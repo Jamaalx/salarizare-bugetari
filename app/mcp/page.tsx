@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { headers } from "next/headers";
 import {
   Calculator as CalcIcon,
   Plug,
@@ -17,8 +16,6 @@ export const metadata = {
   description:
     "Conectează acest calculator la Claude.ai, ChatGPT sau orice asistent AI prin Model Context Protocol (MCP). Endpoint public, gratis.",
 };
-
-export const dynamic = "force-dynamic";
 
 const TOOLS = [
   {
@@ -43,12 +40,10 @@ const TOOLS = [
   },
 ];
 
-export default async function McpPage() {
-  const h = await headers();
-  const host =
-    h.get("x-forwarded-host") || h.get("host") || "salarizare.zed-zen.com";
-  const proto = h.get("x-forwarded-proto") || "https";
-  const mcpUrl = `${proto}://${host}/api/mcp`;
+const PUBLIC_HOST = "salarizare.zed-zen.com";
+const mcpUrl = `https://${PUBLIC_HOST}/api/mcp`;
+
+export default function McpPage() {
   return (
     <main className="min-h-screen bg-slate-50">
       <header className="bg-gradient-to-br from-brand-700 via-brand-600 to-brand-500 text-white">
