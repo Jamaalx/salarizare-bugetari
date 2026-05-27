@@ -37,7 +37,11 @@ import {
   SPORURI_STANDARD,
   VALOARE_REFERINTA_DEFAULT,
   gradatieDinVechime,
+  gradatiiForAnexa,
+  sporuriPentruAnexa,
   clampNumber,
+  type GradatieInfo,
+  type Spor,
 } from "@/lib/tax";
 
 type CoefEntry = {
@@ -80,6 +84,8 @@ type WizardState = {
   scutireImpozit: boolean;
   // null = folosește auto-detecția; true/false = override manual
   conducereOverride: boolean | null;
+  persoaneInIntretinere: number;
+  coefSuplimentConducere: number; // pentru Anexa V conducere (judecători/procurori)
 };
 
 const INITIAL: WizardState = {
@@ -93,12 +99,15 @@ const INITIAL: WizardState = {
   valRef: VALOARE_REFERINTA_DEFAULT,
   scutireImpozit: false,
   conducereOverride: null,
+  persoaneInIntretinere: 0,
+  coefSuplimentConducere: 0,
 };
 
 // Detectie funcții de conducere — art. 13 (1) excepție: coeficientul lor include
 // deja vechimea la nivel maxim, deci gradațiile nu se mai aplică deasupra.
+// Include și termenii specifici justiție (Anexa V) și înalți funcționari publici.
 const FUNCTII_CONDUCERE_RE =
-  /\b(rector|prorector|decan|prodecan|director|[șs]ef\b|şefă\b|manager(?:ial)?|prefect|subprefect|primar|viceprimar|pre[șs]edinte|vicepre[șs]edinte|comandant|inspector\s+(?:general|[șs]ef|şef)|secretar\s+general|secretar[- ]?[șs]ef|secretar-?\s*şef|contabil-?[șs]ef|contabil-?\s*şef|subsecretar\s+de\s+stat|demnitar|guvernator|ambasador)\b/i;
+  /\b(rector|prorector|decan|prodecan|director|[șs]ef\b|şefă\b|manager(?:ial)?|prefect|subprefect|primar|viceprimar|pre[șs]edinte|vicepre[șs]edinte|comandant|inspector\s+(?:general|[șs]ef|şef)|secretar\s+general|secretar[- ]?[șs]ef|secretar-?\s*şef|contabil-?[șs]ef|contabil-?\s*şef|subsecretar\s+de\s+stat|demnitar|guvernator|ambasador|judec[ăa]tor|procuror|magistrat[- ]?asistent|prim[- ]?grefier|grefier[- ]?[șs]ef|înalt[ăa]?\s+func[țt]ionar\s+public)\b/i;
 // Coloana grad: doar "Grad I/II/III" sau "Grad Managerial" cu G mare → conducere.
 // "grad I" cu g mic / "gradul I" sunt grade de execuție personal contractual.
 const GRAD_CONDUCERE_RE = /^Grad\s+(I{1,3}|[Mm]anagerial)$/;
@@ -117,20 +126,33 @@ export default function Wizard({ initialData }: Props) {
   const esteConducere = s.conducereOverride === null ? esteConducereAuto : s.conducereOverride;
   const skipGradatii = coefIncludeVechime || esteConducere;
 
+  // Tabelul de gradații depinde de anexa selectată (Anexa VI = militari/poliție = la 3 ani).
+  const tabelGradatii: GradatieInfo[] = gradatiiForAnexa(s.anexa);
+
   const gradatie = skipGradatii
     ? 0
     : s.gradatieManual !== null
     ? s.gradatieManual
-    : gradatieDinVechime(s.aniVechime);
+    : gradatieDinVechime(s.aniVechime, tabelGradatii);
 
   const salariuG0 = selected ? selected.coeficient * s.valRef : 0;
-  const salariuBaza = selected ? Math.round(aplicaGradatie(salariuG0, gradatie)) : 0;
+  const salariuBaza = selected ? aplicaGradatie(salariuG0, gradatie, tabelGradatii) : 0;
 
-  const sporuriState = SPORURI_STANDARD.map((sp) => ({
+  // Filtrăm sporurile aplicabile pe anexa selectată (ex: medicii nu primesc +100% weekend
+  // ci doar +10% tarif majorat; demnitarii primesc doar sporul UE).
+  const sporuriAplicabile: Spor[] = selected
+    ? sporuriPentruAnexa(selected.anexa)
+    : SPORURI_STANDARD;
+
+  const sporuriState = sporuriAplicabile.map((sp) => ({
     spor: sp,
     activ: !!s.sporuri[sp.id]?.activ,
     procentCustom: s.sporuri[sp.id]?.procent,
   }));
+
+  // Coef supliment conducere se aplică doar pentru Anexa V conducere
+  // (judecători/procurori cu funcții de conducere — Anexa V art. 8).
+  const aplicaCoefSupliment = selected?.anexa === "V" && esteConducere;
 
   const tax = selected
     ? calcBrut({
@@ -138,6 +160,8 @@ export default function Wizard({ initialData }: Props) {
         sporuri: sporuriState,
         valoareReferinta: s.valRef,
         scutireImpozit: s.scutireImpozit,
+        persoaneInIntretinere: s.persoaneInIntretinere,
+        coefSuplimentConducere: aplicaCoefSupliment ? s.coefSuplimentConducere : 0,
       })
     : null;
 
@@ -227,12 +251,14 @@ export default function Wizard({ initialData }: Props) {
           <StepVechime
             aniVechime={s.aniVechime}
             currentGradatie={gradatie}
+            tabelGradatii={tabelGradatii}
             onAni={(n) => setS((p) => ({ ...p, aniVechime: n, gradatieManual: null }))}
           />
         )}
         {current?.id === "sporuri" && (
           <StepSporuri
             sporuri={s.sporuri}
+            sporuriAplicabile={sporuriAplicabile}
             toggle={(id) =>
               setS((p) => ({
                 ...p,
@@ -255,6 +281,11 @@ export default function Wizard({ initialData }: Props) {
             setSalariuActual={(n) => setS((p) => ({ ...p, salariuActual: n }))}
             scutireImpozit={s.scutireImpozit}
             setScutireImpozit={(b) => setS((p) => ({ ...p, scutireImpozit: b }))}
+            persoaneInIntretinere={s.persoaneInIntretinere}
+            setPersoaneInIntretinere={(n) => setS((p) => ({ ...p, persoaneInIntretinere: n }))}
+            aplicaCoefSupliment={aplicaCoefSupliment}
+            coefSuplimentConducere={s.coefSuplimentConducere}
+            setCoefSuplimentConducere={(n) => setS((p) => ({ ...p, coefSuplimentConducere: n }))}
             esteConducereAuto={esteConducereAuto}
             esteConducere={esteConducere}
             conducereOverride={s.conducereOverride}
@@ -267,6 +298,7 @@ export default function Wizard({ initialData }: Props) {
             functie={selected}
             valRef={s.valRef}
             gradatie={gradatie}
+            tabelGradatii={tabelGradatii}
             skipGradatii={skipGradatii}
             coefIncludeVechime={coefIncludeVechime}
             esteConducere={esteConducere}
@@ -520,12 +552,16 @@ function StepFunctie({
 function StepVechime({
   aniVechime,
   currentGradatie,
+  tabelGradatii,
   onAni,
 }: {
   aniVechime: number;
   currentGradatie: number;
+  tabelGradatii: GradatieInfo[];
   onAni: (n: number) => void;
 }) {
+  const esteRegimAparare = tabelGradatii.length === 8; // GRADATII_APARARE
+  const gradatieSafe = tabelGradatii[currentGradatie] ?? tabelGradatii[0];
   return (
     <div>
       <StepHeader
@@ -553,9 +589,18 @@ function StepVechime({
           Gradația {currentGradatie}
         </div>
         <div className="text-sm text-brand-700 mt-1">
-          {GRADATII[currentGradatie].numeRange}
+          {gradatieSafe.numeRange}
         </div>
       </div>
+      {esteRegimAparare && (
+        <div className="mt-3 flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-900">
+          <Info className="shrink-0 w-4 h-4 text-emerald-600 mt-0.5" />
+          <span>
+            Regim Anexa VI (apărare, ordine publică, siguranță națională) —
+            gradațiile sunt la 3 ani, fiecare +3% (Art. 4 alin. 3 Anexa VI).
+          </span>
+        </div>
+      )}
       <details className="mt-5">
         <summary className="cursor-pointer text-sm text-slate-600 hover:text-slate-900 select-none">
           Vezi tabelul complet al gradațiilor
@@ -570,7 +615,7 @@ function StepVechime({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {GRADATII.map((g) => (
+              {tabelGradatii.map((g) => (
                 <tr
                   key={g.nivel}
                   className={
@@ -594,10 +639,12 @@ function StepVechime({
 
 function StepSporuri({
   sporuri,
+  sporuriAplicabile,
   toggle,
   setProcent,
 }: {
   sporuri: Record<string, { activ: boolean; procent?: number }>;
+  sporuriAplicabile: Spor[];
   toggle: (id: string) => void;
   setProcent: (id: string, n: number) => void;
 }) {
@@ -606,11 +653,11 @@ function StepSporuri({
       <StepHeader
         nr={4}
         title="Beneficiezi de sporuri?"
-        desc="Bifează doar cele care ți se aplică efectiv. Sporurile incluse în plafonul de 20% se cumulează până la maxim 20% din salariul de bază."
+        desc="Bifează doar cele care ți se aplică efectiv. Plafonul de 20% (art. 21) se aplică agregat pe ordonatorul principal de credite, nu individual — îți semnalăm doar dacă suma ta personală îl depășește."
         IconFn={TrendingUp}
       />
       <div className="grid sm:grid-cols-2 gap-3">
-        {SPORURI_STANDARD.map((spor) => {
+        {sporuriAplicabile.map((spor) => {
           const st = sporuri[spor.id];
           const activ = !!st?.activ;
           return (
@@ -685,6 +732,11 @@ function StepActual({
   setSalariuActual,
   scutireImpozit,
   setScutireImpozit,
+  persoaneInIntretinere,
+  setPersoaneInIntretinere,
+  aplicaCoefSupliment,
+  coefSuplimentConducere,
+  setCoefSuplimentConducere,
   esteConducereAuto,
   esteConducere,
   conducereOverride,
@@ -697,6 +749,11 @@ function StepActual({
   setSalariuActual: (n: number) => void;
   scutireImpozit: boolean;
   setScutireImpozit: (b: boolean) => void;
+  persoaneInIntretinere: number;
+  setPersoaneInIntretinere: (n: number) => void;
+  aplicaCoefSupliment: boolean;
+  coefSuplimentConducere: number;
+  setCoefSuplimentConducere: (n: number) => void;
   esteConducereAuto: boolean;
   esteConducere: boolean;
   conducereOverride: boolean | null;
@@ -821,13 +878,65 @@ function StepActual({
           </details>
         )}
 
+        <div className="rounded-2xl border border-slate-200 p-5">
+          <label className="block">
+            <span className="text-sm font-semibold text-slate-800 block">
+              Persoane în întreținere
+            </span>
+            <span className="block text-xs text-slate-500 mt-0.5">
+              Pentru deducerea personală (Cod fiscal). Lasă 0 dacă nu ai persoane în întreținere.
+            </span>
+            <div className="mt-3 flex items-center gap-2">
+              <input
+                type="number"
+                min={0}
+                max={10}
+                value={persoaneInIntretinere}
+                onChange={(e) => setPersoaneInIntretinere(clampNumber(Number(e.target.value), 0, 10))}
+                className="w-24 rounded-xl border border-slate-300 px-3 py-2.5 text-lg tabular-nums focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+              />
+              <span className="text-sm text-slate-600">persoane</span>
+            </div>
+          </label>
+        </div>
+
+        {aplicaCoefSupliment && (
+          <div className="rounded-2xl border-2 border-indigo-300 bg-indigo-50 p-5">
+            <label className="block">
+              <span className="text-sm font-semibold text-indigo-900 block">
+                Coeficient suplimentar conducere (Anexa V)
+              </span>
+              <span className="block text-xs text-indigo-800 mt-0.5">
+                Anexa V art. 8 — pentru funcțiile de conducere ale judecătorilor/procurorilor,
+                la indemnizația maximă se adaugă <strong>coef × valoarea de referință</strong>.
+                Valori tipice: 0.50 (Președinte ICCJ/CSM), 0.45 (vicepreședinți), 0.40 (președinți de secții) etc.
+              </span>
+              <div className="mt-3 flex items-center gap-2">
+                <input
+                  type="number"
+                  min={0}
+                  max={1}
+                  step={0.05}
+                  value={coefSuplimentConducere}
+                  onChange={(e) => setCoefSuplimentConducere(clampNumber(Number(e.target.value), 0, 1))}
+                  className="w-24 rounded-xl border border-indigo-300 px-3 py-2.5 text-lg tabular-nums focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                />
+                <span className="text-sm text-indigo-700">× val. ref.</span>
+              </div>
+            </label>
+          </div>
+        )}
+
         <div className="rounded-2xl border border-slate-200 p-5 bg-slate-50">
           <label className="block">
             <span className="text-sm font-semibold text-slate-800 block">
               Salariul tău BRUT actual (decembrie 2026)
             </span>
             <span className="block text-xs text-slate-500 mt-0.5">
-              Opțional — pentru calcul diferență tranzitorie (art. 32).
+              Opțional — pentru calcul diferență tranzitorie (art. 32). <strong>Important:</strong>{" "}
+              introdu doar componentele permanente. Exclude sporurile pentru proiecte cu fonduri
+              europene, gestionare fonduri externe sau stimulente — art. 32 alin. (2)-(4) le exclude
+              din baza de comparație.
             </span>
             <div className="mt-3 flex items-center gap-2">
               <input
@@ -850,7 +959,7 @@ function StepActual({
             </span>
             <span className="block text-xs text-slate-500 mt-0.5">
               Pentru <strong>2027</strong> este fixată prin lege la{" "}
-              <strong>{VALOARE_REFERINTA_DEFAULT} lei</strong> (art. 47 alin. 2). Din
+              <strong>{VALOARE_REFERINTA_DEFAULT} lei</strong> (art. 35 alin. 2). Din
               2028 va fi stabilită anual prin HG. Modifică dacă vrei să simulezi alte
               valori.
             </span>
@@ -891,6 +1000,7 @@ function StepRezultat({
   functie,
   valRef,
   gradatie,
+  tabelGradatii,
   skipGradatii,
   coefIncludeVechime,
   esteConducere,
@@ -904,6 +1014,7 @@ function StepRezultat({
   functie: CoefEntry;
   valRef: number;
   gradatie: number;
+  tabelGradatii: GradatieInfo[];
   skipGradatii: boolean;
   coefIncludeVechime: boolean;
   esteConducere: boolean;
@@ -971,7 +1082,7 @@ function StepRezultat({
           <div>
             {coefIncludeVechime
               ? `Coeficientul include deja vechimea ("${functie.vechime}"), deci gradațiile nu se mai aplică.`
-              : `Pentru funcțiile de conducere (${functie.grad}), gradația este inclusă în coeficient la nivel maxim — art. 10.`}
+              : `Funcție de conducere — gradația este inclusă în coeficient la nivel maxim conform art. 13 alin. (1).`}
           </div>
         </div>
       )}
@@ -1053,7 +1164,7 @@ function StepRezultat({
           <LineItem label="= Salariu de bază" value={`${fmt(salariuBaza)} lei`} bold />
           {tax.sporuriProcent > 0 && (
             <LineItem
-              label="+ Sporuri în plafon (≤20%)"
+              label="+ Sporuri în plafon"
               value={`+${fmt(tax.sporuriProcent)} lei`}
               positive
             />
@@ -1068,6 +1179,13 @@ function StepRezultat({
           <LineItem label="= Salariu BRUT" value={`${fmt(tax.salariuBrut)} lei`} bold />
           <LineItem label="− CAS 25% (pensie)" value={`−${fmt(tax.cas)} lei`} negative />
           <LineItem label="− CASS 10% (sănătate)" value={`−${fmt(tax.cass)} lei`} negative />
+          {tax.deductibil > 0 && (
+            <LineItem
+              label={`+ Deducere personală (${tax.deductibil} lei)`}
+              value="aplicată"
+              positive
+            />
+          )}
           <LineItem
             label={
               scutireImpozit
@@ -1085,14 +1203,27 @@ function StepRezultat({
       </details>
 
       {tax.sporuriDepasescPlafon && (
-        <div className="flex items-start gap-3 rounded-xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm text-rose-900">
-          <AlertTriangle className="shrink-0 w-5 h-5 text-rose-600 mt-0.5" />
+        <div className="flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <AlertTriangle className="shrink-0 w-5 h-5 text-amber-600 mt-0.5" />
           <div>
-            Suma sporurilor „în plafon" depășește 20% din salariul de bază. Conform art.
-            21 alin. (2), au fost capate la 20% în calcul.
+            <strong>Atenție:</strong> suma sporurilor tale „în plafon" depășește 20% din
+            salariul de bază individual. Art. 21 alin. (2) impune limita de 20% ca medie
+            pe ordonatorul principal de credite (instituție), nu pe persoană — angajatorul
+            tău trebuie să se încadreze pe TOTAL angajați; tu individual poți depăși, dar
+            instituția trebuie să compenseze. Calculul tău rămâne neschimbat.
           </div>
         </div>
       )}
+
+      <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600">
+        <Info className="shrink-0 w-4 h-4 text-slate-500 mt-0.5" />
+        <div>
+          <strong>Nu sunt incluse în calcul:</strong> indemnizația de hrană (~347 lei/lună),
+          voucherele de vacanță (1.450 lei/an) și alte drepturi reglementate prin acte
+          separate de proiectul MMFTSS. Aceste sume se adaugă peste salariul net afișat
+          aici, fără să fie supuse impozitului pe venit.
+        </div>
+      </div>
 
       <div className="flex flex-col sm:flex-row gap-3 pt-2">
         <button
