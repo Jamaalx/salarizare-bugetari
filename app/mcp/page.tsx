@@ -77,6 +77,23 @@ export default async function McpPage() {
       </header>
 
       <section className="mx-auto max-w-4xl px-4 py-10 space-y-10">
+        {/* Coming soon banner */}
+        <div className="rounded-2xl border-2 border-amber-300 bg-amber-50 px-5 py-4 flex items-start gap-3">
+          <div className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full bg-amber-200 text-amber-800">
+            <Sparkles className="w-4 h-4" />
+          </div>
+          <div className="text-sm text-amber-900">
+            <p className="font-bold uppercase tracking-wide text-amber-900">
+              În curând
+            </p>
+            <p className="mt-1 leading-relaxed">
+              Conectorul MCP nu este încă activat public. Documentația de mai jos
+              este informativă — endpoint-ul va fi disponibil în zilele
+              următoare.
+            </p>
+          </div>
+        </div>
+
         {/* Endpoint */}
         <div className="rounded-2xl bg-white shadow-sm border border-slate-200 p-6">
           <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
