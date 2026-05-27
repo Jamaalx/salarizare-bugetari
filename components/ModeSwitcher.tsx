@@ -21,9 +21,16 @@ export default function ModeSwitcher() {
         return r.json();
       })
       .then((json: any) => {
+        const rows: any[] = Array.isArray(json) ? json : json.data || [];
+        const ROMAN = /^(IX|VIII|VII|VI|IV|V|III|II|I)\b/;
+        const fixed = rows.map((e) => {
+          if (e.anexa && String(e.anexa).trim()) return e;
+          const m = String(e.sheet || e.capitol || "").match(ROMAN);
+          return m ? { ...e, anexa: m[1] } : e;
+        });
         const payload: CoefPayload = Array.isArray(json)
-          ? { sheets: [], data: json }
-          : json;
+          ? { sheets: [], data: fixed }
+          : { ...json, data: fixed };
         if (!aborted) setData(payload);
       })
       .catch((e) => {
