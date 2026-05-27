@@ -270,7 +270,11 @@ export const SPORURI_STANDARD: Spor[] = [
     tip: "valoare",
     valoare: 15,
     inclusInPlafon20: false,
-    descriere: "Art. 19 — 15% din valoarea de referință.",
+    descriere:
+      "Art. 19 alin. (1) proiect MMFTSS — citat: „spor de 15% din valoarea de referință\". " +
+      "Cuantum FIX (15% × 4100 = 615 lei pentru 2027), NU procent din salariul de bază. " +
+      "Atenție: Legea 153/2017 (vechi) avea 15% din salariul de bază — proiectul nou a redus acest spor pentru funcțiile mari. " +
+      "Conform art. 19 alin. (2), nu intră în plafonul de 20%.",
   },
   {
     id: "conditii",
