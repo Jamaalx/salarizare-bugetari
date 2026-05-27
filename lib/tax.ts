@@ -27,6 +27,11 @@ export interface TaxInput {
   salariuBaza: number; // salariul de bază (după gradație), lei
   sporuri: { spor: Spor; activ: boolean; procentCustom?: number }[];
   valoareReferinta: number; // pentru sporul de handicap (15% din val ref)
+  // Persoane scutite de impozitul pe veniturile din salarii — art. 60 Cod fiscal:
+  // - persoane cu handicap grav sau accentuat (pct. 1 lit. b)
+  // - personal cercetare-dezvoltare (pct. 3)
+  // - programatori IT (pct. 2)
+  scutireImpozit?: boolean;
 }
 
 export interface TaxBreakdown {
@@ -83,7 +88,8 @@ export function calcBrut(input: TaxInput): TaxBreakdown {
   // Userul poate vedea breakdown-ul.
   const deductibil = 0;
 
-  const impozit = Math.round(Math.max(0, venitImpozabil - deductibil) * 0.1);
+  const impozitCalculat = Math.round(Math.max(0, venitImpozabil - deductibil) * 0.1);
+  const impozit = input.scutireImpozit ? 0 : impozitCalculat;
   const salariuNet = venitImpozabil - impozit;
 
   return {
@@ -194,6 +200,15 @@ export const SPORURI_STANDARD: Spor[] = [
     inclusInPlafon20: true,
     descriere:
       "Art. 20 — mărime stabilită prin regulament-cadru pe domeniu. Procent editabil.",
+  },
+  {
+    id: "doctorat",
+    nume: "Spor de doctorat (15%)",
+    tip: "procent",
+    valoare: 15,
+    inclusInPlafon20: true,
+    descriere:
+      "Pentru personalul cu titlul științific de doctor obținut în domeniul postului ocupat. Inclus în plafonul de 20%.",
   },
 ];
 
