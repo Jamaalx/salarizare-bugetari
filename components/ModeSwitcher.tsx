@@ -22,7 +22,7 @@ export default function ModeSwitcher() {
       })
       .then((json: any) => {
         const rows: any[] = Array.isArray(json) ? json : json.data || [];
-        const ROMAN = /^(IX|VIII|VII|VI|IV|V|III|II|I)\b/;
+        const ROMAN = /^(IX|VIII|VII|VI|IV|V|III|II|I)(?=[\s_]|$)/;
         const fixed = rows.map((e) => {
           if (e.anexa && String(e.anexa).trim()) return e;
           const m = String(e.sheet || e.capitol || "").match(ROMAN);
