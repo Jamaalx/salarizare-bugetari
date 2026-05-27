@@ -1,0 +1,11 @@
+node_modules
+.next
+.git
+.gitignore
+.env*
+*.log
+.DS_Store
+.playwright-mcp
+README.md
+Dockerfile
+.dockerignore
