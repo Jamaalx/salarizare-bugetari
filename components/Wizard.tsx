@@ -77,6 +77,9 @@ type WizardState = {
   sporuri: Record<string, { activ: boolean; procent?: number }>;
   salariuActual: number;
   valRef: number;
+  scutireImpozit: boolean;
+  // null = folosește auto-detecția; true/false = override manual
+  conducereOverride: boolean | null;
 };
 
 const INITIAL: WizardState = {
@@ -88,7 +91,17 @@ const INITIAL: WizardState = {
   sporuri: {},
   salariuActual: 0,
   valRef: VALOARE_REFERINTA_DEFAULT,
+  scutireImpozit: false,
+  conducereOverride: null,
 };
+
+// Detectie funcții de conducere — art. 13 (1) excepție: coeficientul lor include
+// deja vechimea la nivel maxim, deci gradațiile nu se mai aplică deasupra.
+const FUNCTII_CONDUCERE_RE =
+  /\b(rector|prorector|decan|prodecan|director|[șs]ef\b|şefă\b|manager(?:ial)?|prefect|subprefect|primar|viceprimar|pre[șs]edinte|vicepre[șs]edinte|comandant|inspector\s+(?:general|[șs]ef|şef)|secretar\s+general|secretar[- ]?[șs]ef|secretar-?\s*şef|contabil-?[șs]ef|contabil-?\s*şef|subsecretar\s+de\s+stat|demnitar|guvernator|ambasador)\b/i;
+// Coloana grad: doar "Grad I/II/III" sau "Grad Managerial" cu G mare → conducere.
+// "grad I" cu g mic / "gradul I" sunt grade de execuție personal contractual.
+const GRAD_CONDUCERE_RE = /^Grad\s+(I{1,3}|[Mm]anagerial)$/;
 
 export default function Wizard({ initialData }: Props) {
   const all = initialData.data;
@@ -97,7 +110,11 @@ export default function Wizard({ initialData }: Props) {
   const selected = s.functieIdx !== null ? all[s.functieIdx] : null;
 
   const coefIncludeVechime = !!(selected?.vechime && selected.vechime.trim().length > 0);
-  const esteConducere = !!(selected?.grad && /grad\s*(i|ii|iii|managerial)/i.test(selected.grad));
+  const gradMarcatConducere = !!(selected?.grad && GRAD_CONDUCERE_RE.test(selected.grad.trim()));
+  const numeMarcatConducere = !!selected && FUNCTII_CONDUCERE_RE.test(selected.functie);
+  const esteAnexaIX = selected?.anexa === "IX";
+  const esteConducereAuto = gradMarcatConducere || numeMarcatConducere || esteAnexaIX;
+  const esteConducere = s.conducereOverride === null ? esteConducereAuto : s.conducereOverride;
   const skipGradatii = coefIncludeVechime || esteConducere;
 
   const gradatie = skipGradatii
@@ -116,7 +133,12 @@ export default function Wizard({ initialData }: Props) {
   }));
 
   const tax = selected
-    ? calcBrut({ salariuBaza, sporuri: sporuriState, valoareReferinta: s.valRef })
+    ? calcBrut({
+        salariuBaza,
+        sporuri: sporuriState,
+        valoareReferinta: s.valRef,
+        scutireImpozit: s.scutireImpozit,
+      })
     : null;
 
   const steps: { id: string; title: string; show: boolean }[] = [
@@ -231,6 +253,13 @@ export default function Wizard({ initialData }: Props) {
             setValRef={(n) => setS((p) => ({ ...p, valRef: n }))}
             salariuActual={s.salariuActual}
             setSalariuActual={(n) => setS((p) => ({ ...p, salariuActual: n }))}
+            scutireImpozit={s.scutireImpozit}
+            setScutireImpozit={(b) => setS((p) => ({ ...p, scutireImpozit: b }))}
+            esteConducereAuto={esteConducereAuto}
+            esteConducere={esteConducere}
+            conducereOverride={s.conducereOverride}
+            setConducereOverride={(b) => setS((p) => ({ ...p, conducereOverride: b }))}
+            coefIncludeVechime={coefIncludeVechime}
           />
         )}
         {current?.id === "rezultat" && selected && tax && (
@@ -241,6 +270,7 @@ export default function Wizard({ initialData }: Props) {
             skipGradatii={skipGradatii}
             coefIncludeVechime={coefIncludeVechime}
             esteConducere={esteConducere}
+            scutireImpozit={s.scutireImpozit}
             salariuG0={salariuG0}
             salariuBaza={salariuBaza}
             tax={tax}
@@ -653,21 +683,144 @@ function StepActual({
   setValRef,
   salariuActual,
   setSalariuActual,
+  scutireImpozit,
+  setScutireImpozit,
+  esteConducereAuto,
+  esteConducere,
+  conducereOverride,
+  setConducereOverride,
+  coefIncludeVechime,
 }: {
   valRef: number;
   setValRef: (n: number) => void;
   salariuActual: number;
   setSalariuActual: (n: number) => void;
+  scutireImpozit: boolean;
+  setScutireImpozit: (b: boolean) => void;
+  esteConducereAuto: boolean;
+  esteConducere: boolean;
+  conducereOverride: boolean | null;
+  setConducereOverride: (b: boolean | null) => void;
+  coefIncludeVechime: boolean;
 }) {
   return (
     <div>
       <StepHeader
         nr={5}
         title="Ultimii pași (opționali)"
-        desc="Ne ajută să-ți arătăm diferența față de salariul actual."
+        desc="Ne ajută să-ți arătăm diferența față de salariul actual și să aplicăm corect fiscalitatea."
         IconFn={Banknote}
       />
       <div className="space-y-4">
+        <label
+          className={
+            "block rounded-2xl border-2 p-5 cursor-pointer transition " +
+            (scutireImpozit
+              ? "border-emerald-500 bg-emerald-50"
+              : "border-slate-200 hover:border-emerald-300 bg-white")
+          }
+        >
+          <div className="flex items-start gap-3">
+            <div
+              className={
+                "shrink-0 mt-0.5 inline-flex items-center justify-center w-5 h-5 rounded border-2 transition " +
+                (scutireImpozit
+                  ? "bg-emerald-600 border-emerald-600 text-white"
+                  : "border-slate-300 bg-white")
+              }
+            >
+              {scutireImpozit && <Check className="w-3.5 h-3.5" strokeWidth={3} />}
+            </div>
+            <input
+              type="checkbox"
+              checked={scutireImpozit}
+              onChange={(e) => setScutireImpozit(e.target.checked)}
+              className="sr-only"
+            />
+            <div className="flex-1 min-w-0">
+              <div className="font-semibold text-slate-900 text-sm">
+                Scutire de impozit pe venit
+              </div>
+              <div className="text-xs text-slate-600 mt-1 leading-snug">
+                Bifează dacă te încadrezi în art. 60 din Codul fiscal: persoană cu{" "}
+                <strong>handicap grav sau accentuat</strong>, personal{" "}
+                <strong>cercetare-dezvoltare</strong> sau <strong>programator IT</strong>.
+                Impozitul pe veniturile salariale devine 0%; CAS și CASS rămân.
+              </div>
+            </div>
+          </div>
+        </label>
+
+        {esteConducereAuto && !coefIncludeVechime && (
+          <div className="rounded-2xl border-2 border-amber-300 bg-amber-50 p-5">
+            <div className="flex items-start gap-2 mb-3">
+              <Info className="shrink-0 w-5 h-5 text-amber-600 mt-0.5" />
+              <div className="text-sm text-amber-900">
+                Am detectat această poziție ca <strong>funcție de conducere</strong> —
+                conform art. 13 (1), coeficientul include deja vechimea, deci{" "}
+                gradațiile <strong>nu se aplică</strong> peste salariul de bază.
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setConducereOverride(null)}
+                className={
+                  "text-xs px-3 py-1.5 rounded-lg border-2 transition " +
+                  (conducereOverride === null
+                    ? "bg-amber-600 text-white border-amber-600"
+                    : "bg-white border-amber-200 text-amber-900 hover:border-amber-400")
+                }
+              >
+                Auto (conducere)
+              </button>
+              <button
+                onClick={() => setConducereOverride(false)}
+                className={
+                  "text-xs px-3 py-1.5 rounded-lg border-2 transition " +
+                  (conducereOverride === false
+                    ? "bg-amber-600 text-white border-amber-600"
+                    : "bg-white border-amber-200 text-amber-900 hover:border-amber-400")
+                }
+              >
+                Nu, e funcție de execuție → aplică gradații
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!esteConducereAuto && !coefIncludeVechime && (
+          <details className="rounded-2xl border border-slate-200 bg-white p-4 text-sm">
+            <summary className="cursor-pointer text-slate-700 select-none">
+              Ești pe funcție de conducere și nu am detectat-o?
+            </summary>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <span className="text-xs text-slate-600">Tratează ca:</span>
+              <button
+                onClick={() => setConducereOverride(null)}
+                className={
+                  "text-xs px-3 py-1.5 rounded-lg border-2 transition " +
+                  (conducereOverride === null
+                    ? "bg-slate-700 text-white border-slate-700"
+                    : "bg-white border-slate-200 text-slate-700 hover:border-slate-400")
+                }
+              >
+                Auto (execuție)
+              </button>
+              <button
+                onClick={() => setConducereOverride(true)}
+                className={
+                  "text-xs px-3 py-1.5 rounded-lg border-2 transition " +
+                  (conducereOverride === true
+                    ? "bg-slate-700 text-white border-slate-700"
+                    : "bg-white border-slate-200 text-slate-700 hover:border-slate-400")
+                }
+              >
+                Da, conducere → nu aplica gradații
+              </button>
+            </div>
+          </details>
+        )}
+
         <div className="rounded-2xl border border-slate-200 p-5 bg-slate-50">
           <label className="block">
             <span className="text-sm font-semibold text-slate-800 block">
@@ -741,6 +894,7 @@ function StepRezultat({
   skipGradatii,
   coefIncludeVechime,
   esteConducere,
+  scutireImpozit,
   salariuG0,
   salariuBaza,
   tax,
@@ -753,6 +907,7 @@ function StepRezultat({
   skipGradatii: boolean;
   coefIncludeVechime: boolean;
   esteConducere: boolean;
+  scutireImpozit: boolean;
   salariuG0: number;
   salariuBaza: number;
   tax: ReturnType<typeof calcBrut>;
@@ -914,9 +1069,16 @@ function StepRezultat({
           <LineItem label="− CAS 25% (pensie)" value={`−${fmt(tax.cas)} lei`} negative />
           <LineItem label="− CASS 10% (sănătate)" value={`−${fmt(tax.cass)} lei`} negative />
           <LineItem
-            label="− Impozit 10% pe venit"
-            value={`−${fmt(tax.impozit)} lei`}
-            negative
+            label={
+              scutireImpozit
+                ? "− Impozit pe venit (scutire art. 60 Cod fiscal)"
+                : "− Impozit 10% pe venit"
+            }
+            value={
+              scutireImpozit ? "0 lei" : `−${fmt(tax.impozit)} lei`
+            }
+            negative={!scutireImpozit}
+            positive={scutireImpozit}
           />
           <LineItem label="= Salariu NET" value={`${fmt(tax.salariuNet)} lei`} bold />
         </div>
