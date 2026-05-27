@@ -242,7 +242,6 @@ export const SPORURI_STANDARD: Spor[] = [
     valoare: 25,
     inclusInPlafon20: false,
     descriere: "Art. 17 — orele lucrate între 22:00–06:00, exceptat de la plafon.",
-    // Anexa II Sănătate are regim diferit (10% în ture — vezi `tura-sanatate`).
     aplicabilAnexe: ["I", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
   },
   {
@@ -260,8 +259,6 @@ export const SPORURI_STANDARD: Spor[] = [
     valoare: 100,
     inclusInPlafon20: false,
     descriere: "Art. 18(3) — ore lucrate în repaus săptămânal / sărbători legale.",
-    // Pentru Anexa II Sănătate, art. 2 prevede doar +10% pe ora lucrată în
-    // weekend/sărbători, nu +100% — vezi sporul `weekend-sanatate` mai jos.
     aplicabilAnexe: ["I", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
   },
   {
@@ -303,6 +300,15 @@ export const SPORURI_STANDARD: Spor[] = [
     descriere:
       "Art. 22 — premiu acordat pentru performanță deosebită, exceptat de la plafonul 20%.",
   },
+  {
+    id: "gestionare-fonduri-externe",
+    nume: "Gestionare fonduri externe (până la 40%)",
+    tip: "procent",
+    valoare: 40,
+    inclusInPlafon20: false,
+    descriere:
+      "Art. 16 — personal Lg.490/2004 și organisme intermediare. Exceptat de plafon (alin. 5).",
+  },
 
   // === Anexa II — Sănătate ===
   {
@@ -343,6 +349,190 @@ export const SPORURI_STANDARD: Spor[] = [
       "Anexa II art. 3-5 — tarif pe oră de gardă peste norma de bază. Estimare medie 25%, variază pe specialitate.",
     aplicabilAnexe: ["II"],
   },
+  {
+    id: "garda-domiciliu-sanatate",
+    nume: "Gardă la domiciliu (15% tarif orar)",
+    tip: "procent",
+    valoare: 15,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa II art. 3(4) — 15% din tariful orar pentru orele de gardă la domiciliu / asistență de urgență.",
+    aplicabilAnexe: ["II"],
+  },
+  {
+    id: "neonatologie-laborator-sanatate",
+    nume: "Condiții periculoase neonatologie/laboratoare (până la 15%)",
+    tip: "procent",
+    valoare: 15,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa II art. 7(1) lit.a) — neonatologie, săli naștere, laboratoare analize. Max 15% sal. bază.",
+    aplicabilAnexe: ["II"],
+  },
+  {
+    id: "periculoase-nivel-1-sanatate",
+    nume: "Condiții deosebit periculoase nivel I (până la 40%)",
+    tip: "procent",
+    valoare: 40,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa II art. 7(1) lit.b) — dializă, oncologie, ATI, paliative, chirurgie cardio, psihiatrie. Max 40%.",
+    aplicabilAnexe: ["II"],
+  },
+  {
+    id: "tesa-leprozerii-sanatate",
+    nume: "Personal TESA în leprozerii/TBC/psihiatrie (până la 20%)",
+    tip: "procent",
+    valoare: 20,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa II art. 7(1) lit.b) — personal nemedical/TESA din leprozerii, TBC, psihiatrie. Max 20%.",
+    aplicabilAnexe: ["II"],
+  },
+  {
+    id: "periculoase-nivel-2-sanatate",
+    nume: "Condiții deosebit periculoase nivel II (până la 50%)",
+    tip: "procent",
+    valoare: 50,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa II art. 7(1) lit.c) — anatomie patologică, SIDA, TBC, UPU/SMURD, ATI, transplant, arși. Max 50%.",
+    aplicabilAnexe: ["II"],
+  },
+  {
+    id: "conditii-grele-sanatate",
+    nume: "Condiții grele de muncă sănătate (5%)",
+    tip: "procent",
+    valoare: 5,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa II art. 7(1) lit.d) — spor fix 5% din salariul de bază, proporțional cu timpul lucrat.",
+    aplicabilAnexe: ["II"],
+  },
+  {
+    id: "izolare-sanatate",
+    nume: "Localități izolate / altitudine (până la 15%)",
+    tip: "procent",
+    valoare: 15,
+    inclusInPlafon20: false,
+    descriere:
+      "Anexa II art. 7(3) — localități izolate, altitudine, atragere dificilă. Exceptat de plafon (alin.4).",
+    aplicabilAnexe: ["II"],
+  },
+  {
+    id: "periculoase-asistenta-sociala",
+    nume: "Condiții deosebit periculoase asistență socială (până la 40%)",
+    tip: "procent",
+    valoare: 40,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa II art. 14(1) lit.a) — centre recuperare neuropsihiatrică, TBC, SIDA. Max 40% sal. bază.",
+    aplicabilAnexe: ["II"],
+  },
+  {
+    id: "al-doilea-copil-plasament",
+    nume: "Al II-lea copil în plasament (până la 10%)",
+    tip: "procent",
+    valoare: 10,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa II art. 14(1) lit.d) — asistenți maternali profesioniști, pentru al doilea copil. Max 10%.",
+    aplicabilAnexe: ["II"],
+  },
+  {
+    id: "continuitate-maternali",
+    nume: "Continuitate asistenți maternali (până la 5%)",
+    tip: "procent",
+    valoare: 5,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa II art. 14(1) lit.e) — asigurarea continuității în muncă pentru asistenții maternali.",
+    aplicabilAnexe: ["II"],
+  },
+
+  // === Anexa III — Cultură ===
+  {
+    id: "conditii-grele-cultura",
+    nume: "Condiții grele de muncă cultură (până la 5%)",
+    tip: "procent",
+    valoare: 5,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa III art. 1 — max 5% din salariul de bază, proporțional cu timpul lucrat la locurile respective.",
+    aplicabilAnexe: ["III"],
+  },
+
+  // === Anexa V — Justiție ===
+  {
+    id: "delegare-penitenciar-justitie",
+    nume: "Delegare/detașare administrația penitenciară (10%)",
+    tip: "procent",
+    valoare: 10,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa V art. 11 — majorare 10% indemnizație / salariu de bază pe durata delegării în penitenciar.",
+    aplicabilAnexe: ["V"],
+  },
+  {
+    id: "membru-csm-ales",
+    nume: "Indemnizație membru CSM ales (25%)",
+    tip: "procent",
+    valoare: 25,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa V art. 10(3) — 25% din indemnizația brută lunară maximă a judecătorului ÎCCJ, membri CSM aleși.",
+    aplicabilAnexe: ["V"],
+  },
+  {
+    id: "membru-csm-drept",
+    nume: "Indemnizație membru CSM de drept (50%)",
+    tip: "procent",
+    valoare: 50,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa V art. 10(4) — 50% din indemnizația brută lunară maximă a judecătorului ÎCCJ, membri de drept.",
+    aplicabilAnexe: ["V"],
+  },
+  {
+    id: "auxiliar-tribunal-justitie",
+    nume: "Majorare auxiliar tribunal/judecătorii Buc. (5%)",
+    tip: "procent",
+    valoare: 5,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa V art. 15(3) — salarii majorate cu 5% pentru auxiliar la tribunale, jud. Bucureștii, reședință de județ.",
+    aplicabilAnexe: ["V"],
+  },
+  {
+    id: "auxiliar-curte-apel-justitie",
+    nume: "Majorare auxiliar curți de apel (7.5%)",
+    tip: "procent",
+    valoare: 7.5,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa V art. 15(4) — salarii majorate cu 7.5% pentru personal auxiliar curți de apel și parchete aferente.",
+    aplicabilAnexe: ["V"],
+  },
+  {
+    id: "auxiliar-iccj-justitie",
+    nume: "Majorare auxiliar ÎCCJ/DNA/DIICOT (10%)",
+    tip: "procent",
+    valoare: 10,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa V art. 15(5) — salarii majorate cu 10% pentru auxiliar ÎCCJ, Parchet ÎCCJ, DNA, DIICOT.",
+    aplicabilAnexe: ["V"],
+  },
+  {
+    id: "criminalistica-inec",
+    nume: "Personal criminalistică INEC (2%)",
+    tip: "procent",
+    valoare: 2,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa V art. 19(4) — indemnizații lunare mai mari cu 2% pentru personal criminalistică INEC.",
+    aplicabilAnexe: ["V"],
+  },
 
   // === Anexa VI — Apărare, ordine publică, siguranță națională ===
   {
@@ -367,12 +557,112 @@ export const SPORURI_STANDARD: Spor[] = [
   },
   {
     id: "risc-misiuni-aparare",
-    nume: "Compensație lunară de risc (val. ref.)",
+    nume: "Compensație lunară de risc misiuni externe (val. ref.)",
     tip: "valoare",
     valoare: 100,
     inclusInPlafon20: false,
     descriere:
-      "Anexa VI art. 38 alin. (1) lit. b — pentru misiuni internaționale, până la nivelul valorii de referință (editabil 0–100%).",
+      "Anexa VI art. 37-38 — compensație lunară de risc, până la 100% din valoarea de referință (editabil 0–100%).",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "munitii-explozivi-aparare",
+    nume: "Activități cu muniții/explozivi/calamități (până la 50% val. ref.)",
+    tip: "valoare",
+    valoare: 50,
+    inclusInPlafon20: false,
+    descriere:
+      "Anexa VI art. 7(1) — primă până la 50% din valoarea de referință pentru muniții, explozivi, calamități. Exceptat.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "clasificare-aviatie",
+    nume: "Primă clasificare aviație (8–30%)",
+    tip: "procent",
+    valoare: 8,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 10 — 8-30% din solda de funcție pentru personal navigant și parașutiști militari. Editabil.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "clasificare-aeronautic-nenav",
+    nume: "Clasificare aeronautic nenavigant (5–19%)",
+    tip: "procent",
+    valoare: 5,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 15 — 5-19% din soldă funcție, personal aeronautic nenavigant. Editabil.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "specializare-aviatie",
+    nume: "Specializare ofițeri ingineri aviație (8–22%)",
+    tip: "procent",
+    valoare: 8,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 16 — 8-22% soldă funcție, ofițeri ingineri/subingineri aviație, transmisiuni aeronautice.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "ambarcare-marina-baza",
+    nume: "Ambarcare nave în bază (15%)",
+    tip: "procent",
+    valoare: 15,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 21(1) lit.a) — 15% din solda funcție/salariu bază, personal ambarcat în baza permanentă.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "ambarcare-marina-deplasare",
+    nume: "Ambarcare nave în misiuni (+15% suplim.)",
+    tip: "procent",
+    valoare: 15,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 21(1) lit.b) — +15% suplimentar pe perioada deplasării pentru instrucții/misiuni.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "clasificare-scafandri",
+    nume: "Primă clasificare scafandri (5–30%)",
+    tip: "procent",
+    valoare: 5,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 24(1) — 5-30% soldă funcție/salariu bază pentru scafandri brevetați. Editabil.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "control-nave-lupta",
+    nume: "Control nave în misiuni de luptă (30%)",
+    tip: "procent",
+    valoare: 30,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 29 — 30% soldă funcție pentru personal echipe specializate control nave misiuni luptă.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "ambarcare-submarine",
+    nume: "Ambarcare submarine (30%)",
+    tip: "procent",
+    valoare: 30,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 30 — 30% soldă funcție/salariu bază pentru personal militar/civil pe submarine.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "compensatie-civil-aparare",
+    nume: "Compensație personal civil apărare (1/3 val. ref.)",
+    tip: "valoare",
+    valoare: 33,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI — compensație lunară personal civil ~1/3 din valoarea de referință.",
     aplicabilAnexe: ["VI"],
   },
 ];
