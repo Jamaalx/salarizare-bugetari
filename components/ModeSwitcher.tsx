@@ -20,8 +20,11 @@ export default function ModeSwitcher() {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json();
       })
-      .then((json: CoefPayload) => {
-        if (!aborted) setData(json);
+      .then((json: any) => {
+        const payload: CoefPayload = Array.isArray(json)
+          ? { sheets: [], data: json }
+          : json;
+        if (!aborted) setData(payload);
       })
       .catch((e) => {
         if (!aborted) setError(e instanceof Error ? e.message : "fetch failed");
