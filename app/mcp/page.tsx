@@ -72,23 +72,6 @@ export default function McpPage() {
       </header>
 
       <section className="mx-auto max-w-4xl px-4 py-10 space-y-10">
-        {/* Coming soon banner */}
-        <div className="rounded-2xl border-2 border-amber-300 bg-amber-50 px-5 py-4 flex items-start gap-3">
-          <div className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full bg-amber-200 text-amber-800">
-            <Sparkles className="w-4 h-4" />
-          </div>
-          <div className="text-sm text-amber-900">
-            <p className="font-bold uppercase tracking-wide text-amber-900">
-              În curând
-            </p>
-            <p className="mt-1 leading-relaxed">
-              Conectorul MCP nu este încă activat public. Documentația de mai jos
-              este informativă — endpoint-ul va fi disponibil în zilele
-              următoare.
-            </p>
-          </div>
-        </div>
-
         {/* Endpoint */}
         <div className="rounded-2xl bg-white shadow-sm border border-slate-200 p-6">
           <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
@@ -96,7 +79,8 @@ export default function McpPage() {
             URL-ul serverului MCP
           </h2>
           <p className="mt-2 text-sm text-slate-600">
-            Public, fără autentificare. Pune URL-ul acesta în clientul tău MCP:
+            Public, autentificare OAuth anonimă (auto-aprobată — fără cont,
+            fără login). Pune URL-ul acesta în clientul tău MCP:
           </p>
           <div className="mt-4 flex items-center gap-2 rounded-xl bg-slate-900 text-emerald-300 px-4 py-3 font-mono text-sm overflow-x-auto">
             <code className="flex-1">{mcpUrl}</code>
@@ -182,7 +166,8 @@ export default function McpPage() {
                     </code>
                   </li>
                   <li>
-                    <strong>Authentication:</strong> None
+                    <strong>Authentication:</strong> OAuth (anonim, fără cont —
+                    Claude îl negociază automat)
                   </li>
                 </ul>
               </span>
