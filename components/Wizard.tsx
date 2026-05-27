@@ -37,6 +37,7 @@ import {
   SPORURI_STANDARD,
   VALOARE_REFERINTA_DEFAULT,
   gradatieDinVechime,
+  clampNumber,
 } from "@/lib/tax";
 
 type CoefEntry = {
@@ -509,7 +510,7 @@ function StepVechime({
           min={0}
           max={50}
           value={aniVechime}
-          onChange={(e) => onAni(Math.max(0, Number(e.target.value) || 0))}
+          onChange={(e) => onAni(clampNumber(Number(e.target.value), 0, 60))}
           className="w-32 rounded-2xl border-2 border-slate-200 px-4 py-4 text-4xl font-bold text-center focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-100 tabular-nums transition"
         />
         <span className="text-xl text-slate-600">ani</span>
@@ -622,7 +623,7 @@ function StepSporuri({
                         max={spor.valoare}
                         value={st?.procent ?? spor.valoare}
                         onChange={(e) =>
-                          setProcent(spor.id, Math.max(0, Number(e.target.value)))
+                          setProcent(spor.id, clampNumber(Number(e.target.value), 0, 100))
                         }
                         onClick={(e) => e.stopPropagation()}
                         className="w-16 rounded border border-slate-300 px-2 py-1 text-sm tabular-nums"
@@ -680,7 +681,7 @@ function StepActual({
                 type="number"
                 min={0}
                 value={salariuActual || ""}
-                onChange={(e) => setSalariuActual(Math.max(0, Number(e.target.value) || 0))}
+                onChange={(e) => setSalariuActual(clampNumber(Number(e.target.value), 0, 1_000_000))}
                 placeholder="ex: 7500"
                 className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-lg tabular-nums focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
               />
@@ -705,7 +706,7 @@ function StepActual({
                 type="number"
                 min={0}
                 value={valRef}
-                onChange={(e) => setValRef(Math.max(0, Number(e.target.value) || 0))}
+                onChange={(e) => setValRef(clampNumber(Number(e.target.value), 0, 100_000))}
                 className="w-32 rounded-xl border border-slate-300 px-3 py-2.5 text-lg tabular-nums focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
               />
               <span className="text-sm text-slate-600">lei</span>

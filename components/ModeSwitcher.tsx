@@ -1,13 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Sparkles, Wrench, Plug } from "lucide-react";
+import { Sparkles, Wrench, Plug, Loader2 } from "lucide-react";
 import Wizard from "./Wizard";
 import Calculator from "./Calculator";
 
-export default function ModeSwitcher({ data }: { data: any }) {
+type CoefPayload = { sheets: any[]; data: any[] };
+
+export default function ModeSwitcher() {
   const [mode, setMode] = useState<"wizard" | "expert">("wizard");
+  const [data, setData] = useState<CoefPayload | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let aborted = false;
+    fetch("/coefficients.json")
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then((json: CoefPayload) => {
+        if (!aborted) setData(json);
+      })
+      .catch((e) => {
+        if (!aborted) setError(e instanceof Error ? e.message : "fetch failed");
+      });
+    return () => {
+      aborted = true;
+    };
+  }, []);
 
   return (
     <>
@@ -59,10 +81,24 @@ export default function ModeSwitcher({ data }: { data: any }) {
         </div>
       </div>
 
-      {mode === "wizard" ? (
-        <Wizard initialData={data} />
+      {data ? (
+        mode === "wizard" ? (
+          <Wizard initialData={data} />
+        ) : (
+          <Calculator initialData={data} />
+        )
+      ) : error ? (
+        <div className="mx-auto max-w-3xl px-4 py-16 text-center">
+          <p className="text-sm font-semibold text-rose-700">
+            Nu am putut încărca datele coeficienților.
+          </p>
+          <p className="mt-2 text-xs text-slate-500">{error}</p>
+        </div>
       ) : (
-        <Calculator initialData={data} />
+        <div className="mx-auto max-w-3xl px-4 py-16 flex flex-col items-center justify-center gap-3 text-slate-500">
+          <Loader2 className="w-6 h-6 animate-spin text-brand-600" />
+          <p className="text-sm">Se încarcă datele coeficienților…</p>
+        </div>
       )}
     </>
   );

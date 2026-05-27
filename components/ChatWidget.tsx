@@ -67,12 +67,24 @@ export default function ChatWidget() {
               error: true,
             },
           ]);
+        } else if (data?.error === "RATE_LIMITED") {
+          setMessages([
+            ...newMessages,
+            {
+              role: "assistant",
+              content:
+                data.message ||
+                "Prea multe întrebări într-un minut. Așteaptă puțin și reîncearcă.",
+              error: true,
+            },
+          ]);
         } else {
           setMessages([
             ...newMessages,
             {
               role: "assistant",
               content:
+                data?.message ||
                 "Hopa, ceva n-a mers. Încearcă din nou peste câteva secunde.",
               error: true,
             },

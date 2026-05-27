@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import {
   Calculator as CalcIcon,
   Plug,
@@ -16,6 +17,8 @@ export const metadata = {
   description:
     "Conectează acest calculator la Claude.ai, ChatGPT sau orice asistent AI prin Model Context Protocol (MCP). Endpoint public, gratis.",
 };
+
+export const dynamic = "force-dynamic";
 
 const TOOLS = [
   {
@@ -40,7 +43,12 @@ const TOOLS = [
   },
 ];
 
-export default function McpPage() {
+export default async function McpPage() {
+  const h = await headers();
+  const host =
+    h.get("x-forwarded-host") || h.get("host") || "salarizare.zed-zen.com";
+  const proto = h.get("x-forwarded-proto") || "https";
+  const mcpUrl = `${proto}://${host}/api/mcp`;
   return (
     <main className="min-h-screen bg-slate-50">
       <header className="bg-gradient-to-br from-brand-700 via-brand-600 to-brand-500 text-white">
@@ -79,9 +87,7 @@ export default function McpPage() {
             Public, fără autentificare. Pune URL-ul acesta în clientul tău MCP:
           </p>
           <div className="mt-4 flex items-center gap-2 rounded-xl bg-slate-900 text-emerald-300 px-4 py-3 font-mono text-sm overflow-x-auto">
-            <code className="flex-1">
-              https://salarizare.zed-zen.com/api/mcp
-            </code>
+            <code className="flex-1">{mcpUrl}</code>
             <a
               href="/api/mcp"
               target="_blank"
@@ -160,7 +166,7 @@ export default function McpPage() {
                   <li>
                     <strong>Remote MCP server URL:</strong>{" "}
                     <code className="bg-slate-100 px-1 rounded text-[11px]">
-                      https://salarizare.zed-zen.com/api/mcp
+                      {mcpUrl}
                     </code>
                   </li>
                   <li>
@@ -216,7 +222,7 @@ export default function McpPage() {
             Pentru dezvoltatori care vor să verifice rapid că merge:
           </p>
           <pre className="bg-slate-900 text-emerald-300 p-4 rounded-xl font-mono text-xs overflow-x-auto leading-relaxed">
-{`curl -X POST https://salarizare.zed-zen.com/api/mcp \\
+{`curl -X POST ${mcpUrl} \\
   -H "Content-Type: application/json" \\
   -d '{
     "jsonrpc": "2.0",

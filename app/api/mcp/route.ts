@@ -6,9 +6,15 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { TOOL_DEFINITIONS } from "@/lib/tools";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+// MCP is public/anonymous — be more generous than chat because legit clients
+// (Claude.ai connector) do `tools/list` + `tools/call` in bursts.
+const MCP_LIMIT = 60;
+const MCP_WINDOW_MS = 60_000;
 
 /**
  * MCP server stateless cu HTTP transport simplificat.
@@ -131,6 +137,29 @@ async function handleRpc(body: any): Promise<any> {
 }
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req);
+  const rl = rateLimit(`mcp:${ip}`, MCP_LIMIT, MCP_WINDOW_MS);
+  if (!rl.ok) {
+    return NextResponse.json(
+      {
+        jsonrpc: "2.0",
+        id: null,
+        error: {
+          code: -32099,
+          message: "Rate limit exceeded. Retry after a minute.",
+        },
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(Math.ceil((rl.resetAt - Date.now()) / 1000)),
+          "X-RateLimit-Limit": String(MCP_LIMIT),
+          "X-RateLimit-Remaining": "0",
+        },
+      }
+    );
+  }
+
   let body: any;
   try {
     body = await req.json();
@@ -152,18 +181,36 @@ export async function POST(req: NextRequest) {
   return NextResponse.json(result, {
     headers: {
       "Cache-Control": "no-store",
-      "Access-Control-Allow-Origin": "*",
+      // No CORS on POST — MCP clients are server-side, browsers don't need this.
     },
   });
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const ip = getClientIp(req);
+  const rl = rateLimit(`mcp-get:${ip}`, Math.floor(MCP_LIMIT / 2), MCP_WINDOW_MS);
+  if (!rl.ok) {
+    return NextResponse.json(
+      { error: "rate_limited" },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(Math.ceil((rl.resetAt - Date.now()) / 1000)),
+        },
+      }
+    );
+  }
+  const host =
+    req.headers.get("x-forwarded-host") ||
+    req.headers.get("host") ||
+    "salarizare.zed-zen.com";
+  const proto = req.headers.get("x-forwarded-proto") || "https";
   return NextResponse.json({
     name: "salarizare-bugetari-ro",
     version: "1.0.0",
     protocol: "Model Context Protocol",
     transport: "HTTP (JSON-RPC over POST)",
-    documentation: "https://salarizare.zed-zen.com/mcp",
+    documentation: `${proto}://${host}/mcp`,
     tools: TOOL_DEFINITIONS.map((t) => ({
       name: t.name,
       description: t.description,
@@ -174,11 +221,5 @@ export async function GET() {
 }
 
 export async function OPTIONS() {
-  return new NextResponse(null, {
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    },
-  });
+  return new NextResponse(null, { status: 204 });
 }

@@ -2,7 +2,8 @@ import { Calendar, FileCheck, ExternalLink } from "lucide-react";
 import ModeSwitcher from "@/components/ModeSwitcher";
 import Sources from "@/components/Sources";
 import ChatWidget from "@/components/ChatWidget";
-import coefData from "@/data/coefficients.json";
+
+const FUNCTII_INDEXATE = 2627;
 
 export default function HomePage() {
   return (
@@ -35,7 +36,7 @@ export default function HomePage() {
           <div className="mt-6 flex flex-wrap gap-4 text-sm text-white/85">
             <span className="inline-flex items-center gap-1.5">
               <FileCheck className="w-4 h-4" />
-              {coefData.data.length.toLocaleString("ro")} funcții indexate
+              {FUNCTII_INDEXATE.toLocaleString("ro")} funcții indexate
             </span>
             <a
               href="#sources"
@@ -48,7 +49,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      <ModeSwitcher data={coefData as any} />
+      <ModeSwitcher />
 
       <Sources />
 

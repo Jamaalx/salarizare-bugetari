@@ -1,12 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { TOOL_DEFINITIONS } from "@/lib/tools";
+import { rateLimit, getClientIp, redact } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const NVIDIA_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
 const MODEL = process.env.NVIDIA_MODEL || "meta/llama-3.3-70b-instruct";
+
+// 10 requests per minute per IP; tool-loop can multiply NVIDIA calls 5x
+// so this is effectively up to ~50 NVIDIA calls/min/IP in the worst case.
+const CHAT_LIMIT = 10;
+const CHAT_WINDOW_MS = 60_000;
+
+const MAX_MESSAGE_CHARS = 2000;
+const MAX_MESSAGES = 20;
+const ALLOWED_ROLES = new Set(["user", "assistant"]);
 
 const SYSTEM_PROMPT = `Ești un asistent virtual specializat pe proiectul de lege MMFTSS din 25 mai 2026 privind salarizarea personalului bugetar din România.
 
@@ -91,12 +101,39 @@ async function callNvidia(messages: ChatMessage[], useTools = true): Promise<any
 
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`NVIDIA NIM error ${res.status}: ${text.slice(0, 500)}`);
+    console.error(
+      `[chat] NVIDIA NIM ${res.status}:`,
+      redact(text.slice(0, 500))
+    );
+    const err = new Error(`upstream_${res.status}`);
+    (err as any).upstreamStatus = res.status;
+    throw err;
   }
   return res.json();
 }
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req);
+  const rl = rateLimit(`chat:${ip}`, CHAT_LIMIT, CHAT_WINDOW_MS);
+  if (!rl.ok) {
+    return NextResponse.json(
+      {
+        error: "RATE_LIMITED",
+        message:
+          "Prea multe întrebări într-un minut. Așteaptă puțin și reîncearcă.",
+        retryAfterMs: rl.resetAt - Date.now(),
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(Math.ceil((rl.resetAt - Date.now()) / 1000)),
+          "X-RateLimit-Limit": String(CHAT_LIMIT),
+          "X-RateLimit-Remaining": String(rl.remaining),
+        },
+      }
+    );
+  }
+
   let payload: { messages: ChatMessage[] };
   try {
     payload = await req.json();
@@ -106,6 +143,23 @@ export async function POST(req: NextRequest) {
 
   if (!payload?.messages || !Array.isArray(payload.messages)) {
     return NextResponse.json({ error: "messages[] required" }, { status: 400 });
+  }
+
+  const sanitized: ChatMessage[] = [];
+  for (const m of payload.messages.slice(-MAX_MESSAGES)) {
+    if (!m || typeof m !== "object") continue;
+    if (!ALLOWED_ROLES.has(m.role)) continue;
+    if (typeof m.content !== "string") continue;
+    const content = m.content.slice(0, MAX_MESSAGE_CHARS);
+    if (!content.trim()) continue;
+    sanitized.push({ role: m.role, content });
+  }
+
+  if (sanitized.length === 0) {
+    return NextResponse.json(
+      { error: "no valid messages after sanitization" },
+      { status: 400 }
+    );
   }
 
   if (!process.env.NVIDIA_API_KEY) {
@@ -122,7 +176,7 @@ export async function POST(req: NextRequest) {
   // Build full message history with system prompt
   const messages: ChatMessage[] = [
     { role: "system", content: SYSTEM_PROMPT },
-    ...payload.messages.slice(-20), // last 20 turns max
+    ...sanitized,
   ];
 
   try {
@@ -175,10 +229,16 @@ export async function POST(req: NextRequest) {
       { status: 502 }
     );
   } catch (err: any) {
-    console.error("[chat] error:", err);
+    console.error("[chat] error:", redact(String(err?.message ?? err)));
+    const upstream = err?.upstreamStatus;
+    const status = upstream && upstream >= 500 ? 502 : 500;
     return NextResponse.json(
-      { error: err?.message ?? "Internal error" },
-      { status: 500 }
+      {
+        error: "INTERNAL",
+        message:
+          "Asistentul nu este disponibil momentan. Reîncearcă peste câteva minute.",
+      },
+      { status }
     );
   }
 }
