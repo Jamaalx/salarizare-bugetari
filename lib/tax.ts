@@ -857,6 +857,112 @@ export const SPORURI_STANDARD: Spor[] = [
       "Anexa VIII Cap. II lit. J — personal contractual administrație, în zone izolate sau unde atragerea se face cu greutate. Până la 15% sal. bază.",
     aplicabilAnexe: ["VIII"],
   },
+
+  // === Adăugiri Cap. IV — sporuri generale ===
+  {
+    id: "fonduri-eu-demnitate",
+    nume: "Proiecte UE — demnitari (până la 20% indemnizație)",
+    tip: "procent",
+    valoare: 20,
+    inclusInPlafon20: true,
+    descriere:
+      "Art. 15 alin. (2)-(3) — președinți/vicepreșed. CJ, primari/viceprimari și demnitari care implementează proiecte finanțate din fonduri europene. Max 20% din indemnizația lunară.",
+    aplicabilAnexe: ["IX"],
+  },
+
+  // === Adăugiri Anexa II — Asistență socială (distinct de Sănătate) ===
+  {
+    id: "conditii-grele-asistenta-sociala",
+    nume: "Condiții grele asistență socială (5%)",
+    tip: "procent",
+    valoare: 5,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa II art. 14(1) lit. b) — personal centre rezidențiale asistență socială (DGASPC etc.). Spor fix 5%, distinct de cel similar din sănătate.",
+    aplicabilAnexe: ["II"],
+  },
+  {
+    id: "izolare-asistenta-sociala",
+    nume: "Izolare asistență socială (până la 15%)",
+    tip: "procent",
+    valoare: 15,
+    inclusInPlafon20: false,
+    descriere:
+      "Anexa II art. 14(1) lit. c) — localități izolate, altitudine, atragere dificilă pentru centre de asistență socială. Exceptat de plafon (art. 14 alin. 2).",
+    aplicabilAnexe: ["II"],
+  },
+
+  // === Adăugiri Anexa VI — Apărare ===
+  {
+    id: "cfp-aparare",
+    nume: "CFP / audit apărare (+10% soldă funcție)",
+    tip: "procent",
+    valoare: 10,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 7 alin. (7) — control financiar preventiv propriu și audit în instituțiile de apărare/ordine publică. Distinct de sporul CFP general (art. 14).",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "indemnizatie-studiu-aparare",
+    nume: "Indemnizație de studiu elevi/studenți (0,40-0,50 val. ref.)",
+    tip: "valoare",
+    valoare: 50,
+    inclusInPlafon20: false,
+    descriere:
+      "Anexa VI art. 41 alin. (1) — student 50% val. ref.; elev 40%. Lunară, pe perioada studiilor. Exceptată de plafon (art. 41 alin. 5).",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "indemnizatie-comanda-aparare",
+    nume: "Indemnizație de comandă elevi/studenți (0,10-0,20 val. ref.)",
+    tip: "valoare",
+    valoare: 20,
+    inclusInPlafon20: false,
+    descriere:
+      "Anexa VI art. 41 alin. (2) — plt. adj. 20%, plt. major 18%, plt. companie 16%, locțiitor 12%, șef grupă 10%. Lunară, exceptată de plafon.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "indemnizatie-curs-aparare",
+    nume: "Indemnizație curs formare militari (0,40-0,50 val. ref.)",
+    tip: "valoare",
+    valoare: 50,
+    inclusInPlafon20: false,
+    descriere:
+      "Anexa VI art. 41 alin. (3) — ofițeri 50%; maiștri militari/subofițeri 40%. Pe durata cursului. Exceptată de plafon.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "indemnizatie-militar-termen-aparare",
+    nume: "Indemnizație militar în termen (0,30-0,40 val. ref.)",
+    tip: "valoare",
+    valoare: 40,
+    inclusInPlafon20: false,
+    descriere:
+      "Anexa VI art. 41 alin. (4) — fruntaș 40% val. ref.; soldat 30%. Lunară, exceptată de plafon.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "indemnizatie-mutare-familie-aparare",
+    nume: "Indemnizație mutare per soț/copil (1/4 val. ref., one-off)",
+    tip: "valoare",
+    valoare: 25,
+    inclusInPlafon20: false,
+    descriere:
+      "Anexa VI art. 38 alin. (3) lit. b) — 1/4 din valoarea de referință pentru soț/soție și fiecare copil aflat în întreținere, la data mutării. Plătită o singură dată.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "retentie-pensie-militara",
+    nume: "Retenție pensie militară (1/3 soldă grad, net)",
+    tip: "procent",
+    valoare: 33,
+    inclusInPlafon20: false,
+    descriere:
+      "Anexa VI art. 46 — pentru militarii care îndeplinesc condițiile pentru pensia de serviciu și rămân activi. 1/3 din solda de grad, NETĂ (fără CAS/CASS/impozit). Exceptată de plafon. NOTĂ: calculul nostru tratează ca procent peste salariul de bază; valoarea reală e netă — diferență de tratament fiscal.",
+    aplicabilAnexe: ["VI"],
+  },
 ];
 
 /** Filtrează sporurile aplicabile pe anexa selectată. */
