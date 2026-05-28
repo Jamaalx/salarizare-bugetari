@@ -680,6 +680,183 @@ export const SPORURI_STANDARD: Spor[] = [
       "Anexa VI — compensație lunară personal civil ~1/3 din valoarea de referință.",
     aplicabilAnexe: ["VI"],
   },
+  {
+    id: "indemnizatie-mutare-aparare",
+    nume: "Indemnizație de mutare (val. ref., one-off)",
+    tip: "valoare",
+    valoare: 100,
+    inclusInPlafon20: false,
+    descriere:
+      "Anexa VI — indemnizație egală cu valoarea de referință la mutare/transfer cu schimbarea domiciliului. " +
+      "Plătită o singură dată; bifează doar luna în care primești efectiv suma.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "indemnizatie-instalare-aparare",
+    nume: "Indemnizație de instalare (val. ref., one-off)",
+    tip: "valoare",
+    valoare: 100,
+    inclusInPlafon20: false,
+    descriere:
+      "Anexa VI — indemnizație egală cu valoarea de referință la prima încadrare/instalare. Plătită o singură dată.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "indemnizatie-campanie-aparare",
+    nume: "Indemnizație de campanie (val. ref., one-off)",
+    tip: "valoare",
+    valoare: 100,
+    inclusInPlafon20: false,
+    descriere:
+      "Anexa VI — indemnizație egală cu valoarea de referință pentru participare la misiuni/operații. Plătită o singură dată la începutul misiunii.",
+    aplicabilAnexe: ["VI"],
+  },
+
+  // === Anexa I — Învățământ ===
+  {
+    id: "izolare-invatamant",
+    nume: "Spor de izolare personal didactic (până la 15%)",
+    tip: "procent",
+    valoare: 15,
+    inclusInPlafon20: false,
+    descriere:
+      "Anexa I art. 3 — personal didactic calificat de predare/conducere în localități izolate. Până la 15% sal. bază, diferențiat pe zone (HG). Exceptat de plafonul 20%.",
+    aplicabilAnexe: ["I"],
+  },
+  {
+    id: "invatamant-special",
+    nume: "Învățământ special / special integrat (până la 15%)",
+    tip: "procent",
+    valoare: 15,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa I art. 4 — personal didactic din învățământul special/special integrat (cu excepția centrelor de resurse). Până la 15% sal. bază.",
+    aplicabilAnexe: ["I"],
+  },
+  {
+    id: "practica-pedagogica",
+    nume: "Practică pedagogică (5–15%)",
+    tip: "procent",
+    valoare: 10,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa I art. 5 — personal didactic desemnat să conducă practica pedagogică pentru viitori educatori/învățători/profesori. 5-15% sal. bază, în raport cu timpul efectiv și numărul elevilor/studenților.",
+    aplicabilAnexe: ["I"],
+  },
+  {
+    id: "predare-simultana",
+    nume: "Predare simultană 2–5 clase (5–15%)",
+    tip: "procent",
+    valoare: 5,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa I art. 6 — învățământ primar/gimnazial cu predare simultană: 5% (2 clase), 7% (3 clase), 10% (4 clase), 15% (5 clase). Editează procentul după caz.",
+    aplicabilAnexe: ["I"],
+  },
+  {
+    id: "salarii-diferentiate-univ",
+    nume: "Salarii diferențiate învățământ superior (până la 20%)",
+    tip: "procent",
+    valoare: 20,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa I art. 7 — personal didactic și administrativ din universități. Până la 20% sal. bază, stabilit de consiliul de administrație. Plătit din venituri proprii.",
+    aplicabilAnexe: ["I"],
+  },
+  {
+    id: "conducator-doctorat",
+    nume: "Conducător de doctorat (1%/doctorand, max 10%)",
+    tip: "procent",
+    valoare: 5,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa I art. 8 — personal didactic din învățământul superior, 1% sal. bază pentru fiecare student-doctorand, dar nu mai mult de 10% total. Editează procentul după numărul de doctoranzi.",
+    aplicabilAnexe: ["I"],
+  },
+
+  // === Anexa VII — Cercetare / instituții finanțate integral din venituri proprii ===
+  {
+    id: "conditii-grele-vp",
+    nume: "Condiții grele de muncă (5%)",
+    tip: "procent",
+    valoare: 5,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VII art. 6(1) lit. a) — spor 5% sal. bază pentru personal din instituții finanțate din venituri proprii, proporțional cu timpul lucrat la locurile respective.",
+    aplicabilAnexe: ["VII"],
+  },
+  {
+    id: "izolare-vp",
+    nume: "Zone izolate / atragere dificilă (până la 15%)",
+    tip: "procent",
+    valoare: 15,
+    inclusInPlafon20: false,
+    descriere:
+      "Anexa VII art. 6(1) lit. b) — personal în zone izolate sau unde atragerea se face cu greutate. Până la 15% sal. bază. Exceptat de plafon (art. 6 alin. 2).",
+    aplicabilAnexe: ["VII"],
+  },
+  {
+    id: "consemn-domiciliu-vp",
+    nume: "Consemn la domiciliu (până la 15%)",
+    tip: "procent",
+    valoare: 15,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VII art. 6(1) lit. c) — până la 15% sal. bază pentru orele de consemn la domiciliu.",
+    aplicabilAnexe: ["VII"],
+  },
+  {
+    id: "siguranta-transport-vp",
+    nume: "Siguranță navigație / feroviară / rutieră / aeronautică (până la 20%)",
+    tip: "procent",
+    valoare: 20,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VII art. 6(1) lit. d) — personal cu atribuții pentru siguranța transportului (naval, feroviar, rutier, aeronautic). Până la 20% sal. bază.",
+    aplicabilAnexe: ["VII"],
+  },
+
+  // === Anexa VIII — Administrație (funcționari publici + personal contractual) ===
+  {
+    id: "izolare-delta-adm",
+    nume: "Spor izolare Delta Dunării / rezervație (până la 15%)",
+    tip: "procent",
+    valoare: 15,
+    inclusInPlafon20: false,
+    descriere:
+      "Anexa VIII Cap. I lit. B art. 7 (și Cap. II lit. J/K corespondent) — funcționari publici și personal contractual din localitățile Rezervației Biosferei Delta Dunării sau din Administrația/comisariatul rezervației. Până la 15% sal. bază, proporțional cu timpul lucrat. Exceptat de plafon.",
+    aplicabilAnexe: ["VIII"],
+  },
+  {
+    id: "radiatii-vama",
+    nume: "Surse de radiații Autoritatea Vamală (până la 10%)",
+    tip: "procent",
+    valoare: 5,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VIII Cap. I lit. B art. 8 — funcționari publici din Autoritatea Vamală Română expuși radiațiilor. Diferențiat: 2,5% (cat. I), 5% (cat. II), 7,5% (cat. III), 10% (cat. IV).",
+    aplicabilAnexe: ["VIII"],
+  },
+  {
+    id: "conditii-grele-contractual-adm",
+    nume: "Condiții grele personal contractual (5%)",
+    tip: "procent",
+    valoare: 5,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VIII Cap. II lit. J — personal contractual administrație: 5% sal. bază, proporțional cu timpul lucrat la locurile respective.",
+    aplicabilAnexe: ["VIII"],
+  },
+  {
+    id: "izolare-contractual-adm",
+    nume: "Zone izolate personal contractual (până la 15%)",
+    tip: "procent",
+    valoare: 15,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VIII Cap. II lit. J — personal contractual administrație, în zone izolate sau unde atragerea se face cu greutate. Până la 15% sal. bază.",
+    aplicabilAnexe: ["VIII"],
+  },
 ];
 
 /** Filtrează sporurile aplicabile pe anexa selectată. */
