@@ -1164,3 +1164,73 @@ export function sporuriPentruAnexa(anexa: string): Spor[] {
  * Începând cu 2028 se stabilește anual prin HG.
  */
 export const VALOARE_REFERINTA_DEFAULT = 4100;
+
+/**
+ * Anexa IV Art. 6 — Nomenclatorul funcțiilor și coeficienților de ierarhizare
+ * pentru determinarea salariilor în VALUTĂ pentru personalul trimis în
+ * misiune permanentă în străinătate (ambasade, consulate, institute culturale).
+ *
+ * Formula: salariu_net_valuta = coef × baza_de_calcul_pe_tara
+ * unde baza_de_calcul_pe_tara se stabilește prin HG (Art. 4 alin. 3) —
+ * NU este publicată încă (urmează în 60 zile după adoptarea legii).
+ */
+export interface FunctieDiplomatieMisiune {
+  nr: number;
+  functie: string;
+  studii: "S" | "M" | "G" | "M; G";
+  coeficient: number;
+}
+
+export const FUNCTII_DIPLOMATIE_MISIUNE: FunctieDiplomatieMisiune[] = [
+  { nr: 1, functie: "Ambasador-șef de misiune, emisar special zone conflict, reprezentant special SECI", studii: "S", coeficient: 6.6 },
+  { nr: 2, functie: "Ambasador de carieră", studii: "S", coeficient: 6.27 },
+  { nr: 3, functie: "Consul general-șef consulat, ministru plenipotențiar, reprezentant militar general-locotenent/maior", studii: "S", coeficient: 6.16 },
+  { nr: 4, functie: "Ministru consilier, consul general carieră, director institut cultural, atașat apărării principal/militar/aero/naval", studii: "S", coeficient: 6.05 },
+  { nr: 5, functie: "Consilier diplomatic/economic clasa I, atașat apărare clasa I, șef birou presă clasa I, director adjunct institut cultural", studii: "S", coeficient: 4.84 },
+  { nr: 6, functie: "Consilier diplomatic/economic clasa a II-a, atașat apărare clasa a II-a, reprezentant militar locotenent-colonel", studii: "S", coeficient: 4.62 },
+  { nr: 7, functie: "Secretar I clasa I, secretar economic I clasa I, atașat apărare adjunct clasa I, consul clasa I", studii: "S", coeficient: 4.18 },
+  { nr: 8, functie: "Secretar I clasa a II-a, secretar economic I clasa a II-a, atașat apărare adjunct clasa a II-a, consul clasa a II-a", studii: "S", coeficient: 4.07 },
+  { nr: 9, functie: "Secretar II clasa I, secretar economic II clasa I, economist clasa I, viceconsul clasa I, șef birou turism clasa I", studii: "S", coeficient: 3.85 },
+  { nr: 10, functie: "Secretar II clasa a II-a, corespondent presă clasa I, economist clasa a II-a, șef serviciu admin. clasa I, viceconsul clasa a II-a", studii: "S", coeficient: 3.74 },
+  { nr: 11, functie: "Secretar III clasa I, secretar economic III clasa I, secretar militar, consilier relații clasa I, șef birou turism clasa a II-a", studii: "S", coeficient: 3.63 },
+  { nr: 12, functie: "Secretar III clasa a II-a, secretar economic III clasa a II-a, consilier relații clasa a II-a, referent principal relații clasa a II-a", studii: "S", coeficient: 3.41 },
+  { nr: 13, functie: "Atașat clasa I, referent relații clasa I, bibliotecar principal, agent consular clasa I, atașat comunicații III clasa I", studii: "S", coeficient: 3.19 },
+  { nr: 14, functie: "Atașat clasa a II-a, agent consular clasa a II-a, referent relații clasa a II-a, referent principal protecție clasa a II-a", studii: "S", coeficient: 3.08 },
+  { nr: 15, functie: "Șef birou administrativ, referent principal de specialitate, plutonier-major/adjutant principal/maistru militar clasa a II-a", studii: "M", coeficient: 2.97 },
+  { nr: 16, functie: "Contabil principal, referent transmitere, funcționar consular principal, sergent-plutonier/maistru militar clasa V-III", studii: "M", coeficient: 2.86 },
+  { nr: 17, functie: "Contabil, cancelarist, bibliotecar, funcționar consular", studii: "M", coeficient: 2.75 },
+  { nr: 18, functie: "Secretar-dactilograf principal, referent de specialitate I, referent protecție I", studii: "M", coeficient: 2.75 },
+  { nr: 19, functie: "Intendent I, referent de specialitate II, referent protecție II", studii: "M", coeficient: 2.53 },
+  { nr: 20, functie: "Secretar-dactilograf, referent relații II, intendent II", studii: "M; G", coeficient: 2.42 },
+  { nr: 21, functie: "Șofer I, muncitor calificat I", studii: "M; G", coeficient: 2.31 },
+  { nr: 22, functie: "Șofer II, muncitor calificat II, soldat/gradat voluntar în structuri NATO/UE/OSCE/ONU", studii: "G", coeficient: 1.98 },
+  { nr: 23, functie: "Portar", studii: "G", coeficient: 1.87 },
+  { nr: 24, functie: "Îngrijitor", studii: "G", coeficient: 1.76 },
+];
+
+/**
+ * Calculul salariului lunar NET în valută pentru personalul în misiune
+ * permanentă în străinătate. Conform Anexa IV Art. 4(2):
+ *   salariu_net_valuta = coeficient × baza_de_calcul_pe_tara
+ *
+ * Salariul e NET (nu se aplică CAS/CASS/impozit ca la lei) — e drept salarial
+ * primit direct, ținând cont de costul vieții din țară. Alte drepturi în
+ * valută și lei (Art. 5) sunt stabilite separat prin lege.
+ */
+export function calcSalariuDiplomatieValuta(
+  coef: number,
+  bazaPeTara: number,
+): number {
+  if (coef <= 0 || bazaPeTara <= 0) return 0;
+  return Math.round(coef * bazaPeTara);
+}
+
+/**
+ * Aplicare regulă Art. 6 nota 1: la trimiterea în misiune, încadrarea în
+ * clasa I se face DOAR dacă personalul a mai fost trimis minimum 1 an în
+ * aceeași funcție sau una ierarhizată cel puțin la fel.
+ * Pentru cei la prima misiune sau pe funcție nouă — clasa a II-a (coef mai mic).
+ */
+export function clasaPrimaMisiune(esteRepetata: boolean): "I" | "II" {
+  return esteRepetata ? "I" : "II";
+}

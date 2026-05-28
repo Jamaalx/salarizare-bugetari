@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Sparkles, Wrench, Plug, Loader2 } from "lucide-react";
+import { Sparkles, Wrench, Plug, Loader2, Globe } from "lucide-react";
 import Wizard from "./Wizard";
 import Calculator from "./Calculator";
 
@@ -52,6 +52,12 @@ export default function ModeSwitcher() {
             >
               Documente sursă
             </a>
+            <Link
+              href="/diplomatie"
+              className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-brand-600"
+            >
+              <Globe className="w-3.5 h-3.5" /> Diplomație (misiune externă)
+            </Link>
             <Link
               href="/mcp"
               className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-brand-600"
