@@ -88,6 +88,8 @@ type WizardState = {
   conducereOverride: boolean | null;
   persoaneInIntretinere: number;
   coefSuplimentConducere: number; // pentru Anexa V conducere (judecători/procurori)
+  // Anexa VI Art. 3(5) — coef. suplim. risc apărare/ordine publică (max +0.40)
+  coefSuplimRiscAparare: number;
 };
 
 const INITIAL: WizardState = {
@@ -103,6 +105,7 @@ const INITIAL: WizardState = {
   conducereOverride: null,
   persoaneInIntretinere: 0,
   coefSuplimentConducere: 0,
+  coefSuplimRiscAparare: 0,
 };
 
 // Detectie funcții de conducere — art. 13 (1) excepție: coeficientul lor include
@@ -137,7 +140,14 @@ export default function Wizard({ initialData }: Props) {
     ? s.gradatieManual
     : gradatieDinVechime(s.aniVechime, tabelGradatii);
 
-  const salariuG0 = selected ? selected.coeficient * s.valRef : 0;
+  // Anexa VI Art. 3(5) — la coeficientul de salarizare se adaugă max +0.40
+  // pentru misiuni/activități cu grad de efort/pericol (afectează solda de
+  // funcție, NU sporurile; intră în baza de calcul gradații).
+  const aplicaCoefRiscAparare = selected?.anexa === "VI";
+  const coefEfectiv = selected
+    ? selected.coeficient + (aplicaCoefRiscAparare ? s.coefSuplimRiscAparare : 0)
+    : 0;
+  const salariuG0 = selected ? coefEfectiv * s.valRef : 0;
   const salariuBaza = selected ? aplicaGradatie(salariuG0, gradatie, tabelGradatii) : 0;
 
   // Filtrăm sporurile aplicabile pe anexa selectată (ex: medicii nu primesc +100% weekend
@@ -300,6 +310,9 @@ export default function Wizard({ initialData }: Props) {
             aplicaCoefSupliment={aplicaCoefSupliment}
             coefSuplimentConducere={s.coefSuplimentConducere}
             setCoefSuplimentConducere={(n) => setS((p) => ({ ...p, coefSuplimentConducere: n }))}
+            aplicaCoefRiscAparare={aplicaCoefRiscAparare}
+            coefSuplimRiscAparare={s.coefSuplimRiscAparare}
+            setCoefSuplimRiscAparare={(n) => setS((p) => ({ ...p, coefSuplimRiscAparare: n }))}
             esteConducereAuto={esteConducereAuto}
             esteConducere={esteConducere}
             conducereOverride={s.conducereOverride}
@@ -829,6 +842,9 @@ function StepActual({
   aplicaCoefSupliment,
   coefSuplimentConducere,
   setCoefSuplimentConducere,
+  aplicaCoefRiscAparare,
+  coefSuplimRiscAparare,
+  setCoefSuplimRiscAparare,
   esteConducereAuto,
   esteConducere,
   conducereOverride,
@@ -846,6 +862,9 @@ function StepActual({
   aplicaCoefSupliment: boolean;
   coefSuplimentConducere: number;
   setCoefSuplimentConducere: (n: number) => void;
+  aplicaCoefRiscAparare: boolean;
+  coefSuplimRiscAparare: number;
+  setCoefSuplimRiscAparare: (n: number) => void;
   esteConducereAuto: boolean;
   esteConducere: boolean;
   conducereOverride: boolean | null;
@@ -1026,6 +1045,41 @@ function StepActual({
               {coefSuplimentConducere > 0 && (
                 <p className="mt-2 text-xs text-indigo-700">
                   Coef. ales: <strong className="tabular-nums">{coefSuplimentConducere}</strong> × val. ref. = adaos la indemnizația de încadrare.
+                </p>
+              )}
+            </label>
+          </div>
+        )}
+
+        {aplicaCoefRiscAparare && (
+          <div className="rounded-2xl border-2 border-rose-300 bg-rose-50 p-5">
+            <label className="block">
+              <span className="text-sm font-semibold text-rose-900 block">
+                Coeficient suplimentar risc / pericol (Anexa VI Art. 3 alin. 5)
+              </span>
+              <span className="block text-xs text-rose-800 mt-0.5">
+                Pentru militari, polițiști și polițiști de penitenciare. Se adaugă la
+                coeficientul de salarizare (max <strong>+0.40</strong>) pentru criterii ca:
+                misiuni operative, poliție judiciară, structuri NATO/UE/OSCE/ONU,
+                anticorupție internă, cifru de stat, condiții speciale (cai/câini etc.).
+                Stabilit prin ordin al ordonatorului principal de credite.
+              </span>
+              <div className="mt-3 flex items-center gap-2">
+                <input
+                  type="number"
+                  min={0}
+                  max={0.4}
+                  step={0.05}
+                  value={coefSuplimRiscAparare}
+                  onChange={(e) => setCoefSuplimRiscAparare(clampNumber(Number(e.target.value), 0, 0.4))}
+                  className="w-24 rounded-xl border border-rose-300 px-3 py-2.5 text-lg tabular-nums focus:border-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-100"
+                />
+                <span className="text-sm text-rose-700">+ la coef. salarizare (max 0.40)</span>
+              </div>
+              {coefSuplimRiscAparare > 0 && (
+                <p className="mt-2 text-xs text-rose-700">
+                  Solda de funcție crește cu{" "}
+                  <strong className="tabular-nums">{coefSuplimRiscAparare}</strong> × val. ref. înainte de gradații.
                 </p>
               )}
             </label>
