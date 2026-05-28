@@ -95,6 +95,10 @@ type WizardState = {
   // Anexa II — Direcție Sănătate Publică (DSP) — Art. 7(6) limitează sporurile
   // de condiții doar la lit. a, b, c, e (NU d "condiții grele" 5%)
   esteDsp: boolean;
+  // Art. 32 alin. (2)-(4) — sporuri/stimulente actuale care se EXCLUD din
+  // baza de comparație pentru calculul diferenței tranzitorii.
+  // Suma totală în lei (UE + gestionare fonduri + premii + stimulente).
+  salariuActualExcluderi: number;
 };
 
 const INITIAL: WizardState = {
@@ -113,6 +117,7 @@ const INITIAL: WizardState = {
   coefSuplimRiscAparare: 0,
   reducerePiccj: false,
   esteDsp: false,
+  salariuActualExcluderi: 0,
 };
 
 // Detectie funcții de conducere — art. 13 (1) excepție: coeficientul lor include
@@ -339,6 +344,10 @@ export default function Wizard({ initialData }: Props) {
             aplicaDsp={aplicaDsp}
             esteDsp={s.esteDsp}
             setEsteDsp={(b) => setS((p) => ({ ...p, esteDsp: b }))}
+            salariuActualExcluderi={s.salariuActualExcluderi}
+            setSalariuActualExcluderi={(n) =>
+              setS((p) => ({ ...p, salariuActualExcluderi: n }))
+            }
             esteConducereAuto={esteConducereAuto}
             esteConducere={esteConducere}
             conducereOverride={s.conducereOverride}
@@ -360,6 +369,7 @@ export default function Wizard({ initialData }: Props) {
             salariuBaza={salariuBaza}
             tax={tax}
             salariuActual={s.salariuActual}
+            salariuActualExcluderi={s.salariuActualExcluderi}
             onReset={reset}
           />
         )}
@@ -877,6 +887,8 @@ function StepActual({
   aplicaDsp,
   esteDsp,
   setEsteDsp,
+  salariuActualExcluderi,
+  setSalariuActualExcluderi,
   esteConducereAuto,
   esteConducere,
   conducereOverride,
@@ -903,6 +915,8 @@ function StepActual({
   aplicaDsp: boolean;
   esteDsp: boolean;
   setEsteDsp: (b: boolean) => void;
+  salariuActualExcluderi: number;
+  setSalariuActualExcluderi: (n: number) => void;
   esteConducereAuto: boolean;
   esteConducere: boolean;
   conducereOverride: boolean | null;
@@ -1207,13 +1221,12 @@ function StepActual({
         <div className="rounded-2xl border border-slate-200 p-5 bg-slate-50">
           <label className="block">
             <span className="text-sm font-semibold text-slate-800 block">
-              Salariul tău BRUT actual (decembrie 2026)
+              Salariul tău BRUT actual TOTAL (decembrie 2026)
             </span>
             <span className="block text-xs text-slate-500 mt-0.5">
-              Opțional — pentru calcul diferență tranzitorie (art. 32). <strong>Important:</strong>{" "}
-              introdu doar componentele permanente. Exclude sporurile pentru proiecte cu fonduri
-              europene, gestionare fonduri externe sau stimulente — art. 32 alin. (2)-(4) le exclude
-              din baza de comparație.
+              Opțional — pentru calcul diferență tranzitorie (art. 32). Introdu valoarea
+              TOTALĂ brută (cu toate sporurile/premiile/stimulentele). Excluderile le bifezi
+              mai jos.
             </span>
             <div className="mt-3 flex items-center gap-2">
               <input
@@ -1227,6 +1240,48 @@ function StepActual({
               <span className="text-sm text-slate-600">lei</span>
             </div>
           </label>
+          {salariuActual > 0 && (
+            <div className="mt-4 pt-4 border-t border-slate-200">
+              <label className="block">
+                <span className="text-sm font-semibold text-amber-800 block">
+                  Sporuri/premii actuale EXCLUSE din baza de comparație (art. 32 alin. 2-4)
+                </span>
+                <span className="block text-xs text-slate-600 mt-0.5 leading-snug">
+                  Suma TOTALĂ lunară a sporurilor care, conform legii, NU intră în baza de
+                  comparație pentru calculul diferenței tranzitorii:
+                </span>
+                <ul className="mt-2 text-xs text-slate-600 list-disc list-inside space-y-0.5 leading-snug">
+                  <li>spor pentru proiecte cu fonduri europene (art. 15)</li>
+                  <li>spor gestionare fonduri externe (art. 16, Lg.490/2004)</li>
+                  <li>premii de performanță (art. 22)</li>
+                  <li>stimulente acordate pentru gestionarea financiară a fondurilor UE</li>
+                  <li>compensații de risc misiuni externe (apărare)</li>
+                </ul>
+                <div className="mt-3 flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={0}
+                    max={salariuActual}
+                    value={salariuActualExcluderi || ""}
+                    onChange={(e) =>
+                      setSalariuActualExcluderi(
+                        clampNumber(Number(e.target.value), 0, salariuActual),
+                      )
+                    }
+                    placeholder="0"
+                    className="w-full rounded-xl border border-amber-300 px-4 py-2.5 text-lg tabular-nums focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-100"
+                  />
+                  <span className="text-sm text-amber-700">lei</span>
+                </div>
+                {salariuActualExcluderi > 0 && (
+                  <p className="mt-2 text-xs text-amber-700">
+                    Baza de comparație: <strong className="tabular-nums">{(salariuActual - salariuActualExcluderi).toLocaleString("ro-RO")} lei</strong>
+                    {" "}(salariu actual − excluderi).
+                  </p>
+                )}
+              </label>
+            </div>
+          )}
         </div>
 
         <div className="rounded-2xl border border-slate-200 p-5">
@@ -1286,6 +1341,7 @@ function StepRezultat({
   salariuBaza,
   tax,
   salariuActual,
+  salariuActualExcluderi,
   onReset,
 }: {
   functie: CoefEntry;
@@ -1300,11 +1356,15 @@ function StepRezultat({
   salariuBaza: number;
   tax: ReturnType<typeof calcBrut>;
   salariuActual: number;
+  salariuActualExcluderi: number;
   onReset: () => void;
 }) {
   const fmt = (n: number) => n.toLocaleString("ro-RO", { maximumFractionDigits: 0 });
-  const diferentaTranzitorie = Math.max(0, salariuActual - tax.salariuBrut);
-  const cresterePotentiala = tax.salariuBrut - salariuActual;
+  // Art. 32 alin. (2)-(4): baza de comparație exclude sporurile UE, gestionare fonduri,
+  // premii, stimulente. Diferența tranzitorie se calculează pe baza acestei valori reduse.
+  const bazaComparatie = Math.max(0, salariuActual - salariuActualExcluderi);
+  const diferentaTranzitorie = Math.max(0, bazaComparatie - tax.salariuBrut);
+  const cresterePotentiala = tax.salariuBrut - bazaComparatie;
 
   const [copyState, setCopyState] = useState<"idle" | "ok" | "err">("idle");
   useEffect(() => {
@@ -1376,17 +1436,29 @@ function StepRezultat({
           }
         >
           <h3 className="text-sm font-semibold text-slate-700 mb-2">
-            Comparație cu salariul actual
+            Comparație cu salariul actual (art. 32)
           </h3>
           <div className="grid sm:grid-cols-2 gap-2 text-sm text-slate-600 mb-3">
             <div>
-              Brut actual (dec. 2026):{" "}
+              Brut actual total (dec. 2026):{" "}
               <strong className="tabular-nums text-slate-900">{fmt(salariuActual)} lei</strong>
             </div>
             <div>
               Brut nou (calculat):{" "}
               <strong className="tabular-nums text-slate-900">{fmt(tax.salariuBrut)} lei</strong>
             </div>
+            {salariuActualExcluderi > 0 && (
+              <>
+                <div>
+                  − Excluderi (UE / fonduri / premii):{" "}
+                  <strong className="tabular-nums text-amber-700">−{fmt(salariuActualExcluderi)} lei</strong>
+                </div>
+                <div>
+                  = Bază comparație art. 32:{" "}
+                  <strong className="tabular-nums text-slate-900">{fmt(bazaComparatie)} lei</strong>
+                </div>
+              </>
+            )}
           </div>
           <div className="text-lg font-bold flex items-center gap-2">
             {diferentaTranzitorie > 0 ? (
