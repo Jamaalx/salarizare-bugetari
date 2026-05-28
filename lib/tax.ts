@@ -24,6 +24,10 @@ export interface Spor {
   // Dacă e nedefinit, sporul e aplicabil pe toate anexele.
   // Altfel, doar pe anexele listate (ex: ["VI"] = doar apărare/ordine publică).
   aplicabilAnexe?: string[];
+  // Grup de sporuri mutual exclusive (ex: "sanatate-conditii" = Anexa II
+  // art. 7(1) lit. a-d nu se cumulează). Activarea unui spor dezactivează
+  // celelalte din același grup în UI.
+  groupExclusiv?: string;
 }
 
 export interface TaxInput {
@@ -293,7 +297,8 @@ export const SPORURI_STANDARD: Spor[] = [
     valoare: 15,
     inclusInPlafon20: true,
     descriere:
-      "Pentru personalul cu titlul științific de doctor obținut în domeniul postului ocupat. Inclus în plafonul de 20%.",
+      "Pentru personalul cu titlul științific de doctor obținut în domeniul postului ocupat. Inclus în plafonul de 20%. " +
+      "⚠️ STATUS INCERT: nu apare explicit în noul proiect MMFTSS — bază legală anterioară Legea 153/2017 art. 14 alin. (8). Probabil va fi păstrat prin HG/regulament-cadru, dar de confirmat la adoptare.",
   },
   {
     id: "premiu-performanta",
@@ -361,7 +366,8 @@ export const SPORURI_STANDARD: Spor[] = [
     inclusInPlafon20: false,
     descriere:
       "Sumă fixă lunară pentru personalul medical care asigură permanență/continuitate în unitate. " +
-      "Valori uzuale: 300, 500, 800 sau 1000 lei (în funcție de poziție și regulamentul unității). Editează cuantumul după caz.",
+      "Valori uzuale: 300, 500, 800 sau 1000 lei (în funcție de poziție și regulamentul unității). Editează cuantumul după caz. " +
+      "⚠️ STATUS INCERT: nu apare explicit în noul proiect MMFTSS — bază legală anterioară OUG 115/2004 + HG 153/2018. Probabil păstrată prin act normativ separat, de confirmat la adoptare.",
     aplicabilAnexe: ["II"],
   },
   {
@@ -381,8 +387,9 @@ export const SPORURI_STANDARD: Spor[] = [
     valoare: 15,
     inclusInPlafon20: true,
     descriere:
-      "Anexa II art. 7(1) lit.a) — neonatologie, săli naștere, laboratoare analize. Max 15% sal. bază.",
+      "Anexa II art. 7(1) lit.a) — neonatologie, săli naștere, laboratoare analize. Max 15% sal. bază. Nu se cumulează cu celelalte sporuri lit. b-d (art. 7 alin. 5).",
     aplicabilAnexe: ["II"],
+    groupExclusiv: "sanatate-conditii-art7",
   },
   {
     id: "periculoase-nivel-1-sanatate",
@@ -391,8 +398,9 @@ export const SPORURI_STANDARD: Spor[] = [
     valoare: 40,
     inclusInPlafon20: true,
     descriere:
-      "Anexa II art. 7(1) lit.b) — dializă, oncologie, ATI, paliative, chirurgie cardio, psihiatrie. Max 40%.",
+      "Anexa II art. 7(1) lit.b) — dializă, oncologie, ATI, paliative, chirurgie cardio, psihiatrie. Max 40%. Nu se cumulează cu lit. a/c/d (art. 7 alin. 5).",
     aplicabilAnexe: ["II"],
+    groupExclusiv: "sanatate-conditii-art7",
   },
   {
     id: "tesa-leprozerii-sanatate",
@@ -401,8 +409,9 @@ export const SPORURI_STANDARD: Spor[] = [
     valoare: 20,
     inclusInPlafon20: true,
     descriere:
-      "Anexa II art. 7(1) lit.b) — personal nemedical/TESA din leprozerii, TBC, psihiatrie. Max 20%.",
+      "Anexa II art. 7(1) lit.b) — personal nemedical/TESA din leprozerii, TBC, psihiatrie. Max 20%. Nu se cumulează cu lit. a/c/d (art. 7 alin. 5).",
     aplicabilAnexe: ["II"],
+    groupExclusiv: "sanatate-conditii-art7",
   },
   {
     id: "periculoase-nivel-2-sanatate",
@@ -411,8 +420,9 @@ export const SPORURI_STANDARD: Spor[] = [
     valoare: 50,
     inclusInPlafon20: true,
     descriere:
-      "Anexa II art. 7(1) lit.c) — anatomie patologică, SIDA, TBC, UPU/SMURD, ATI, transplant, arși. Max 50%.",
+      "Anexa II art. 7(1) lit.c) — anatomie patologică, SIDA, TBC, UPU/SMURD, ATI, transplant, arși. Max 50%. Nu se cumulează cu lit. a/b/d (art. 7 alin. 5).",
     aplicabilAnexe: ["II"],
+    groupExclusiv: "sanatate-conditii-art7",
   },
   {
     id: "conditii-grele-sanatate",
@@ -421,8 +431,9 @@ export const SPORURI_STANDARD: Spor[] = [
     valoare: 5,
     inclusInPlafon20: true,
     descriere:
-      "Anexa II art. 7(1) lit.d) — spor fix 5% din salariul de bază, proporțional cu timpul lucrat.",
+      "Anexa II art. 7(1) lit.d) — spor fix 5% din salariul de bază, proporțional cu timpul lucrat. Nu se cumulează cu lit. a/b/c (art. 7 alin. 5).",
     aplicabilAnexe: ["II"],
+    groupExclusiv: "sanatate-conditii-art7",
   },
   {
     id: "izolare-sanatate",
@@ -961,6 +972,180 @@ export const SPORURI_STANDARD: Spor[] = [
     inclusInPlafon20: false,
     descriere:
       "Anexa VI art. 46 — pentru militarii care îndeplinesc condițiile pentru pensia de serviciu și rămân activi. 1/3 din solda de grad, NETĂ (fără CAS/CASS/impozit). Exceptată de plafon. NOTĂ: calculul nostru tratează ca procent peste salariul de bază; valoarea reală e netă — diferență de tratament fiscal.",
+    aplicabilAnexe: ["VI"],
+  },
+
+  // === Anexa VI — Prime niche aviație ===
+  {
+    id: "prima-ora-zbor",
+    nume: "Primă orară de zbor (2-10% × 1/3 sd. cd. escadrilă)",
+    tip: "procent",
+    valoare: 5,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 11 — per oră de zbor; majorabilă +50-200% după misiune. Membri echipaj: 50-85% din prima pilotului. Editează procentul pentru ora medie.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "prima-parasutare",
+    nume: "Primă parașutare (2-8% × 1/3 sd. cd. batalion paraș.)",
+    tip: "procent",
+    valoare: 5,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 12 alin. (1) — per parașutare; combinate (alin. 2) +1-5%.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "prima-catapultare",
+    nume: "Primă catapultare (1-2 × sumă soldă funcție + grad, one-off)",
+    tip: "lei",
+    valoare: 4100,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 12 alin. (3) — catapultare reală 1×, test 2×. Plată one-off. Suma e ESTIMATIVĂ (echivalentul soldei funcție+grad) — verifică fluturașul.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "prima-specialitate-aviatie",
+    nume: "Prime zboruri test/recepție aeronave (4-500%)",
+    tip: "procent",
+    valoare: 10,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 13 — per eveniment, interval foarte larg (4-500%) după tipul misiunii: încercare, recepție, demonstrație. Editează după misiune.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "prime-asigurare-aeronautica",
+    nume: "Prime asigurare activități aeronautice (interval larg)",
+    tip: "procent",
+    valoare: 5,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 17 — pachet: aterizare (0,04-3%), start (1-2%), dirijare (0,02-2%), reparații (0,2-15%), asigurare tehnică (0,003-0,1%), aterizare drone (5-40%), simulatoare (0,1-0,5%). Editează după cum se aplică.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "compensatie-aeronautic-incapacitate",
+    nume: "Compensație aeronautic în incapacitate de zbor",
+    tip: "procent",
+    valoare: 80,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 18 — diferență salarială pentru personal aeronautic retras din zbor (≥80% din vechimea minimă pensie). Procent estimativ.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "prima-rapel-elicopter",
+    nume: "Primă rapel/coborâre rapidă elicopter (2-3%)",
+    tip: "procent",
+    valoare: 2,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 20 — per coborâre: 2% rapel, 3% coborâre rapidă, din sd. funcție comandant.",
+    aplicabilAnexe: ["VI"],
+  },
+
+  // === Anexa VI — Prime marină ===
+  {
+    id: "ambarcare-elevi",
+    nume: "Ambarcare elevi/studenți militari (10%)",
+    tip: "procent",
+    valoare: 10,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 21 — 10% din solda minimă a soldatului gradat profesionist, pentru elevi/studenți instituții militare. Cumulabil cu sporul pentru personalul militar.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "prima-manevre-nave",
+    nume: "Primă manevre periculoase nave (50% sd. funcție zilnic)",
+    tip: "procent",
+    valoare: 50,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 22 — 50% sd. funcție per zi, pentru plecare/acostare/alte manevre periculoase, indiferent de numărul de manevre.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "prima-salt-elicopter-apa",
+    nume: "Primă salt elicopter în apă (1% sd. cd. scafandri)",
+    tip: "procent",
+    valoare: 1,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 23 — per salt din elicopter în apă, 1% sd. funcție comandant divizion scafandri.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "prima-scufundare",
+    nume: "Primă scufundare (1-50% × 1/3 sd. cd. divizion)",
+    tip: "procent",
+    valoare: 3,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 24 alin. (2) — interval combinat după modul: autonomă deschisă/alim. suprafață 1-5%, semi-închisă 1,5-6%, închisă 2-3%, unitară 3-7%, saturație 12-50% zilnic. Majorări: -20% antrenament adâncime, +25% apă <10°C/testare, +100% misiuni EOD.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "prima-salt-recuperare-scafandri",
+    nume: "Salt/recuperare scafandri (2-6% × 1/3 sd. cd. divizion)",
+    tip: "procent",
+    valoare: 3,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 25 — tabel: 2/3/4/5/5,5/6% după modalitate (vedetă, elicopter, submarin, viteză, etc.). +100% misiuni reale.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "prima-imersiune-submersibile",
+    nume: "Imersiune submersibile / incintă (2,5-5%)",
+    tip: "procent",
+    valoare: 3,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 26 — per oră imersiune.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "prima-echipa-suprafata",
+    nume: "Echipa suprafață scufundări (10-25% din prima scafandri)",
+    tip: "procent",
+    valoare: 15,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 27 — pentru echipajul de suprafață care asigură scufundările; 10-25% din prima orară/zilnică a scafandrilor.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "prima-imersiune-submarin",
+    nume: "Primă imersiune submarin (2% sd. cd. submarin / oră)",
+    tip: "procent",
+    valoare: 2,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 31 — per oră imersiune. ×2 la 100-200m, ×3 peste 200m; +30% per intrare/ieșire prin sas.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "prima-proba-submarin",
+    nume: "Probă imersiune mare adâncime (2 solde funcție, one-off)",
+    tip: "lei",
+    valoare: 8200,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 32 — plată one-off pentru proba la mare adâncime, echivalent 2× soldă funcție comandant. Verifică valoarea exactă pe fluturaș.",
+    aplicabilAnexe: ["VI"],
+  },
+  {
+    id: "prima-iesire-submarin-avariat",
+    nume: "Ieșire submarin avariat (4 solde funcție, one-off)",
+    tip: "lei",
+    valoare: 16400,
+    inclusInPlafon20: true,
+    descriere:
+      "Anexa VI art. 33 — plată one-off pentru ieșirea dintr-un submarin avariat, echivalent 4× soldă funcție. Valoare ESTIMATIVĂ.",
     aplicabilAnexe: ["VI"],
   },
 ];

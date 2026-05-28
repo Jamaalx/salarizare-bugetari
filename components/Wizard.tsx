@@ -260,10 +260,20 @@ export default function Wizard({ initialData }: Props) {
             sporuri={s.sporuri}
             sporuriAplicabile={sporuriAplicabile}
             toggle={(id) =>
-              setS((p) => ({
-                ...p,
-                sporuri: { ...p.sporuri, [id]: { ...p.sporuri[id], activ: !p.sporuri[id]?.activ } },
-              }))
+              setS((p) => {
+                const target = sporuriAplicabile.find((x) => x.id === id);
+                const willActivate = !p.sporuri[id]?.activ;
+                const nextSporuri = { ...p.sporuri, [id]: { ...p.sporuri[id], activ: willActivate } };
+                // Dacă activăm un spor cu groupExclusiv, dezactivăm celelalte din același grup
+                if (willActivate && target?.groupExclusiv) {
+                  for (const sp of sporuriAplicabile) {
+                    if (sp.id !== id && sp.groupExclusiv === target.groupExclusiv && nextSporuri[sp.id]?.activ) {
+                      nextSporuri[sp.id] = { ...nextSporuri[sp.id], activ: false };
+                    }
+                  }
+                }
+                return { ...p, sporuri: nextSporuri };
+              })
             }
             setProcent={(id, n) =>
               setS((p) => ({
