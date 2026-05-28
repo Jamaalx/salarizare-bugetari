@@ -320,8 +320,8 @@ export const SPORURI_STANDARD: Spor[] = [
     nume: "Spor pentru activitate în 3 ture (10%)",
     tip: "procent",
     valoare: 10,
-    inclusInPlafon20: true,
-    descriere: "Anexa II art. 1 — pentru personalul medical în program de 3 ture.",
+    inclusInPlafon20: false,
+    descriere: "Anexa II art. 1 — personalul medical în program de 3 ture (sau 2 ture 12-24h). Exceptat de plafonul de 20% conform art. 1 alin. (2).",
     aplicabilAnexe: ["II"],
   },
   {
@@ -335,22 +335,22 @@ export const SPORURI_STANDARD: Spor[] = [
   },
   {
     id: "radiatii",
-    nume: "Lucrul cu surse de radiații (până la 50%)",
+    nume: "Surse de radiații Sănătate (până la 10%)",
     tip: "procent",
-    valoare: 30,
-    inclusInPlafon20: false,
+    valoare: 5,
+    inclusInPlafon20: true,
     descriere:
-      "Anexa II — personal expus radiațiilor ionizante (radiologie, medicină nucleară). Editează procentul după nivelul de expunere.",
+      "Anexa II art. 7(1) lit. e) — personal medical/auxiliar expus radiațiilor ionizante. Diferențiat pe categorii de risc radiologic: 2,5% (cat. I), 5% (cat. II), 7,5% (cat. III), 10% (cat. IV).",
     aplicabilAnexe: ["II"],
   },
   {
     id: "garzi-medic",
-    nume: "Garde medici (tarif suplimentar)",
+    nume: "Gardă suplimentară (contract separat, estimare)",
     tip: "procent",
     valoare: 25,
     inclusInPlafon20: false,
     descriere:
-      "Anexa II art. 3-5 — tarif pe oră de gardă peste norma de bază. Estimare medie 25%, variază pe specialitate.",
+      "Anexa II art. 3-5 — gărzile obligatorii (pentru completarea normei) se plătesc cu tariful orar al salariului de bază, NU au procent fix. Gărzile peste norma legală se prestează prin contract separat. Acest spor e o ESTIMARE orientativă pentru cei cu gărzi multiple — verifică fluturașul pentru valoarea exactă. Variază pe specialitate.",
     aplicabilAnexe: ["II"],
   },
   {
@@ -552,12 +552,12 @@ export const SPORURI_STANDARD: Spor[] = [
   // === Anexa VI — Apărare, ordine publică, siguranță națională ===
   {
     id: "conditii-periculoase-aparare",
-    nume: "Condiții periculoase / grele (15% val. ref.)",
+    nume: "Condiții periculoase / grele apărare (până la 15% val. ref.)",
     tip: "valoare",
     valoare: 15,
-    inclusInPlafon20: false,
+    inclusInPlafon20: true,
     descriere:
-      "Anexa VI art. 8 alin. (1) — până la 15% din valoarea de referință. Editează procentul după caz.",
+      "Anexa VI art. 7 alin. (2) — până la 15% din valoarea de referință. INTRĂ în plafonul 20% (art. 7 alin. 11 exceptă doar muniții/explozivi alin.1 și izolarea alin.5). Editează procentul după caz.",
     aplicabilAnexe: ["VI"],
   },
   {
