@@ -1191,6 +1191,37 @@ export function sporuriGrupate(anexa: string): {
 export const VALOARE_REFERINTA_DEFAULT = 4100;
 
 /**
+ * Anexa V Art. 8 — Coeficientul suplimentar pentru funcțiile de conducere
+ * din sistemul justiției. Se adaugă la indemnizația de încadrare maximă
+ * a judecătorului ÎCCJ, înmulțit cu valoarea de referință.
+ *
+ * Formula: indemnizație = max_iccj + coef × val. ref.
+ */
+export interface CoefConducereJustitie {
+  id: string;
+  label: string;
+  coef: number;
+  categorie: "ICCJ" | "Curti";
+}
+
+export const COEFICIENTI_CONDUCERE_JUSTITIE: CoefConducereJustitie[] = [
+  // a) ÎCCJ + Parchetul de pe lângă ÎCCJ
+  { id: "iccj-pres", label: "Președinte ÎCCJ / Procuror general PÎCCJ", coef: 0.5, categorie: "ICCJ" },
+  { id: "iccj-vicepres", label: "Vicepreș. ÎCCJ / Prim-adj. proc. gen. / Proc. șef DNA / DIICOT", coef: 0.45, categorie: "ICCJ" },
+  { id: "iccj-pres-sectie", label: "Pres. secție ÎCCJ / Adj. proc. gen. / Adj. proc. șef DNA / DIICOT", coef: 0.4, categorie: "ICCJ" },
+  { id: "iccj-sef-sectie", label: "Proc. șef secție (PÎCCJ / DNA / DIICOT)", coef: 0.35, categorie: "ICCJ" },
+  { id: "iccj-sef-sectie-adj", label: "Proc. șef secție adjunct (PÎCCJ / DNA / DIICOT)", coef: 0.3, categorie: "ICCJ" },
+  { id: "iccj-sef-serv", label: "Proc. șef serviciu (PÎCCJ / DNA / DIICOT)", coef: 0.25, categorie: "ICCJ" },
+  { id: "iccj-sef-birou", label: "Proc. șef birou (PÎCCJ / DNA / DIICOT)", coef: 0.2, categorie: "ICCJ" },
+  // b) Curți de apel, tribunale, judecătorii
+  { id: "curti-pres", label: "Pres. curte apel / Proc. general / Prim procuror", coef: 0.5, categorie: "Curti" },
+  { id: "curti-vicepres", label: "Vicepreș. / Proc. general adjunct / Prim proc. adjunct", coef: 0.45, categorie: "Curti" },
+  { id: "curti-pres-sectie", label: "Pres. secție / Proc. șef secție", coef: 0.4, categorie: "Curti" },
+  { id: "curti-sef-serv", label: "Proc. șef serviciu", coef: 0.3, categorie: "Curti" },
+  { id: "curti-sef-birou", label: "Proc. șef birou", coef: 0.2, categorie: "Curti" },
+];
+
+/**
  * Anexa IV Art. 6 — Nomenclatorul funcțiilor și coeficienților de ierarhizare
  * pentru determinarea salariilor în VALUTĂ pentru personalul trimis în
  * misiune permanentă în străinătate (ambasade, consulate, institute culturale).

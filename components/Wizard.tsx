@@ -41,6 +41,7 @@ import {
   sporuriPentruAnexa,
   sporuriGrupate,
   clampNumber,
+  COEFICIENTI_CONDUCERE_JUSTITIE,
   type GradatieInfo,
   type Spor,
 } from "@/lib/tax";
@@ -995,25 +996,38 @@ function StepActual({
           <div className="rounded-2xl border-2 border-indigo-300 bg-indigo-50 p-5">
             <label className="block">
               <span className="text-sm font-semibold text-indigo-900 block">
-                Coeficient suplimentar conducere (Anexa V)
+                Funcția de conducere (Anexa V Art. 8)
               </span>
               <span className="block text-xs text-indigo-800 mt-0.5">
-                Anexa V art. 8 — pentru funcțiile de conducere ale judecătorilor/procurorilor,
-                la indemnizația maximă se adaugă <strong>coef × valoarea de referință</strong>.
-                Valori tipice: 0.50 (Președinte ICCJ/CSM), 0.45 (vicepreședinți), 0.40 (președinți de secții) etc.
+                Pentru judecători/procurori cu funcții de conducere, la indemnizația
+                maximă se adaugă <strong>coef × valoarea de referință</strong>. Alege funcția exactă:
               </span>
-              <div className="mt-3 flex items-center gap-2">
-                <input
-                  type="number"
-                  min={0}
-                  max={1}
-                  step={0.05}
-                  value={coefSuplimentConducere}
-                  onChange={(e) => setCoefSuplimentConducere(clampNumber(Number(e.target.value), 0, 1))}
-                  className="w-24 rounded-xl border border-indigo-300 px-3 py-2.5 text-lg tabular-nums focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
-                />
-                <span className="text-sm text-indigo-700">× val. ref.</span>
-              </div>
+              <select
+                value={coefSuplimentConducere || ""}
+                onChange={(e) => setCoefSuplimentConducere(Number(e.target.value) || 0)}
+                className="mt-3 w-full rounded-xl border border-indigo-300 bg-white px-3 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+              >
+                <option value="">— nu sunt conducere / nu se aplică —</option>
+                <optgroup label="ÎCCJ și Parchetul de pe lângă ÎCCJ (DNA / DIICOT)">
+                  {COEFICIENTI_CONDUCERE_JUSTITIE.filter((c) => c.categorie === "ICCJ").map((c) => (
+                    <option key={c.id} value={c.coef}>
+                      {c.coef.toFixed(2)} — {c.label}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="Curți de apel, tribunale, judecătorii">
+                  {COEFICIENTI_CONDUCERE_JUSTITIE.filter((c) => c.categorie === "Curti").map((c) => (
+                    <option key={c.id} value={c.coef}>
+                      {c.coef.toFixed(2)} — {c.label}
+                    </option>
+                  ))}
+                </optgroup>
+              </select>
+              {coefSuplimentConducere > 0 && (
+                <p className="mt-2 text-xs text-indigo-700">
+                  Coef. ales: <strong className="tabular-nums">{coefSuplimentConducere}</strong> × val. ref. = adaos la indemnizația de încadrare.
+                </p>
+              )}
             </label>
           </div>
         )}
