@@ -9,7 +9,7 @@ export function clampNumber(n: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, n));
 }
 
-export type SporType = "procent" | "valoare";
+export type SporType = "procent" | "valoare" | "lei";
 
 export interface Spor {
   id: string;
@@ -17,6 +17,7 @@ export interface Spor {
   tip: SporType;
   // pentru tip="procent": procent din salariul de bază
   // pentru tip="valoare": procent din valoarea de referință
+  // pentru tip="lei": sumă fixă lunară în lei (ex: indemnizație de permanență 300/500/800/1000)
   valoare: number;
   inclusInPlafon20: boolean;
   descriere?: string;
@@ -100,8 +101,11 @@ export function calcBrut(input: TaxInput): TaxBreakdown {
     if (spor.tip === "procent") {
       const p = procentCustom ?? spor.valoare;
       lei = (sb * p) / 100;
-    } else {
+    } else if (spor.tip === "valoare") {
       lei = (input.valoareReferinta * spor.valoare) / 100;
+    } else {
+      // tip === "lei" — sumă fixă lunară (cu override prin procentCustom = valoare în lei)
+      lei = procentCustom ?? spor.valoare;
     }
     if (spor.inclusInPlafon20) sporuriProcent += lei;
     else sporuriExceptate += lei;
@@ -347,6 +351,17 @@ export const SPORURI_STANDARD: Spor[] = [
     inclusInPlafon20: false,
     descriere:
       "Anexa II art. 3-5 — tarif pe oră de gardă peste norma de bază. Estimare medie 25%, variază pe specialitate.",
+    aplicabilAnexe: ["II"],
+  },
+  {
+    id: "indemnizatie-permanenta-sanatate",
+    nume: "Indemnizație de permanență (sumă fixă lunară)",
+    tip: "lei",
+    valoare: 500,
+    inclusInPlafon20: false,
+    descriere:
+      "Sumă fixă lunară pentru personalul medical care asigură permanență/continuitate în unitate. " +
+      "Valori uzuale: 300, 500, 800 sau 1000 lei (în funcție de poziție și regulamentul unității). Editează cuantumul după caz.",
     aplicabilAnexe: ["II"],
   },
   {

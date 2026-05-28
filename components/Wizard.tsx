@@ -708,6 +708,23 @@ function StepSporuri({
                       <span className="text-xs text-slate-600">% din baza</span>
                     </div>
                   )}
+                  {activ && spor.tip === "lei" && (
+                    <div className="mt-2 flex items-center gap-2">
+                      <input
+                        type="number"
+                        min={0}
+                        max={5000}
+                        step={50}
+                        value={st?.procent ?? spor.valoare}
+                        onChange={(e) =>
+                          setProcent(spor.id, clampNumber(Number(e.target.value), 0, 5000))
+                        }
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-20 rounded border border-slate-300 px-2 py-1 text-sm tabular-nums"
+                      />
+                      <span className="text-xs text-slate-600">lei / lună</span>
+                    </div>
+                  )}
                   <div className="mt-1.5 text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
                     {spor.inclusInPlafon20 ? "în plafonul 20%" : "exceptat de la plafon"}
                   </div>

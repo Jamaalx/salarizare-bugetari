@@ -52,7 +52,7 @@ export default function ChatWidget() {
               <Clock className="w-7 h-7" strokeWidth={1.75} />
             </div>
             <p className="text-base font-semibold text-slate-900">
-              În CURÂND
+              ÎN CURÂND
             </p>
             <p className="mt-2 text-sm text-slate-500 leading-relaxed">
               Asistentul AI va răspunde la întrebări despre salarizare,
