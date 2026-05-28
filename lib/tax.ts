@@ -283,12 +283,13 @@ export const SPORURI_STANDARD: Spor[] = [
   },
   {
     id: "conditii",
-    nume: "Spor pentru condiții de muncă",
+    nume: "Spor pentru condiții de muncă (cadru)",
     tip: "procent",
     valoare: 15,
     inclusInPlafon20: true,
     descriere:
-      "Art. 20 — procent stabilit prin regulament-cadru pe domeniu (variază între 5% și 40% în funcție de anexă). Editează procentul după caz.",
+      "Art. 20 — procent stabilit prin regulament-cadru pe domeniu. Aplicabil DOAR pentru anexele care NU au sporuri concrete de condiții (Învățământ, Diplomație, Demnitate publică). Pentru Sănătate, Cultură, Justiție, Apărare, Cercetare, Administrație — folosește sporurile specifice anexei tale.",
+    aplicabilAnexe: ["I", "IV", "IX"],
   },
   {
     id: "doctorat",
@@ -299,6 +300,7 @@ export const SPORURI_STANDARD: Spor[] = [
     descriere:
       "Pentru personalul cu titlul științific de doctor obținut în domeniul postului ocupat. Inclus în plafonul de 20%. " +
       "⚠️ STATUS INCERT: nu apare explicit în noul proiect MMFTSS — bază legală anterioară Legea 153/2017 art. 14 alin. (8). Probabil va fi păstrat prin HG/regulament-cadru, dar de confirmat la adoptare.",
+    aplicabilAnexe: ["I", "VII"],
   },
   {
     id: "premiu-performanta",
@@ -1156,6 +1158,29 @@ export function sporuriPentruAnexa(anexa: string): Spor[] {
   return SPORURI_STANDARD.filter(
     (s) => !s.aplicabilAnexe || s.aplicabilAnexe.includes(anexa),
   );
+}
+
+/**
+ * Categorizează sporurile aplicabile pe anexa selectată:
+ * - "generale": sporuri din Cap. IV proiect care se aplică transversal
+ *   (fără aplicabilAnexe sau aplicabile pe ≥5 anexe — practic peste tot)
+ * - "specifice": sporuri restrânse la 1-4 anexe (reguli specifice anexei)
+ */
+export function sporuriGrupate(anexa: string): {
+  generale: Spor[];
+  specifice: Spor[];
+} {
+  const aplicabile = sporuriPentruAnexa(anexa);
+  const generale: Spor[] = [];
+  const specifice: Spor[] = [];
+  for (const s of aplicabile) {
+    if (!s.aplicabilAnexe || s.aplicabilAnexe.length >= 5) {
+      generale.push(s);
+    } else {
+      specifice.push(s);
+    }
+  }
+  return { generale, specifice };
 }
 
 /**

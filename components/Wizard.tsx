@@ -39,6 +39,7 @@ import {
   gradatieDinVechime,
   gradatiiForAnexa,
   sporuriPentruAnexa,
+  sporuriGrupate,
   clampNumber,
   type GradatieInfo,
   type Spor,
@@ -259,6 +260,8 @@ export default function Wizard({ initialData }: Props) {
           <StepSporuri
             sporuri={s.sporuri}
             sporuriAplicabile={sporuriAplicabile}
+            anexa={s.anexa}
+            anexaNume={FAMILII.find((x) => x.anexa === s.anexa)?.nume ?? ""}
             toggle={(id) =>
               setS((p) => {
                 const target = sporuriAplicabile.find((x) => x.id === id);
@@ -650,14 +653,27 @@ function StepVechime({
 function StepSporuri({
   sporuri,
   sporuriAplicabile,
+  anexa,
+  anexaNume,
   toggle,
   setProcent,
 }: {
   sporuri: Record<string, { activ: boolean; procent?: number }>;
   sporuriAplicabile: Spor[];
+  anexa: string;
+  anexaNume: string;
   toggle: (id: string) => void;
   setProcent: (id: string, n: number) => void;
 }) {
+  // Grupez sporuri pe "generale" (Cap. IV — aplicabile pe ≥5 anexe sau fără
+  // restricție) vs "specifice" (restrânse la 1-4 anexe — reglementări proprii).
+  const generale = sporuriAplicabile.filter(
+    (s) => !s.aplicabilAnexe || s.aplicabilAnexe.length >= 5,
+  );
+  const specifice = sporuriAplicabile.filter(
+    (s) => s.aplicabilAnexe && s.aplicabilAnexe.length < 5,
+  );
+
   return (
     <div>
       <StepHeader
@@ -666,8 +682,60 @@ function StepSporuri({
         desc="Bifează doar cele care ți se aplică efectiv. Plafonul de 20% (art. 21) se aplică agregat pe ordonatorul principal de credite, nu individual — îți semnalăm doar dacă suma ta personală îl depășește."
         IconFn={TrendingUp}
       />
+
+      {generale.length > 0 && (
+        <SubSectionSporuri
+          title="Sporuri generale (Cap. IV)"
+          subtitle="Aplicabile transversal — CFP, fonduri UE, ore noapte/suplimentare, handicap, premii performanță, etc."
+          sporuri={sporuri}
+          list={generale}
+          toggle={toggle}
+          setProcent={setProcent}
+        />
+      )}
+
+      {specifice.length > 0 && (
+        <SubSectionSporuri
+          title={`Sporuri specifice Anexei ${anexa}${anexaNume ? ` — ${anexaNume}` : ""}`}
+          subtitle="Reglementări proprii sectorului tău — vezi descrierea fiecăruia pentru articolul aplicabil."
+          sporuri={sporuri}
+          list={specifice}
+          toggle={toggle}
+          setProcent={setProcent}
+        />
+      )}
+
+      <div className="mt-4 flex items-start gap-2 text-xs text-slate-500">
+        <Info className="shrink-0 w-4 h-4 text-brand-500 mt-0.5" strokeWidth={2} />
+        <p>Dacă nu ai niciun spor, mergi direct mai departe.</p>
+      </div>
+    </div>
+  );
+}
+
+function SubSectionSporuri({
+  title,
+  subtitle,
+  sporuri,
+  list,
+  toggle,
+  setProcent,
+}: {
+  title: string;
+  subtitle: string;
+  sporuri: Record<string, { activ: boolean; procent?: number }>;
+  list: Spor[];
+  toggle: (id: string) => void;
+  setProcent: (id: string, n: number) => void;
+}) {
+  return (
+    <div className="mb-6">
+      <div className="mb-3">
+        <h3 className="text-xs font-bold tracking-wider text-brand-700 uppercase">{title}</h3>
+        <p className="text-xs text-slate-500 mt-0.5 leading-snug">{subtitle}</p>
+      </div>
       <div className="grid sm:grid-cols-2 gap-3">
-        {sporuriAplicabile.map((spor) => {
+        {list.map((spor) => {
           const st = sporuri[spor.id];
           const activ = !!st?.activ;
           return (
@@ -743,10 +811,6 @@ function StepSporuri({
             </label>
           );
         })}
-      </div>
-      <div className="mt-4 flex items-start gap-2 text-xs text-slate-500">
-        <Info className="shrink-0 w-4 h-4 text-brand-500 mt-0.5" strokeWidth={2} />
-        <p>Dacă nu ai niciun spor, mergi direct mai departe.</p>
       </div>
     </div>
   );
