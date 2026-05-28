@@ -90,6 +90,11 @@ type WizardState = {
   coefSuplimentConducere: number; // pentru Anexa V conducere (judecători/procurori)
   // Anexa VI Art. 3(5) — coef. suplim. risc apărare/ordine publică (max +0.40)
   coefSuplimRiscAparare: number;
+  // Anexa V — reducere -10% pentru specialiști PÎCCJ/DNA/DIICOT, polițiști judiciari
+  reducerePiccj: boolean;
+  // Anexa II — Direcție Sănătate Publică (DSP) — Art. 7(6) limitează sporurile
+  // de condiții doar la lit. a, b, c, e (NU d "condiții grele" 5%)
+  esteDsp: boolean;
 };
 
 const INITIAL: WizardState = {
@@ -106,6 +111,8 @@ const INITIAL: WizardState = {
   persoaneInIntretinere: 0,
   coefSuplimentConducere: 0,
   coefSuplimRiscAparare: 0,
+  reducerePiccj: false,
+  esteDsp: false,
 };
 
 // Detectie funcții de conducere — art. 13 (1) excepție: coeficientul lor include
@@ -148,12 +155,25 @@ export default function Wizard({ initialData }: Props) {
     ? selected.coeficient + (aplicaCoefRiscAparare ? s.coefSuplimRiscAparare : 0)
     : 0;
   const salariuG0 = selected ? coefEfectiv * s.valRef : 0;
-  const salariuBaza = selected ? aplicaGradatie(salariuG0, gradatie, tabelGradatii) : 0;
+  const salariuDupaGradatii = selected ? aplicaGradatie(salariuG0, gradatie, tabelGradatii) : 0;
+  // Anexa V — pentru specialiști PÎCCJ/DNA/DIICOT, polițiști judiciari
+  // (Art. 20, 17 alin. 3-5) salariul de bază e redus cu 10%.
+  const aplicaReducerePiccj = selected?.anexa === "V";
+  const salariuBaza = selected
+    ? (aplicaReducerePiccj && s.reducerePiccj
+        ? Math.ceil(salariuDupaGradatii * 0.9)
+        : salariuDupaGradatii)
+    : 0;
 
   // Filtrăm sporurile aplicabile pe anexa selectată (ex: medicii nu primesc +100% weekend
   // ci doar +10% tarif majorat; demnitarii primesc doar sporul UE).
+  // Anexa II Art. 7(6): DSP (Direcție Sănătate Publică) poate primi doar
+  // sporurile lit. a, b, c, e — NU lit. d (condiții grele 5%).
+  const aplicaDsp = selected?.anexa === "II";
   const sporuriAplicabile: Spor[] = selected
-    ? sporuriPentruAnexa(selected.anexa)
+    ? sporuriPentruAnexa(selected.anexa).filter(
+        (sp) => !(aplicaDsp && s.esteDsp && sp.id === "conditii-grele-sanatate"),
+      )
     : SPORURI_STANDARD;
 
   const sporuriState = sporuriAplicabile.map((sp) => ({
@@ -313,6 +333,12 @@ export default function Wizard({ initialData }: Props) {
             aplicaCoefRiscAparare={aplicaCoefRiscAparare}
             coefSuplimRiscAparare={s.coefSuplimRiscAparare}
             setCoefSuplimRiscAparare={(n) => setS((p) => ({ ...p, coefSuplimRiscAparare: n }))}
+            aplicaReducerePiccj={aplicaReducerePiccj}
+            reducerePiccj={s.reducerePiccj}
+            setReducerePiccj={(b) => setS((p) => ({ ...p, reducerePiccj: b }))}
+            aplicaDsp={aplicaDsp}
+            esteDsp={s.esteDsp}
+            setEsteDsp={(b) => setS((p) => ({ ...p, esteDsp: b }))}
             esteConducereAuto={esteConducereAuto}
             esteConducere={esteConducere}
             conducereOverride={s.conducereOverride}
@@ -845,6 +871,12 @@ function StepActual({
   aplicaCoefRiscAparare,
   coefSuplimRiscAparare,
   setCoefSuplimRiscAparare,
+  aplicaReducerePiccj,
+  reducerePiccj,
+  setReducerePiccj,
+  aplicaDsp,
+  esteDsp,
+  setEsteDsp,
   esteConducereAuto,
   esteConducere,
   conducereOverride,
@@ -865,6 +897,12 @@ function StepActual({
   aplicaCoefRiscAparare: boolean;
   coefSuplimRiscAparare: number;
   setCoefSuplimRiscAparare: (n: number) => void;
+  aplicaReducerePiccj: boolean;
+  reducerePiccj: boolean;
+  setReducerePiccj: (b: boolean) => void;
+  aplicaDsp: boolean;
+  esteDsp: boolean;
+  setEsteDsp: (b: boolean) => void;
   esteConducereAuto: boolean;
   esteConducere: boolean;
   conducereOverride: boolean | null;
@@ -1084,6 +1122,86 @@ function StepActual({
               )}
             </label>
           </div>
+        )}
+
+        {aplicaReducerePiccj && (
+          <label
+            className={
+              "block rounded-2xl border-2 p-5 cursor-pointer transition " +
+              (reducerePiccj
+                ? "border-orange-500 bg-orange-50"
+                : "border-slate-200 hover:border-orange-300 bg-white")
+            }
+          >
+            <div className="flex items-start gap-3">
+              <div
+                className={
+                  "shrink-0 mt-0.5 inline-flex items-center justify-center w-5 h-5 rounded border-2 transition " +
+                  (reducerePiccj
+                    ? "bg-orange-600 border-orange-600 text-white"
+                    : "border-slate-300 bg-white")
+                }
+              >
+                {reducerePiccj && <Check className="w-3.5 h-3.5" strokeWidth={3} />}
+              </div>
+              <input
+                type="checkbox"
+                checked={reducerePiccj}
+                onChange={(e) => setReducerePiccj(e.target.checked)}
+                className="sr-only"
+              />
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold text-slate-900 text-sm">
+                  Reducere -10% (specialiști PÎCCJ / DNA / DIICOT / polițiști judiciari)
+                </div>
+                <div className="text-xs text-slate-600 mt-1 leading-snug">
+                  Anexa V Art. 20 / Art. 17 alin. (3)-(5) — pentru specialiștii din cadrul
+                  PÎCCJ, DNA, DIICOT și pentru ofițerii de poliție judiciară, salariul
+                  de bază se calculează cu reducere de 10% față de funcțiile asimilate.
+                </div>
+              </div>
+            </div>
+          </label>
+        )}
+
+        {aplicaDsp && (
+          <label
+            className={
+              "block rounded-2xl border-2 p-5 cursor-pointer transition " +
+              (esteDsp
+                ? "border-teal-500 bg-teal-50"
+                : "border-slate-200 hover:border-teal-300 bg-white")
+            }
+          >
+            <div className="flex items-start gap-3">
+              <div
+                className={
+                  "shrink-0 mt-0.5 inline-flex items-center justify-center w-5 h-5 rounded border-2 transition " +
+                  (esteDsp
+                    ? "bg-teal-600 border-teal-600 text-white"
+                    : "border-slate-300 bg-white")
+                }
+              >
+                {esteDsp && <Check className="w-3.5 h-3.5" strokeWidth={3} />}
+              </div>
+              <input
+                type="checkbox"
+                checked={esteDsp}
+                onChange={(e) => setEsteDsp(e.target.checked)}
+                className="sr-only"
+              />
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold text-slate-900 text-sm">
+                  Lucrez la Direcția de Sănătate Publică (DSP)
+                </div>
+                <div className="text-xs text-slate-600 mt-1 leading-snug">
+                  Anexa II Art. 7 alin. (6) — personalul DSP poate beneficia DOAR de
+                  sporurile condiții lit. a (neonatologie), b (nivel I), c (nivel II)
+                  și e (radiații). Sporul lit. d (condiții grele 5%) NU se aplică.
+                </div>
+              </div>
+            </div>
+          </label>
         )}
 
         <div className="rounded-2xl border border-slate-200 p-5 bg-slate-50">
