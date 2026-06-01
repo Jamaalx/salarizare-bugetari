@@ -76,10 +76,22 @@ export const calculateSalarySchema = z.object({
           "conditii",
         ]),
         procent: z.number().optional(),
+        ore: z
+          .number()
+          .optional()
+          .describe("Ore/lună pentru sporurile orare (noapte, ore supl.) — necesită și oreNormaLunara"),
+        fractie: z
+          .number()
+          .optional()
+          .describe("Fracțiunea de timp (0–100) pentru sporurile proporționale cu timpul lucrat"),
       })
     )
     .default([])
     .describe("Lista sporurilor aplicabile cu procentul (dacă e custom)"),
+  oreNormaLunara: z
+    .number()
+    .optional()
+    .describe("Ore din programul lunar de lucru — numitorul tarifului orar pentru sporurile orare (ex: 165–168)"),
 });
 
 export const getLawArticleSchema = z.object({
@@ -135,6 +147,8 @@ export function calculateSalary(input: z.infer<typeof calculateSalarySchema>) {
       spor: sp,
       activ: !!found,
       procentCustom: found?.procent,
+      ore: found?.ore,
+      fractieTimp: found?.fractie,
     };
   });
 
@@ -142,6 +156,7 @@ export function calculateSalary(input: z.infer<typeof calculateSalarySchema>) {
     salariuBaza,
     sporuri: sporuriState,
     valoareReferinta: valRef,
+    oreNormaLunara: input.oreNormaLunara,
   });
 
   return {

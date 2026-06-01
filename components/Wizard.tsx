@@ -36,6 +36,7 @@ import {
   GRADATII,
   SPORURI_STANDARD,
   VALOARE_REFERINTA_DEFAULT,
+  ORE_NORMA_REPER,
   gradatieDinVechime,
   gradatiiForAnexa,
   sporuriPentruAnexa,
@@ -80,7 +81,9 @@ type WizardState = {
   functieIdx: number | null;
   aniVechime: number;
   gradatieManual: number | null;
-  sporuri: Record<string, { activ: boolean; procent?: number }>;
+  sporuri: Record<string, { activ: boolean; procent?: number; ore?: number; fractie?: number }>;
+  // Ore normă/lună — numitorul tarifului orar pentru sporurile orare. 0 = necompletat.
+  oreNorma: number;
   salariuActual: number;
   valRef: number;
   scutireImpozit: boolean;
@@ -108,6 +111,7 @@ const INITIAL: WizardState = {
   aniVechime: 5,
   gradatieManual: null,
   sporuri: {},
+  oreNorma: 0,
   salariuActual: 0,
   valRef: VALOARE_REFERINTA_DEFAULT,
   scutireImpozit: false,
@@ -185,6 +189,8 @@ export default function Wizard({ initialData }: Props) {
     spor: sp,
     activ: !!s.sporuri[sp.id]?.activ,
     procentCustom: s.sporuri[sp.id]?.procent,
+    ore: s.sporuri[sp.id]?.ore,
+    fractieTimp: s.sporuri[sp.id]?.fractie,
   }));
 
   // Coef supliment conducere se aplică doar pentru Anexa V conducere
@@ -196,6 +202,7 @@ export default function Wizard({ initialData }: Props) {
         salariuBaza,
         sporuri: sporuriState,
         valoareReferinta: s.valRef,
+        oreNormaLunara: s.oreNorma,
         scutireImpozit: s.scutireImpozit,
         persoaneInIntretinere: s.persoaneInIntretinere,
         coefSuplimentConducere: aplicaCoefSupliment ? s.coefSuplimentConducere : 0,
@@ -317,9 +324,23 @@ export default function Wizard({ initialData }: Props) {
             setProcent={(id, n) =>
               setS((p) => ({
                 ...p,
-                sporuri: { ...p.sporuri, [id]: { activ: p.sporuri[id]?.activ ?? false, procent: n } },
+                sporuri: { ...p.sporuri, [id]: { ...p.sporuri[id], activ: p.sporuri[id]?.activ ?? false, procent: n } },
               }))
             }
+            setOre={(id, n) =>
+              setS((p) => ({
+                ...p,
+                sporuri: { ...p.sporuri, [id]: { ...p.sporuri[id], activ: p.sporuri[id]?.activ ?? false, ore: n } },
+              }))
+            }
+            setFractie={(id, n) =>
+              setS((p) => ({
+                ...p,
+                sporuri: { ...p.sporuri, [id]: { ...p.sporuri[id], activ: p.sporuri[id]?.activ ?? false, fractie: n } },
+              }))
+            }
+            oreNorma={s.oreNorma}
+            setOreNorma={(n) => setS((p) => ({ ...p, oreNorma: n }))}
           />
         )}
         {current?.id === "actual" && (
@@ -707,13 +728,21 @@ function StepSporuri({
   anexaNume,
   toggle,
   setProcent,
+  setOre,
+  setFractie,
+  oreNorma,
+  setOreNorma,
 }: {
-  sporuri: Record<string, { activ: boolean; procent?: number }>;
+  sporuri: Record<string, { activ: boolean; procent?: number; ore?: number; fractie?: number }>;
   sporuriAplicabile: Spor[];
   anexa: string;
   anexaNume: string;
   toggle: (id: string) => void;
   setProcent: (id: string, n: number) => void;
+  setOre: (id: string, n: number) => void;
+  setFractie: (id: string, n: number) => void;
+  oreNorma: number;
+  setOreNorma: (n: number) => void;
 }) {
   // Grupez sporuri pe "generale" (Cap. IV — aplicabile pe ≥5 anexe sau fără
   // restricție) vs "specifice" (restrânse la 1-4 anexe — reglementări proprii).
@@ -722,6 +751,11 @@ function StepSporuri({
   );
   const specifice = sporuriAplicabile.filter(
     (s) => s.aplicabilAnexe && s.aplicabilAnexe.length < 5,
+  );
+
+  // Există vreun spor orar activ? Atunci avem nevoie de „ore normă/lună".
+  const areOrarActiv = sporuriAplicabile.some(
+    (sp) => sp.inputKind === "orar" && sporuri[sp.id]?.activ,
   );
 
   return (
@@ -733,6 +767,36 @@ function StepSporuri({
         IconFn={TrendingUp}
       />
 
+      {areOrarActiv && (
+        <div className={"mb-5 rounded-2xl border-2 p-4 " + (oreNorma > 0 ? "border-brand-300 bg-brand-50/60" : "border-amber-300 bg-amber-50")}>
+          <label className="block">
+            <span className="text-sm font-semibold text-slate-800">
+              Ore normă / lună (programul lunar de lucru)
+            </span>
+            <span className="block text-xs text-slate-500 mt-0.5 leading-snug">
+              Numitorul tarifului orar (tarif orar = salariu de bază ÷ ore normă). Completează numărul exact de ore al lunii respective — îl găsești pe fluturaș. Reper orientativ: ~{ORE_NORMA_REPER} h/lună la normă întreagă.
+            </span>
+            <div className="mt-2 flex items-center gap-2">
+              <input
+                type="number"
+                min={0}
+                max={400}
+                value={oreNorma || ""}
+                placeholder="ex: 168"
+                onChange={(e) => setOreNorma(clampNumber(Number(e.target.value), 0, 400))}
+                className="w-24 rounded border border-slate-300 px-2 py-1 text-sm tabular-nums"
+              />
+              <span className="text-xs text-slate-600">ore / lună</span>
+            </div>
+          </label>
+          {oreNorma <= 0 && (
+            <p className="mt-2 text-xs font-medium text-amber-800">
+              ⚠ Completează orele de normă ca sporurile orare bifate să fie calculate.
+            </p>
+          )}
+        </div>
+      )}
+
       {generale.length > 0 && (
         <SubSectionSporuri
           title="Sporuri generale (Cap. IV)"
@@ -741,6 +805,8 @@ function StepSporuri({
           list={generale}
           toggle={toggle}
           setProcent={setProcent}
+          setOre={setOre}
+          setFractie={setFractie}
         />
       )}
 
@@ -752,6 +818,8 @@ function StepSporuri({
           list={specifice}
           toggle={toggle}
           setProcent={setProcent}
+          setOre={setOre}
+          setFractie={setFractie}
         />
       )}
 
@@ -770,13 +838,17 @@ function SubSectionSporuri({
   list,
   toggle,
   setProcent,
+  setOre,
+  setFractie,
 }: {
   title: string;
   subtitle: string;
-  sporuri: Record<string, { activ: boolean; procent?: number }>;
+  sporuri: Record<string, { activ: boolean; procent?: number; ore?: number; fractie?: number }>;
   list: Spor[];
   toggle: (id: string) => void;
   setProcent: (id: string, n: number) => void;
+  setOre: (id: string, n: number) => void;
+  setFractie: (id: string, n: number) => void;
 }) {
   return (
     <div className="mb-6">
@@ -820,7 +892,58 @@ function SubSectionSporuri({
                   {spor.descriere && (
                     <div className="text-xs text-slate-500 mt-1 leading-snug">{spor.descriere}</div>
                   )}
-                  {activ && spor.tip === "procent" && (
+                  {activ && spor.inputKind === "orar" && (
+                    <div className="mt-2 flex items-center gap-2 flex-wrap">
+                      <input
+                        type="number"
+                        min={0}
+                        max={400}
+                        value={st?.ore ?? ""}
+                        placeholder="0"
+                        onChange={(e) =>
+                          setOre(spor.id, clampNumber(Number(e.target.value), 0, 400))
+                        }
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-20 rounded border border-slate-300 px-2 py-1 text-sm tabular-nums"
+                      />
+                      <span className="text-xs text-slate-600">{spor.unitateOre ?? "ore / lună"}</span>
+                      <span className="text-[11px] text-slate-400">× {spor.valoare}% din tariful orar</span>
+                    </div>
+                  )}
+                  {activ && spor.inputKind === "selectie" && (
+                    <div className="mt-2 flex items-center gap-2">
+                      <select
+                        value={st?.procent ?? spor.valoare}
+                        onChange={(e) => setProcent(spor.id, Number(e.target.value))}
+                        onClick={(e) => e.stopPropagation()}
+                        className="rounded border border-slate-300 px-2 py-1 text-sm"
+                      >
+                        {spor.optiuni?.map((o) => (
+                          <option key={o.valoare} value={o.valoare}>
+                            {o.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {activ && spor.inputKind === "proportional" && (
+                    <div className="mt-2 flex items-center gap-2 flex-wrap">
+                      <input
+                        type="number"
+                        min={0}
+                        max={100}
+                        value={st?.fractie ?? 100}
+                        onChange={(e) =>
+                          setFractie(spor.id, clampNumber(Number(e.target.value), 0, 100))
+                        }
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-16 rounded border border-slate-300 px-2 py-1 text-sm tabular-nums"
+                      />
+                      <span className="text-xs text-slate-600">% din timp lucrat în condiții</span>
+                      <span className="text-[11px] text-slate-400">→ {spor.valoare}% × fracțiune</span>
+                    </div>
+                  )}
+                  {activ && spor.tip === "procent" && !spor.inputKind && (
                     <div className="mt-2 flex items-center gap-2">
                       <input
                         type="number"

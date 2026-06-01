@@ -7,7 +7,9 @@ import {
   GRADATII,
   SPORURI_STANDARD,
   VALOARE_REFERINTA_DEFAULT,
+  ORE_NORMA_REPER,
   gradatieDinVechime,
+  sporuriPentruAnexa,
   clampNumber,
   type Spor,
 } from "@/lib/tax";
@@ -56,8 +58,13 @@ export default function Calculator({ initialData }: Props) {
       spor: s,
       activ: false,
       procentCustom: undefined as number | undefined,
+      ore: undefined as number | undefined,
+      fractieTimp: undefined as number | undefined,
     }))
   );
+
+  // ore normă/lună — numitorul tarifului orar pentru sporurile orare
+  const [oreNorma, setOreNorma] = useState<number>(0);
 
   // salariu actual pentru diferența tranzitorie
   const [salariuActual, setSalariuActual] = useState<number>(0);
@@ -97,14 +104,28 @@ export default function Calculator({ initialData }: Props) {
   const salariuBaza = selected ? aplicaGradatie(salariuG0, gradatie) : 0;
   const salariuBazaRot = Math.round(salariuBaza);
 
+  // Sporurile aplicabile pe anexa funcției selectate (ex: medicii NU primesc
+  // +100% weekend, ci +10% tarif majorat). Fără funcție selectată → niciunul.
+  const sporuriVizibile = useMemo(() => {
+    if (!selected) return [];
+    const ids = new Set(sporuriPentruAnexa(selected.anexa).map((s) => s.id));
+    return sporuriState.filter((s) => ids.has(s.spor.id));
+  }, [selected, sporuriState]);
+
+  // Există vreun spor orar activ printre cele vizibile?
+  const areOrarActiv = sporuriVizibile.some(
+    (s) => s.spor.inputKind === "orar" && s.activ,
+  );
+
   const taxResult = useMemo(() => {
     if (!selected) return null;
     return calcBrut({
       salariuBaza: salariuBazaRot,
-      sporuri: sporuriState,
+      sporuri: sporuriVizibile,
       valoareReferinta: valRef,
+      oreNormaLunara: oreNorma,
     });
-  }, [selected, salariuBazaRot, sporuriState, valRef]);
+  }, [selected, salariuBazaRot, sporuriVizibile, valRef, oreNorma]);
 
   const toggleSpor = (id: string) => {
     setSporuriState((prev) =>
@@ -114,6 +135,16 @@ export default function Calculator({ initialData }: Props) {
   const updateProcent = (id: string, p: number) => {
     setSporuriState((prev) =>
       prev.map((s) => (s.spor.id === id ? { ...s, procentCustom: p } : s))
+    );
+  };
+  const updateOre = (id: string, n: number) => {
+    setSporuriState((prev) =>
+      prev.map((s) => (s.spor.id === id ? { ...s, ore: n } : s))
+    );
+  };
+  const updateFractie = (id: string, n: number) => {
+    setSporuriState((prev) =>
+      prev.map((s) => (s.spor.id === id ? { ...s, fractieTimp: n } : s))
     );
   };
 
@@ -279,51 +310,134 @@ export default function Calculator({ initialData }: Props) {
         title="4. Sporuri și alte drepturi"
         hint="Bifează ce ți se aplică. Plafon 20% pentru sporuri din plafon."
       >
-        <div className="grid md:grid-cols-2 gap-3">
-          {sporuriState.map(({ spor, activ, procentCustom }) => (
-            <label
-              key={spor.id}
-              className={
-                "flex items-start gap-3 rounded-lg border p-3 cursor-pointer transition " +
-                (activ
-                  ? "border-brand-500 bg-brand-50"
-                  : "border-slate-200 bg-white hover:bg-slate-50")
-              }
-            >
-              <input
-                type="checkbox"
-                className="mt-1 h-4 w-4 accent-brand-600"
-                checked={activ}
-                onChange={() => toggleSpor(spor.id)}
-              />
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-slate-800">{spor.nume}</div>
-                {spor.descriere && (
-                  <div className="text-xs text-slate-500 mt-0.5">{spor.descriere}</div>
-                )}
-                {activ && spor.tip === "procent" && (
-                  <div className="mt-2 flex items-center gap-2">
-                    <input
-                      type="number"
-                      min={0}
-                      max={spor.valoare}
-                      step={1}
-                      value={procentCustom ?? spor.valoare}
-                      onChange={(e) =>
-                        updateProcent(spor.id, clampNumber(Number(e.target.value), 0, 100))
-                      }
-                      className="w-20 rounded border border-slate-300 px-2 py-1 text-sm"
-                    />
-                    <span className="text-xs text-slate-600">% din salariul de bază</span>
-                  </div>
-                )}
-                <div className="mt-1 text-[11px] uppercase tracking-wide text-slate-400">
-                  {spor.inclusInPlafon20 ? "în plafonul 20%" : "exceptat de la plafon"}
+        {!selected ? (
+          <p className="text-sm text-slate-500">
+            Selectează întâi o funcție — sporurile afișate depind de anexa ei.
+          </p>
+        ) : (
+          <>
+            {areOrarActiv && (
+              <div className={"mb-4 rounded-lg border p-3 " + (oreNorma > 0 ? "border-brand-300 bg-brand-50/60" : "border-amber-300 bg-amber-50")}>
+                <label className="block text-sm font-medium text-slate-800">
+                  Ore normă / lună (programul lunar de lucru)
+                </label>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Numitorul tarifului orar (tarif orar = salariu de bază ÷ ore normă). Completează numărul exact al lunii de pe fluturaș. Reper: ~{ORE_NORMA_REPER} h/lună.
+                </p>
+                <div className="mt-2 flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={0}
+                    max={400}
+                    value={oreNorma || ""}
+                    placeholder="ex: 168"
+                    onChange={(e) => setOreNorma(clampNumber(Number(e.target.value), 0, 400))}
+                    className="w-24 rounded border border-slate-300 px-2 py-1 text-sm tabular-nums"
+                  />
+                  <span className="text-xs text-slate-600">ore / lună</span>
                 </div>
+                {oreNorma <= 0 && (
+                  <p className="mt-2 text-xs font-medium text-amber-800">
+                    ⚠ Completează orele de normă ca sporurile orare bifate să fie calculate.
+                  </p>
+                )}
               </div>
-            </label>
-          ))}
-        </div>
+            )}
+            <div className="grid md:grid-cols-2 gap-3">
+              {sporuriVizibile.map(({ spor, activ, procentCustom, ore, fractieTimp }) => (
+                <label
+                  key={spor.id}
+                  className={
+                    "flex items-start gap-3 rounded-lg border p-3 cursor-pointer transition " +
+                    (activ
+                      ? "border-brand-500 bg-brand-50"
+                      : "border-slate-200 bg-white hover:bg-slate-50")
+                  }
+                >
+                  <input
+                    type="checkbox"
+                    className="mt-1 h-4 w-4 accent-brand-600"
+                    checked={activ}
+                    onChange={() => toggleSpor(spor.id)}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-slate-800">{spor.nume}</div>
+                    {spor.descriere && (
+                      <div className="text-xs text-slate-500 mt-0.5">{spor.descriere}</div>
+                    )}
+                    {activ && spor.inputKind === "orar" && (
+                      <div className="mt-2 flex items-center gap-2 flex-wrap">
+                        <input
+                          type="number"
+                          min={0}
+                          max={400}
+                          value={ore ?? ""}
+                          placeholder="0"
+                          onChange={(e) =>
+                            updateOre(spor.id, clampNumber(Number(e.target.value), 0, 400))
+                          }
+                          className="w-20 rounded border border-slate-300 px-2 py-1 text-sm tabular-nums"
+                        />
+                        <span className="text-xs text-slate-600">{spor.unitateOre ?? "ore / lună"}</span>
+                        <span className="text-[11px] text-slate-400">× {spor.valoare}% din tariful orar</span>
+                      </div>
+                    )}
+                    {activ && spor.inputKind === "selectie" && (
+                      <div className="mt-2 flex items-center gap-2">
+                        <select
+                          value={procentCustom ?? spor.valoare}
+                          onChange={(e) => updateProcent(spor.id, Number(e.target.value))}
+                          className="rounded border border-slate-300 px-2 py-1 text-sm"
+                        >
+                          {spor.optiuni?.map((o) => (
+                            <option key={o.valoare} value={o.valoare}>
+                              {o.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                    {activ && spor.inputKind === "proportional" && (
+                      <div className="mt-2 flex items-center gap-2 flex-wrap">
+                        <input
+                          type="number"
+                          min={0}
+                          max={100}
+                          value={fractieTimp ?? 100}
+                          onChange={(e) =>
+                            updateFractie(spor.id, clampNumber(Number(e.target.value), 0, 100))
+                          }
+                          className="w-16 rounded border border-slate-300 px-2 py-1 text-sm tabular-nums"
+                        />
+                        <span className="text-xs text-slate-600">% din timp lucrat în condiții</span>
+                        <span className="text-[11px] text-slate-400">→ {spor.valoare}% × fracțiune</span>
+                      </div>
+                    )}
+                    {activ && spor.tip === "procent" && !spor.inputKind && (
+                      <div className="mt-2 flex items-center gap-2">
+                        <input
+                          type="number"
+                          min={0}
+                          max={spor.valoare}
+                          step={1}
+                          value={procentCustom ?? spor.valoare}
+                          onChange={(e) =>
+                            updateProcent(spor.id, clampNumber(Number(e.target.value), 0, 100))
+                          }
+                          className="w-20 rounded border border-slate-300 px-2 py-1 text-sm"
+                        />
+                        <span className="text-xs text-slate-600">% din salariul de bază</span>
+                      </div>
+                    )}
+                    <div className="mt-1 text-[11px] uppercase tracking-wide text-slate-400">
+                      {spor.inclusInPlafon20 ? "în plafonul 20%" : "exceptat de la plafon"}
+                    </div>
+                  </div>
+                </label>
+              ))}
+            </div>
+          </>
+        )}
       </Panel>
 
       {/* Notificare gradații skip */}

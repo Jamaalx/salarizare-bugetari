@@ -4,12 +4,37 @@
 
 export const SAL_MIN_BRUT_2026 = 4050; // salariul minim brut pe țară 2026 (RO)
 
+// Reper orientativ pentru programul lunar de lucru (medie ~165 h/lună la normă
+// întreagă). Folosit DOAR ca text ajutător — utilizatorul introduce numărul
+// exact al lunii de pe fluturaș, nu se pre-completează niciun câmp.
+export const ORE_NORMA_REPER = 165;
+
 export function clampNumber(n: number, min: number, max: number): number {
   if (!Number.isFinite(n)) return min;
   return Math.min(max, Math.max(min, n));
 }
 
 export type SporType = "procent" | "valoare" | "lei";
+
+// Mecanismul de calcul al sporului — determină ce date îi cere utilizatorului
+// pentru acuratețe. Lipsă (undefined) = comportament standard:
+//   procent → % din salariul de bază; valoare → % din val. ref.; lei → sumă fixă.
+// - "orar":        tarif_orar × ore × procent% (noapte, ore supl., gărzi). Cere `ore`.
+// - "selectie":    procentul e ales dintr-o listă de condiții (ex: categorie risc
+//                  radiologic 2,5/5/7,5/10%). Folosește `optiuni`; valoarea aleasă
+//                  ajunge în procentCustom.
+// - "proportional": % din bază scalat cu fracțiunea de timp lucrat în condiții
+//                  (art. „proporțional cu timpul efectiv lucrat"). Cere `fractieTimp`.
+// - "oneOff":      sumă punctuală (mutare/instalare/campanie) — NU intră în
+//                  salariul lunar recurent, se raportează separat.
+// - "bazaProprie": procent dintr-o bază de referință diferită de salariul propriu
+//                  (ex: indemnizația ÎCCJ pentru membri CSM). Cere `bazaCustom`.
+export type SporInputKind =
+  | "orar"
+  | "selectie"
+  | "proportional"
+  | "oneOff"
+  | "bazaProprie";
 
 export interface Spor {
   id: string;
@@ -28,12 +53,33 @@ export interface Spor {
   // art. 7(1) lit. a-d nu se cumulează). Activarea unui spor dezactivează
   // celelalte din același grup în UI.
   groupExclusiv?: string;
+  // Mecanismul de calcul (vezi SporInputKind). Lipsă = standard.
+  inputKind?: SporInputKind;
+  // Eticheta câmpului de ore pentru inputKind="orar" (ex: "ore de noapte / lună").
+  unitateOre?: string;
+  // Opțiunile pentru inputKind="selectie" — fiecare fixează procentul real.
+  optiuni?: { label: string; valoare: number }[];
+  // Eticheta bazei de referință pentru inputKind="bazaProprie".
+  bazaLabel?: string;
 }
 
 export interface TaxInput {
   salariuBaza: number; // salariul de bază (după gradație), lei
-  sporuri: { spor: Spor; activ: boolean; procentCustom?: number }[];
+  sporuri: {
+    spor: Spor;
+    activ: boolean;
+    procentCustom?: number;
+    // ore/lună pentru sporurile orare (inputKind="orar")
+    ore?: number;
+    // fracțiunea de timp lucrat în condiții, 0–100 (inputKind="proportional")
+    fractieTimp?: number;
+    // baza de referință în lei (inputKind="bazaProprie")
+    bazaCustom?: number;
+  }[];
   valoareReferinta: number;
+  // Numărul de ore din programul lunar — numitorul tarifului orar pentru
+  // sporurile orare. Fără valoare (0), sporurile orare nu pot fi calculate.
+  oreNormaLunara?: number;
   // Persoane scutite de impozitul pe veniturile din salarii — art. 60 Cod fiscal:
   // - persoane cu handicap grav sau accentuat (pct. 1 lit. b)
   // - personal cercetare-dezvoltare (pct. 3)
@@ -62,6 +108,12 @@ export interface TaxBreakdown {
 
   plafon20: number; // 20% din salariul de bază — limită orientativă pentru sporurile în plafon
   sporuriDepasescPlafon: boolean; // true dacă suma sporurilor „în plafon" > 20% (avertisment, NU cap)
+
+  // Sume punctuale (one-off) — NU sunt incluse în salariuBrut lunar recurent.
+  sumeOneOff: number;
+  // true dacă un spor orar e activ dar nu s-a completat „ore normă/lună"
+  // (numitorul tarifului orar) → sporul iese 0 și cifra e incompletă.
+  oreNormaLipsa: boolean;
 }
 
 /**
@@ -95,14 +147,44 @@ export function calculDeducere(
 
 export function calcBrut(input: TaxInput): TaxBreakdown {
   const sb = input.salariuBaza + (input.coefSuplimentConducere ?? 0) * input.valoareReferinta;
+  // Tariful orar = salariu de bază / ore normă lunară. Numitorul e introdus de
+  // utilizator (valoarea exactă a lunii de pe fluturaș), fără presupuneri.
+  const oreNorma = input.oreNormaLunara && input.oreNormaLunara > 0 ? input.oreNormaLunara : 0;
+  const tarifOrar = oreNorma > 0 ? sb / oreNorma : 0;
+
   let sporuriProcent = 0;
   let sporuriValoare = 0;
   let sporuriExceptate = 0;
+  let sumeOneOff = 0;
+  let oreNormaLipsa = false;
 
-  for (const { spor, activ, procentCustom } of input.sporuri) {
+  for (const { spor, activ, procentCustom, ore, fractieTimp, bazaCustom } of input.sporuri) {
     if (!activ) continue;
     let lei = 0;
-    if (spor.tip === "procent") {
+
+    if (spor.inputKind === "orar") {
+      // tarif_orar × ore × procent% — se aplică DOAR pe orele calificate,
+      // nu pe tot salariul lunar.
+      if (oreNorma <= 0) oreNormaLipsa = true;
+      const p = procentCustom ?? spor.valoare;
+      lei = tarifOrar * (ore ?? 0) * (p / 100);
+    } else if (spor.inputKind === "proportional") {
+      // % din bază scalat cu fracțiunea de timp lucrat în condițiile respective.
+      const p = procentCustom ?? spor.valoare;
+      const frac = clampNumber(fractieTimp ?? 100, 0, 100) / 100;
+      lei = ((sb * p) / 100) * frac;
+    } else if (spor.inputKind === "bazaProprie") {
+      // procent dintr-o bază de referință proprie (≠ salariul utilizatorului).
+      const p = procentCustom ?? spor.valoare;
+      lei = ((bazaCustom ?? 0) * p) / 100;
+    } else if (spor.inputKind === "oneOff") {
+      // sumă punctuală — raportată separat, exclusă din salariul lunar recurent.
+      sumeOneOff += spor.tip === "valoare"
+        ? (input.valoareReferinta * spor.valoare) / 100
+        : procentCustom ?? spor.valoare;
+      continue;
+    } else if (spor.tip === "procent") {
+      // standard + "selectie" (procentul ales din listă ajunge în procentCustom)
       const p = procentCustom ?? spor.valoare;
       lei = (sb * p) / 100;
     } else if (spor.tip === "valoare") {
@@ -111,6 +193,7 @@ export function calcBrut(input: TaxInput): TaxBreakdown {
       // tip === "lei" — sumă fixă lunară (cu override prin procentCustom = valoare în lei)
       lei = procentCustom ?? spor.valoare;
     }
+
     if (spor.inclusInPlafon20) sporuriProcent += lei;
     else sporuriExceptate += lei;
   }
@@ -147,6 +230,8 @@ export function calcBrut(input: TaxInput): TaxBreakdown {
     salariuNet: Math.round(salariuNet),
     plafon20,
     sporuriDepasescPlafon: sporuriDepasesc,
+    sumeOneOff: Math.round(sumeOneOff),
+    oreNormaLipsa,
   };
 }
 
@@ -249,8 +334,10 @@ export const SPORURI_STANDARD: Spor[] = [
     tip: "procent",
     valoare: 25,
     inclusInPlafon20: false,
-    descriere: "Art. 17 — orele lucrate între 22:00–06:00, exceptat de la plafon.",
+    descriere: "Art. 17 — spor de 25% din tariful orar, DOAR pentru orele lucrate între 22:00–06:00. Se aplică pe orele de noapte introduse, nu pe tot salariul. Exceptat de la plafon.",
     aplicabilAnexe: ["I", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
+    inputKind: "orar",
+    unitateOre: "ore de noapte / lună (22:00–06:00)",
   },
   {
     id: "ore-supl-75",
@@ -258,7 +345,9 @@ export const SPORURI_STANDARD: Spor[] = [
     tip: "procent",
     valoare: 75,
     inclusInPlafon20: false,
-    descriere: "Art. 18 — ore suplimentare necompensate cu liber în 60 zile.",
+    descriere: "Art. 18 — 75% din tariful orar pentru orele suplimentare necompensate cu liber în 60 zile. Se aplică pe orele suplimentare introduse, nu pe tot salariul.",
+    inputKind: "orar",
+    unitateOre: "ore suplimentare / lună",
   },
   {
     id: "ore-supl-100",
@@ -266,8 +355,10 @@ export const SPORURI_STANDARD: Spor[] = [
     tip: "procent",
     valoare: 100,
     inclusInPlafon20: false,
-    descriere: "Art. 18(3) — ore lucrate în repaus săptămânal / sărbători legale.",
+    descriere: "Art. 18(3) — 100% din tariful orar pentru orele lucrate în repaus săptămânal / sărbători legale. Se aplică pe orele introduse, nu pe tot salariul.",
     aplicabilAnexe: ["I", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
+    inputKind: "orar",
+    unitateOre: "ore weekend / sărbători / lună",
   },
   {
     id: "handicap",
@@ -337,8 +428,10 @@ export const SPORURI_STANDARD: Spor[] = [
     tip: "procent",
     valoare: 10,
     inclusInPlafon20: true,
-    descriere: "Anexa II art. 2 — în loc de +100% (regim general).",
+    descriere: "Anexa II art. 2 — +10% din tariful orar pentru orele lucrate în weekend/sărbători (în loc de +100% din regimul general). Se aplică pe orele introduse, nu pe tot salariul.",
     aplicabilAnexe: ["II"],
+    inputKind: "orar",
+    unitateOre: "ore în weekend / sărbători / lună",
   },
   {
     id: "radiatii",
@@ -347,18 +440,27 @@ export const SPORURI_STANDARD: Spor[] = [
     valoare: 5,
     inclusInPlafon20: true,
     descriere:
-      "Anexa II art. 7(1) lit. e) — personal medical/auxiliar expus radiațiilor ionizante. Diferențiat pe categorii de risc radiologic: 2,5% (cat. I), 5% (cat. II), 7,5% (cat. III), 10% (cat. IV).",
+      "Anexa II art. 7(1) lit. e) — personal medical/auxiliar expus radiațiilor ionizante. Alege categoria de risc radiologic — procentul se stabilește automat.",
     aplicabilAnexe: ["II"],
+    inputKind: "selectie",
+    optiuni: [
+      { label: "Categoria I (2,5%)", valoare: 2.5 },
+      { label: "Categoria II (5%)", valoare: 5 },
+      { label: "Categoria III (7,5%)", valoare: 7.5 },
+      { label: "Categoria IV (10%)", valoare: 10 },
+    ],
   },
   {
     id: "garzi-medic",
-    nume: "Gardă suplimentară (contract separat, estimare)",
+    nume: "Gărzi (plată la tarif orar)",
     tip: "procent",
-    valoare: 25,
+    valoare: 100,
     inclusInPlafon20: false,
     descriere:
-      "Anexa II art. 3-5 — gărzile obligatorii (pentru completarea normei) se plătesc cu tariful orar al salariului de bază, NU au procent fix. Gărzile peste norma legală se prestează prin contract separat. Acest spor e o ESTIMARE orientativă pentru cei cu gărzi multiple — verifică fluturașul pentru valoarea exactă. Variază pe specialitate.",
+      "Anexa II art. 3-5 — gărzile pentru completarea normei se plătesc cu tariful orar al salariului de bază (100% pe oră). Introdu orele de gardă/lună. Gărzile peste norma legală se prestează prin contract separat; verifică fluturașul pentru valoarea exactă pe specialitate.",
     aplicabilAnexe: ["II"],
+    inputKind: "orar",
+    unitateOre: "ore de gardă / lună",
   },
   {
     id: "indemnizatie-permanenta-sanatate",
@@ -379,8 +481,10 @@ export const SPORURI_STANDARD: Spor[] = [
     valoare: 15,
     inclusInPlafon20: true,
     descriere:
-      "Anexa II art. 3(4) — 15% din tariful orar pentru orele de gardă la domiciliu / asistență de urgență.",
+      "Anexa II art. 3(4) — 15% din tariful orar pentru orele de gardă la domiciliu / asistență de urgență. Introdu orele de gardă la domiciliu/lună.",
     aplicabilAnexe: ["II"],
+    inputKind: "orar",
+    unitateOre: "ore de gardă la domiciliu / lună",
   },
   {
     id: "neonatologie-laborator-sanatate",
@@ -433,9 +537,10 @@ export const SPORURI_STANDARD: Spor[] = [
     valoare: 5,
     inclusInPlafon20: true,
     descriere:
-      "Anexa II art. 7(1) lit.d) — spor fix 5% din salariul de bază, proporțional cu timpul lucrat. Nu se cumulează cu lit. a/b/c (art. 7 alin. 5).",
+      "Anexa II art. 7(1) lit.d) — spor 5% din salariul de bază, proporțional cu timpul efectiv lucrat în acele condiții. Introdu fracțiunea de timp lucrat. Nu se cumulează cu lit. a/b/c (art. 7 alin. 5).",
     aplicabilAnexe: ["II"],
     groupExclusiv: "sanatate-conditii-art7",
+    inputKind: "proportional",
   },
   {
     id: "izolare-sanatate",
