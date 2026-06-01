@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import {
   Wallet,
   GraduationCap,
@@ -145,7 +145,15 @@ export default function Wizard({ initialData }: Props) {
   const esteAnexaIX = selected?.anexa === "IX";
   const esteConducereAuto = gradMarcatConducere || numeMarcatConducere || esteAnexaIX;
   const esteConducere = s.conducereOverride === null ? esteConducereAuto : s.conducereOverride;
-  const skipGradatii = coefIncludeVechime || esteConducere;
+  // Gradațiile de vechime în muncă (art. 13) se aplică PESTE coeficientul din
+  // anexă, care e stabilit la gradația 0 (art. 13 alin. 2). Excepții (gradația
+  // e deja inclusă): funcțiile de conducere/înalți funcționari publici, Anexa V
+  // (indemnizația de încadrare include gradul, gradația și vechimea în funcție)
+  // și Anexa IX (demnitate publică — indemnizație lunară).
+  // ATENȚIE: câmpul `vechime` din grilă (ex. învățământ, sănătate) e vechimea în
+  // ÎNVĂȚĂMÂNT/specialitate care selectează coeficientul — NU se confundă cu
+  // vechimea în muncă din art. 13, care se aplică pe deasupra.
+  const skipGradatii = esteConducere || s.anexa === "V";
 
   // Tabelul de gradații depinde de anexa selectată (Anexa VI = militari/poliție = la 3 ani).
   const tabelGradatii: GradatieInfo[] = gradatiiForAnexa(s.anexa);
@@ -227,12 +235,20 @@ export default function Wizard({ initialData }: Props) {
   const reset = () => setS(INITIAL);
   const goTo = (idx: number) => setS((p) => ({ ...p, step: idx }));
 
+  const sectionRef = useRef<HTMLElement | null>(null);
   useEffect(() => {
-    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+    // La schimbarea pasului, aducem conținutul wizard-ului în vizor (sub banner),
+    // ca utilizatorul să nu fie nevoit să scroleze peste header de fiecare dată.
+    if (typeof window === "undefined") return;
+    const el = sectionRef.current;
+    if (el) {
+      const top = el.getBoundingClientRect().top + window.scrollY - 12;
+      window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+    }
   }, [current?.id]);
 
   return (
-    <section className="mx-auto max-w-3xl px-4 py-8 md:py-12">
+    <section ref={sectionRef} className="mx-auto max-w-3xl px-4 py-6 md:py-8">
       {/* Progress bar */}
       <div className="mb-8">
         <div className="flex items-center justify-between gap-1.5 mb-2">
@@ -651,7 +667,7 @@ function StepVechime({
       <StepHeader
         nr={3}
         title="Câți ani de vechime în muncă ai?"
-        desc="Se ia în calcul toată vechimea (inclusiv perioade din sectorul privat — art. 13 alin. 6)."
+        desc="Toată vechimea în muncă (inclusiv sectorul privat — art. 13 alin. 6). E diferită de vechimea în învățământ/specialitate din grilă (aceea a stabilit deja coeficientul); gradația se adaugă peste coeficient, fiindcă grila e la gradația 0."
         IconFn={Award}
       />
       <div className="flex items-center justify-center gap-4 py-6">
@@ -1540,8 +1556,10 @@ function StepRezultat({
         <div className="flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
           <Info className="shrink-0 w-5 h-5 text-amber-600 mt-0.5" />
           <div>
-            {coefIncludeVechime
-              ? `Coeficientul include deja vechimea ("${functie.vechime}"), deci gradațiile nu se mai aplică.`
+            {functie.anexa === "V"
+              ? `Anexa V (justiție) — indemnizația de încadrare include deja gradul, gradația și vechimea în funcție (art. 13 alin. 1), deci gradațiile nu se mai adaugă.`
+              : functie.anexa === "IX"
+              ? `Anexa IX (demnitate publică) — se acordă indemnizație lunară, fără gradații de vechime.`
               : `Funcție de conducere — gradația este inclusă în coeficient la nivel maxim conform art. 13 alin. (1).`}
           </div>
         </div>

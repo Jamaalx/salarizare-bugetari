@@ -92,7 +92,12 @@ export default function Calculator({ initialData }: Props) {
   // SAU funcții de conducere (coeficient include gradația max)
   const coefIncludeVechime = !!(selected && selected.vechime && selected.vechime.trim().length > 0);
   const esteConducere = !!(selected && selected.grad && /grad\s*(i|ii|iii|managerial)/i.test(selected.grad));
-  const skipGradatii = coefIncludeVechime || esteConducere;
+  // Gradațiile art. 13 se aplică peste coeficientul din anexă (stabilit la
+  // gradația 0). Excepții unde gradația e deja inclusă: conducere, Anexa V
+  // (indemnizație de încadrare) și Anexa IX (demnitate publică). Câmpul
+  // `vechime` din grilă (vechime în învățământ/specialitate) NU mai blochează
+  // gradațiile — el doar selectează coeficientul de bază.
+  const skipGradatii = esteConducere || selected?.anexa === "V" || selected?.anexa === "IX";
 
   // calcul salariu de bază
   const gradatie = skipGradatii
@@ -443,10 +448,12 @@ export default function Calculator({ initialData }: Props) {
       {/* Notificare gradații skip */}
       {selected && skipGradatii && (
         <div className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          <strong>ℹ️ Gradațiile nu se aplică pentru această funcție.</strong>{" "}
-          {coefIncludeVechime
-            ? `Coeficientul include deja vechimea ("${selected.vechime}"). Pentru a calcula altă tranșă, selectează din listă funcția cu vechimea corespunzătoare.`
-            : `Pentru funcțiile de conducere (${selected.grad}), gradația este inclusă în coeficient la nivel maxim (art. 10).`}
+          <strong>ℹ️ Gradațiile de vechime nu se aplică pentru această funcție.</strong>{" "}
+          {selected.anexa === "V"
+            ? "Anexa V (justiție) — indemnizația de încadrare include deja gradul, gradația și vechimea în funcție (art. 13 alin. 1)."
+            : selected.anexa === "IX"
+            ? "Anexa IX (demnitate publică) — se acordă indemnizație lunară, fără gradații de vechime."
+            : `Funcție de conducere (${selected.grad || "gradația inclusă"}) — gradația este inclusă în coeficient conform art. 13 alin. (1).`}
         </div>
       )}
 

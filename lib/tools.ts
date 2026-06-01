@@ -61,7 +61,7 @@ export const calculateSalarySchema = z.object({
     .boolean()
     .default(false)
     .describe(
-      "True pentru funcții unde coef include deja vechimea (învățământ universitar, sanitar) sau funcții de conducere — gradațiile nu se mai aplică"
+      "True DOAR pentru funcții unde gradația e deja inclusă: funcții de conducere, Anexa V (justiție — indemnizație de încadrare) și Anexa IX (demnitate publică). Pentru execuție (inclusiv învățământ și sănătate) lasă FALSE — coeficientul din anexă e la gradația 0 (art. 13 alin. 2), iar gradațiile de vechime în muncă se aplică pe deasupra. Câmpul vechime din grila de învățământ/sănătate e vechimea în specialitate care alege coeficientul, NU vechimea în muncă din art. 13"
     ),
   sporuri: z
     .array(

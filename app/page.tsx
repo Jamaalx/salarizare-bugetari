@@ -19,21 +19,21 @@ export default function HomePage() {
             <rect width="100%" height="100%" fill="url(#grid)" />
           </svg>
         </div>
-        <div className="relative mx-auto max-w-6xl px-4 py-10 md:py-16">
+        <div className="relative mx-auto max-w-6xl px-4 py-5 md:py-8">
           <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold tracking-wide uppercase backdrop-blur-sm">
             <Calendar className="w-3.5 h-3.5" />
             Proiect lege MMFTSS — 25 mai 2026
             <span className="mx-1 text-white/60">·</span>
             Intră în vigoare 1 ianuarie 2027
           </div>
-          <h1 className="mt-5 text-3xl md:text-5xl font-bold tracking-tight leading-[1.1]">
+          <h1 className="mt-3 text-2xl md:text-4xl font-bold tracking-tight leading-[1.1]">
             Calculator Salariu Bugetari
           </h1>
-          <p className="mt-4 max-w-2xl text-base md:text-lg text-white/90 leading-relaxed">
+          <p className="mt-2 max-w-2xl text-sm md:text-base text-white/90 leading-relaxed">
             Află în 1 minut cât vei avea salariul tău conform noii legi a salarizării
             personalului plătit din fonduri publice.
           </p>
-          <div className="mt-6 flex flex-wrap gap-4 text-sm text-white/85">
+          <div className="mt-4 flex flex-wrap gap-4 text-sm text-white/85">
             <span className="inline-flex items-center gap-1.5">
               <FileCheck className="w-4 h-4" />
               {FUNCTII_INDEXATE.toLocaleString("ro")} funcții indexate
