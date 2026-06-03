@@ -18,13 +18,13 @@ type CoefEntry = (typeof coefData.data)[number];
 const ALL_DATA: CoefEntry[] = coefData.data as any;
 
 const ANEXE = [
-  { anexa: "I", nume: "Învățământ", desc: "Profesori, educatori, învățători, didactic auxiliar" },
+  { anexa: "I", nume: "Învățământ și cercetare", desc: "Profesori, educatori, didactic auxiliar, cercetători (CS I/II/III), institute de cercetare" },
   { anexa: "II", nume: "Sănătate și asistență socială", desc: "Medici, asistente, infirmieri, asistenți sociali" },
   { anexa: "III", nume: "Cultură", desc: "Biblioteci, muzee, teatre, presa publică" },
   { anexa: "IV", nume: "Diplomație", desc: "Personal MAE, ambasade, consulate" },
   { anexa: "V", nume: "Justiție", desc: "Judecători, procurori, grefieri, executori" },
   { anexa: "VI", nume: "Apărare, ordine publică", desc: "Militari, poliție, penitenciare, ISU" },
-  { anexa: "VII", nume: "Cercetare", desc: "Cercetători, dezvoltare tehnologică" },
+  { anexa: "VII", nume: "Instituții din venituri proprii", desc: "Personal din instituții publice finanțate integral din venituri proprii (cercetătorii CS I/II/III sunt în Anexa I)" },
   { anexa: "VIII", nume: "Administrație", desc: "Funcționari publici, personal contractual" },
   { anexa: "IX", nume: "Funcții de demnitate publică", desc: "Aleși locali, miniștri, parlamentari" },
 ];
@@ -92,6 +92,12 @@ export const calculateSalarySchema = z.object({
     .number()
     .optional()
     .describe("Ore din programul lunar de lucru — numitorul tarifului orar pentru sporurile orare (ex: 165–168)"),
+  soldaGradCoef: z
+    .number()
+    .optional()
+    .describe(
+      "DOAR Anexa VI (militari/poliție/penitenciare): coeficientul soldei de grad / salariului gradului profesional (cap. I.2, între 0.1 soldat și 1.0 mareșal). Solda lunară = soldă de funcție (coeficient de mai sus, cu gradații) + soldă de grad (acest coef × val. ref., FĂRĂ gradații — art. 2 alin. 2, art. 4 alin. 3, art. 6 alin. 4). Omite pentru celelalte anexe.",
+    ),
 });
 
 export const getLawArticleSchema = z.object({
@@ -157,6 +163,7 @@ export function calculateSalary(input: z.infer<typeof calculateSalarySchema>) {
     sporuri: sporuriState,
     valoareReferinta: valRef,
     oreNormaLunara: input.oreNormaLunara,
+    soldaGradCoef: input.soldaGradCoef,
   });
 
   return {
@@ -167,10 +174,12 @@ export function calculateSalary(input: z.infer<typeof calculateSalarySchema>) {
       gradatie: gradatie,
       coefIncludeVechime: input.coefIncludeVechime,
     },
-    salariuDeBaza: salariuBaza,
+    salariuDeBaza: tax.salariuBaza,
     detaliiCalcul: {
       coefXValRef: Math.round(salariuG0),
       adaosGradatii: salariuBaza - Math.round(salariuG0),
+      soldaDeFunctie: tax.soldaGrad > 0 ? salariuBaza : undefined,
+      soldaDeGrad: tax.soldaGrad > 0 ? tax.soldaGrad : undefined,
       sporuriInPlafon: tax.sporuriProcent,
       sporuriExceptate: tax.sporuriExceptate,
       sporuriDepasescPlafon: tax.sporuriDepasescPlafon,

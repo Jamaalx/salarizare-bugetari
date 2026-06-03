@@ -91,10 +91,16 @@ export interface TaxInput {
   // suplimentar din valoarea de referință se adaugă la salariul de bază.
   // Ex: președinte ICCJ +0.5 × val. ref.
   coefSuplimentConducere?: number;
+  // Anexa VI (militari/poliție/penitenciare) — coeficientul soldei de grad /
+  // salariului gradului profesional (cap. I.2). Solda lunară = soldă de funcție
+  // (salariuBaza, cu gradații) + soldă de grad (coef × val. ref., FĂRĂ gradații).
+  // Art. 2 alin. (2) + art. 6 alin. (4) + art. 4 alin. (3) din Anexa VI.
+  soldaGradCoef?: number;
 }
 
 export interface TaxBreakdown {
-  salariuBaza: number;
+  salariuBaza: number; // soldă de funcție + soldă de grad (pt. militari); altfel salariul de bază
+  soldaGrad: number; // în lei, solda de grad / salariul gradului profesional (Anexa VI), 0 altfel
   sporuriProcent: number; // în lei, sporuri procentuale care intră în plafon (NU mai sunt capate)
   sporuriValoare: number; // în lei, sporuri valorice
   sporuriExceptate: number; // în lei, sporuri în afara plafonului
@@ -147,6 +153,10 @@ export function calculDeducere(
 
 export function calcBrut(input: TaxInput): TaxBreakdown {
   const sb = input.salariuBaza + (input.coefSuplimentConducere ?? 0) * input.valoareReferinta;
+  // Solda de grad (Anexa VI) = coef cap. I.2 × val. ref. Se adaugă în solda lunară,
+  // dar NU primește gradații (art. 4 alin. 3) și NU intră în baza sporurilor calculate
+  // „din solda de funcție" (ex. art. 10) — de aceea e ținut separat de `sb`.
+  const soldaGrad = (input.soldaGradCoef ?? 0) * input.valoareReferinta;
   // Tariful orar = salariu de bază / ore normă lunară. Numitorul e introdus de
   // utilizator (valoarea exactă a lunii de pe fluturaș), fără presupuneri.
   const oreNorma = input.oreNormaLunara && input.oreNormaLunara > 0 ? input.oreNormaLunara : 0;
@@ -204,7 +214,7 @@ export function calcBrut(input: TaxInput): TaxBreakdown {
   const plafon20 = sb * 0.2;
   const sporuriDepasesc = sporuriProcent > plafon20;
 
-  const salariuBrut = sb + sporuriProcent + sporuriExceptate + sporuriValoare;
+  const salariuBrut = sb + soldaGrad + sporuriProcent + sporuriExceptate + sporuriValoare;
 
   // CAS 25%, CASS 10%
   const cas = Math.round(salariuBrut * 0.25);
@@ -218,7 +228,8 @@ export function calcBrut(input: TaxInput): TaxBreakdown {
   const salariuNet = venitImpozabil - impozit;
 
   return {
-    salariuBaza: sb,
+    salariuBaza: Math.round(sb + soldaGrad),
+    soldaGrad: Math.round(soldaGrad),
     sporuriProcent,
     sporuriValoare,
     sporuriExceptate,
@@ -267,6 +278,101 @@ export const GRADATII_APARARE: GradatieInfo[] = [
 /** Tabelul de gradații aplicabil în funcție de anexa ocupațională. */
 export function gradatiiForAnexa(anexa: string): GradatieInfo[] {
   return anexa === "VI" ? GRADATII_APARARE : GRADATII;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SOLDA DE GRAD / SALARIUL GRADULUI PROFESIONAL — Anexa VI, capitolul I.2
+// ─────────────────────────────────────────────────────────────────────────────
+// Art. 2 alin. (2): militarii/polițiștii/polițiștii de penitenciare au soldă
+// lunară compusă din SOLDĂ DE FUNCȚIE + SOLDĂ DE GRAD.
+// Art. 6 alin. (4): solda de grad = coeficienții din cap. I.2 × valoarea de referință.
+// Art. 4 alin. (3): gradațiile (1–7) majorează DOAR solda de funcție — solda de
+// grad NU primește gradații.
+// Coeficienții de mai jos sunt preluați integral din cap. I.2 al Anexei VI
+// (Proiect-COEFICIENTI MMFTSS 25.05.2026). Nota: rândurile nrCrt 48–56 lipseau
+// din importul `coefficients.json` (shift de coloană în xlsx) — sunt incluse aici.
+export interface SoldaGrad {
+  nrCrt: number;
+  key: string; // "g{nrCrt}"
+  label: string; // gradul militar / gradul profesional
+  coef: number;
+}
+
+export const SOLDE_GRAD: SoldaGrad[] = [
+  { nrCrt: 35, key: "g35", label: "Mareșal", coef: 1.0 },
+  { nrCrt: 36, key: "g36", label: "General; amiral; chestor general de poliție", coef: 0.9 },
+  { nrCrt: 37, key: "g37", label: "General-locotenent; viceamiral; chestor-șef de poliție", coef: 0.85 },
+  { nrCrt: 38, key: "g38", label: "General-maior; contraamiral; chestor principal de poliție", coef: 0.81 },
+  { nrCrt: 39, key: "g39", label: "General de brigadă / de flotilă aeriană; contraamiral de flotilă; chestor de poliție", coef: 0.77 },
+  { nrCrt: 40, key: "g40", label: "Colonel; comandor; comisar-șef de poliție", coef: 0.73580378565715798 },
+  { nrCrt: 41, key: "g41", label: "Locotenent-colonel; căpitan-comandor; comisar de poliție", coef: 0.69848040522527299 },
+  { nrCrt: 42, key: "g42", label: "Maior; locotenent-comandor; subcomisar de poliție", coef: 0.69848040522527299 },
+  { nrCrt: 43, key: "g43", label: "Căpitan; inspector principal de poliție", coef: 0.64249533457744601 },
+  { nrCrt: 44, key: "g44", label: "Locotenent; inspector de poliție", coef: 0.62383364436150301 },
+  { nrCrt: 45, key: "g45", label: "Sublocotenent; aspirant; subinspector de poliție", coef: 0.60517195414556102 },
+  { nrCrt: 46, key: "g46", label: "Maistru militar principal; plutonier adjutant principal; agent-șef principal", coef: 0.58651026392961803 },
+  { nrCrt: 47, key: "g47", label: "Maistru militar clasa I; plutonier adjutant; agent-șef de poliție", coef: 0.56784857371367603 },
+  { nrCrt: 48, key: "g48", label: "Maistru militar clasa a II-a; plutonier major; agent-șef adjunct", coef: 0.474540122633964 },
+  { nrCrt: 49, key: "g49", label: "Maistru militar clasa a III-a; plutonier; agent principal", coef: 0.45587843241802201 },
+  { nrCrt: 50, key: "g50", label: "Maistru militar clasa a IV-a; sergent-major; agent de poliție", coef: 0.43721674220207901 },
+  { nrCrt: 51, key: "g51", label: "Maistru militar clasa a V-a; sergent", coef: 0.41855505198613702 },
+  { nrCrt: 52, key: "g52", label: "Caporal clasa I", coef: 0.39989336177019502 },
+  { nrCrt: 53, key: "g53", label: "Caporal clasa a II-a", coef: 0.3 },
+  { nrCrt: 54, key: "g54", label: "Caporal clasa a III-a", coef: 0.25 },
+  { nrCrt: 55, key: "g55", label: "Fruntaș", coef: 0.2 },
+  { nrCrt: 56, key: "g56", label: "Soldat", coef: 0.1 },
+];
+
+export function soldaGradByKey(key: string | null | undefined): SoldaGrad | null {
+  if (!key) return null;
+  return SOLDE_GRAD.find((g) => g.key === key) ?? null;
+}
+
+// Reguli de auto-deducere: din numele funcției ("Funcţii corespunzătoare gradului
+// de colonel; ...") extragem gradul PRIMAR (primul din enumerare = gradul de
+// armată) și îl mapăm pe coeficientul soldei de grad. Ordinea contează — gradele
+// compuse (general-maior, locotenent-colonel, clasa a III-a) se verifică înaintea
+// celor simple. Validat pe toate cele 34 de funcții din cap. I.1.
+const SOLDA_GRAD_RULES: [string, string][] = [
+  ["general de brigad", "g39"], ["general de flotil", "g39"],
+  ["general-locotenent", "g37"], ["general-maior", "g38"], ["general", "g36"],
+  ["locotenent-colonel", "g41"], ["colonel", "g40"],
+  ["maior", "g42"], ["căpitan", "g43"],
+  ["sublocotenent", "g45"], ["locotenent", "g44"],
+  ["maistru militar clasa a v", "g51"], ["maistru militar clasa a iv", "g50"],
+  ["maistru militar clasa a iii", "g49"], ["maistru militar clasa a ii", "g48"],
+  ["maistru militar clasa i", "g47"], ["maistru militar principal", "g46"],
+  ["plutonier adjutant sef", "g46"], ["plutonier adjutant", "g47"],
+  ["plutonier major", "g48"], ["plutonier", "g49"],
+  ["sergent-major", "g50"], ["sergent", "g51"],
+  ["caporal clasa a iii", "g54"], ["caporal clasa a ii", "g53"], ["caporal clasa i", "g52"],
+  ["frunta", "g55"], ["soldat", "g56"],
+  ["subinspector", "g45"], ["agent de poliţie/penitenciare debutant", "g50"], ["agent", "g46"],
+];
+
+/**
+ * Cheia soldei de grad dedusă automat din denumirea funcției (cap. I.1).
+ * Funcțiile de vârf fără „gradului de" (Șeful SMG etc.) → grad de general.
+ * Returnează null dacă nu se poate deduce (utilizatorul alege manual).
+ */
+export function soldaGradPentruFunctie(functie: string): string | null {
+  const low = functie.toLowerCase();
+  const idx = low.indexOf("gradului de ");
+  if (idx < 0) return "g36";
+  const primar = low.slice(idx + "gradului de ".length).split(";")[0].split(",")[0];
+  for (const [sub, key] of SOLDA_GRAD_RULES) {
+    if (primar.includes(sub)) return key;
+  }
+  return null;
+}
+
+/**
+ * Adevărat pentru rândurile soldei de grad (cap. I.2) importate din greșeală ca
+ * funcții selectabile în Anexa VI. Coeficientul lor (≤ 1.0) e sub orice funcție
+ * din cap. I.1 (minim 1.14 — soldat), deci pragul separă curat cele două capitole.
+ */
+export function esteRandSoldaDeGrad(e: { anexa: string; coeficient: number }): boolean {
+  return e.anexa === "VI" && e.coeficient <= 1.0;
 }
 
 /**

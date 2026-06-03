@@ -76,8 +76,8 @@ const SOURCES: SourceItem[] = [
   },
   {
     href: "/sources/Anexa-VII-var-20-mai-2026.doc",
-    title: "Anexa VII — Cercetare",
-    desc: "Reglementări specifice pentru personalul din cercetare-dezvoltare.",
+    title: "Anexa VII — Instituții din venituri proprii",
+    desc: "Reglementări specifice pentru personalul din instituțiile publice finanțate integral din venituri proprii.",
     type: "annex",
   },
   {

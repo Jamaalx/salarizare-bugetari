@@ -43,6 +43,10 @@ import {
   sporuriGrupate,
   clampNumber,
   COEFICIENTI_CONDUCERE_JUSTITIE,
+  SOLDE_GRAD,
+  soldaGradByKey,
+  soldaGradPentruFunctie,
+  esteRandSoldaDeGrad,
   type GradatieInfo,
   type Spor,
 } from "@/lib/tax";
@@ -64,13 +68,13 @@ type CoefEntry = {
 type Props = { initialData: { sheets: any[]; data: CoefEntry[] } };
 
 const FAMILII = [
-  { anexa: "I", nume: "Învățământ", Icon: GraduationCap, desc: "Profesori, educatori, învățători, didactic auxiliar" },
+  { anexa: "I", nume: "Învățământ și cercetare", Icon: GraduationCap, desc: "Profesori, educatori, didactic auxiliar, cercetători (CS I/II/III), institute de cercetare" },
   { anexa: "II", nume: "Sănătate și asistență socială", Icon: Stethoscope, desc: "Medici, asistente, infirmieri, asistenți sociali" },
   { anexa: "III", nume: "Cultură", Icon: Drama, desc: "Biblioteci, muzee, teatre, presa publică" },
   { anexa: "IV", nume: "Diplomație", Icon: Globe, desc: "Personal MAE, ambasade, consulate" },
   { anexa: "V", nume: "Justiție", Icon: Scale, desc: "Judecători, procurori, grefieri, executori" },
   { anexa: "VI", nume: "Apărare, ordine publică", Icon: Shield, desc: "Militari, poliție, penitenciare, ISU" },
-  { anexa: "VII", nume: "Cercetare", Icon: Microscope, desc: "Cercetători, dezvoltare tehnologică" },
+  { anexa: "VII", nume: "Instituții din venituri proprii", Icon: Microscope, desc: "Personal din instituții publice finanțate integral din venituri proprii. Cercetătorii (CS I/II/III) sunt la Învățământ și cercetare." },
   { anexa: "VIII", nume: "Administrație", Icon: Landmark, desc: "Funcționari publici, personal contractual primării/instituții" },
   { anexa: "IX", nume: "Funcții de demnitate publică", Icon: Crown, desc: "Aleși locali, miniștri, parlamentari" },
 ];
@@ -93,6 +97,9 @@ type WizardState = {
   coefSuplimentConducere: number; // pentru Anexa V conducere (judecători/procurori)
   // Anexa VI Art. 3(5) — coef. suplim. risc apărare/ordine publică (max +0.40)
   coefSuplimRiscAparare: number;
+  // Anexa VI — cheia soldei de grad (cap. I.2). null = dedus automat din funcție;
+  // string = override manual al gradului militar/profesional deținut.
+  soldaGradKey: string | null;
   // Anexa V — reducere -10% pentru specialiști PÎCCJ/DNA/DIICOT, polițiști judiciari
   reducerePiccj: boolean;
   // Anexa II — Direcție Sănătate Publică (DSP) — Art. 7(6) limitează sporurile
@@ -119,6 +126,7 @@ const INITIAL: WizardState = {
   persoaneInIntretinere: 0,
   coefSuplimentConducere: 0,
   coefSuplimRiscAparare: 0,
+  soldaGradKey: null,
   reducerePiccj: false,
   esteDsp: false,
   salariuActualExcluderi: 0,
@@ -205,6 +213,16 @@ export default function Wizard({ initialData }: Props) {
   // (judecători/procurori cu funcții de conducere — Anexa V art. 8).
   const aplicaCoefSupliment = selected?.anexa === "V" && esteConducere;
 
+  // Anexa VI — solda de grad. Gradul se deduce automat din funcție, dar poate fi
+  // schimbat manual (soldaGradKey). Pentru celelalte anexe, coef = 0.
+  const aplicaSoldaGrad = selected?.anexa === "VI";
+  const soldaGradKeyEfectiv = aplicaSoldaGrad
+    ? s.soldaGradKey ?? soldaGradPentruFunctie(selected!.functie)
+    : null;
+  const soldaGradEntry = soldaGradByKey(soldaGradKeyEfectiv);
+  const soldaGradCoef = aplicaSoldaGrad && soldaGradEntry ? soldaGradEntry.coef : 0;
+  const soldaGradLei = soldaGradCoef * s.valRef;
+
   const tax = selected
     ? calcBrut({
         salariuBaza,
@@ -214,6 +232,7 @@ export default function Wizard({ initialData }: Props) {
         scutireImpozit: s.scutireImpozit,
         persoaneInIntretinere: s.persoaneInIntretinere,
         coefSuplimentConducere: aplicaCoefSupliment ? s.coefSuplimentConducere : 0,
+        soldaGradCoef,
       })
     : null;
 
@@ -375,6 +394,11 @@ export default function Wizard({ initialData }: Props) {
             aplicaCoefRiscAparare={aplicaCoefRiscAparare}
             coefSuplimRiscAparare={s.coefSuplimRiscAparare}
             setCoefSuplimRiscAparare={(n) => setS((p) => ({ ...p, coefSuplimRiscAparare: n }))}
+            aplicaSoldaGrad={aplicaSoldaGrad}
+            soldaGradKeyEfectiv={soldaGradKeyEfectiv}
+            soldaGradAuto={s.soldaGradKey === null}
+            soldaGradLei={soldaGradLei}
+            setSoldaGradKey={(k) => setS((p) => ({ ...p, soldaGradKey: k }))}
             aplicaReducerePiccj={aplicaReducerePiccj}
             reducerePiccj={s.reducerePiccj}
             setReducerePiccj={(b) => setS((p) => ({ ...p, reducerePiccj: b }))}
@@ -404,6 +428,8 @@ export default function Wizard({ initialData }: Props) {
             scutireImpozit={s.scutireImpozit}
             salariuG0={salariuG0}
             salariuBaza={salariuBaza}
+            soldaGrad={tax.soldaGrad}
+            soldaGradLabel={soldaGradEntry?.label ?? null}
             tax={tax}
             salariuActual={s.salariuActual}
             salariuActualExcluderi={s.salariuActualExcluderi}
@@ -545,6 +571,9 @@ function StepFunctie({
   const filtered = useMemo(() => {
     let list = all;
     if (anexa) list = list.filter((e) => e.anexa === anexa);
+    // Anexa VI: rândurile cap. I.2 (soldele de grad, coef ≤ 1.0) NU sunt funcții —
+    // se aleg separat ca grad militar. Le scoatem din lista de funcții.
+    list = list.filter((e) => !esteRandSoldaDeGrad(e));
     if (query.trim()) {
       const q = query.toLowerCase();
       list = list.filter(
@@ -1020,6 +1049,11 @@ function StepActual({
   aplicaCoefRiscAparare,
   coefSuplimRiscAparare,
   setCoefSuplimRiscAparare,
+  aplicaSoldaGrad,
+  soldaGradKeyEfectiv,
+  soldaGradAuto,
+  soldaGradLei,
+  setSoldaGradKey,
   aplicaReducerePiccj,
   reducerePiccj,
   setReducerePiccj,
@@ -1048,6 +1082,11 @@ function StepActual({
   aplicaCoefRiscAparare: boolean;
   coefSuplimRiscAparare: number;
   setCoefSuplimRiscAparare: (n: number) => void;
+  aplicaSoldaGrad: boolean;
+  soldaGradKeyEfectiv: string | null;
+  soldaGradAuto: boolean;
+  soldaGradLei: number;
+  setSoldaGradKey: (k: string | null) => void;
   aplicaReducerePiccj: boolean;
   reducerePiccj: boolean;
   setReducerePiccj: (b: boolean) => void;
@@ -1236,6 +1275,56 @@ function StepActual({
               {coefSuplimentConducere > 0 && (
                 <p className="mt-2 text-xs text-indigo-700">
                   Coef. ales: <strong className="tabular-nums">{coefSuplimentConducere}</strong> × val. ref. = adaos la indemnizația de încadrare.
+                </p>
+              )}
+            </label>
+          </div>
+        )}
+
+        {aplicaSoldaGrad && (
+          <div className="rounded-2xl border-2 border-sky-300 bg-sky-50 p-5">
+            <label className="block">
+              <span className="text-sm font-semibold text-sky-900 block">
+                Gradul militar / profesional deținut — solda de grad (Anexa VI cap. I.2)
+              </span>
+              <span className="block text-xs text-sky-800 mt-0.5">
+                Solda lunară = <strong>solda de funcție</strong> (de mai sus) +{" "}
+                <strong>solda de grad</strong>, conform art. 2 alin. (2). Gradul e dedus
+                automat din funcția aleasă; schimbă-l dacă gradul tău efectiv diferă.
+                Solda de grad NU primește gradații de vechime (art. 4 alin. 3).
+              </span>
+              <select
+                value={soldaGradKeyEfectiv ?? ""}
+                onChange={(e) => setSoldaGradKey(e.target.value || null)}
+                className="mt-3 w-full rounded-xl border border-sky-300 px-3 py-2.5 text-sm focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-100"
+              >
+                {SOLDE_GRAD.map((g) => (
+                  <option key={g.key} value={g.key}>
+                    {g.coef.toFixed(3)} — {g.label}
+                  </option>
+                ))}
+              </select>
+              <div className="mt-2 flex items-center justify-between gap-2 text-xs">
+                <span className="text-sky-700">
+                  {soldaGradAuto ? "Dedus automat din funcție." : "Grad ales manual."}
+                </span>
+                {!soldaGradAuto && (
+                  <button
+                    type="button"
+                    onClick={() => setSoldaGradKey(null)}
+                    className="font-medium text-sky-700 underline hover:text-sky-900"
+                  >
+                    Revino la auto
+                  </button>
+                )}
+              </div>
+              {soldaGradLei > 0 && (
+                <p className="mt-2 text-xs text-sky-700">
+                  Solda de grad ={" "}
+                  <strong className="tabular-nums">
+                    {Math.round(soldaGradLei).toLocaleString("ro-RO")} lei
+                  </strong>{" "}
+                  (se adaugă la solda de funcție în brut).
                 </p>
               )}
             </label>
@@ -1478,6 +1567,8 @@ function StepRezultat({
   scutireImpozit,
   salariuG0,
   salariuBaza,
+  soldaGrad,
+  soldaGradLabel,
   tax,
   salariuActual,
   salariuActualExcluderi,
@@ -1493,12 +1584,17 @@ function StepRezultat({
   scutireImpozit: boolean;
   salariuG0: number;
   salariuBaza: number;
+  soldaGrad: number;
+  soldaGradLabel: string | null;
   tax: ReturnType<typeof calcBrut>;
   salariuActual: number;
   salariuActualExcluderi: number;
   onReset: () => void;
 }) {
   const fmt = (n: number) => n.toLocaleString("ro-RO", { maximumFractionDigits: 0 });
+  // Pentru militari (Anexa VI), salariul de bază afișat = solda de funcție + solda de grad.
+  const areSoldaGrad = soldaGrad > 0;
+  const bazaTotala = Math.round(salariuBaza) + soldaGrad;
   // Art. 32 alin. (2)-(4): baza de comparație exclude sporurile UE, gestionare fonduri,
   // premii, stimulente. Diferența tranzitorie se calculează pe baza acestei valori reduse.
   const bazaComparatie = Math.max(0, salariuActual - salariuActualExcluderi);
@@ -1531,10 +1627,12 @@ function StepRezultat({
 
       <div className="grid sm:grid-cols-3 gap-3">
         <BigCard
-          label="Salariu de bază"
-          value={`${fmt(salariuBaza)} lei`}
+          label={areSoldaGrad ? "Salariu de bază (soldă lunară)" : "Salariu de bază"}
+          value={`${fmt(areSoldaGrad ? bazaTotala : salariuBaza)} lei`}
           sub={
-            skipGradatii
+            areSoldaGrad
+              ? `soldă funcție ${fmt(salariuBaza)} + soldă grad ${fmt(soldaGrad)} lei`
+              : skipGradatii
               ? `coef ${functie.coeficient.toFixed(3)} × ${fmt(valRef)} lei`
               : `coef ${functie.coeficient.toFixed(3)} × ${fmt(valRef)} × gr. ${gradatie}`
           }
@@ -1651,7 +1749,19 @@ function StepRezultat({
               positive
             />
           )}
-          <LineItem label="= Salariu de bază" value={`${fmt(salariuBaza)} lei`} bold />
+          {areSoldaGrad ? (
+            <>
+              <LineItem label="= Soldă de funcție" value={`${fmt(salariuBaza)} lei`} bold />
+              <LineItem
+                label={`+ Soldă de grad${soldaGradLabel ? ` (${soldaGradLabel.split(";")[0]})` : ""}`}
+                value={`+${fmt(soldaGrad)} lei`}
+                positive
+              />
+              <LineItem label="= Salariu de bază (soldă lunară)" value={`${fmt(bazaTotala)} lei`} bold />
+            </>
+          ) : (
+            <LineItem label="= Salariu de bază" value={`${fmt(salariuBaza)} lei`} bold />
+          )}
           {tax.sporuriProcent > 0 && (
             <LineItem
               label="+ Sporuri în plafon"
