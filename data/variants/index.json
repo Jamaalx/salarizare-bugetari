@@ -1,0 +1,149 @@
+{
+  "implicit": "2026-08-20",
+  "variante": [
+    {
+      "id": "2026-05-25",
+      "numar": "I",
+      "eticheta": "25 mai 2026",
+      "etichetaLunga": "Varianta I — proiectul MMFTSS din 25 mai 2026",
+      "data": "2026-05-25",
+      "valoareReferinta": 4100,
+      "perioadaValoareReferinta": "2027",
+      "articolValoareReferinta": "art. 35 alin. (2)",
+      "intrareInVigoare": "2027-01-01",
+      "intrareInVigoareText": "1 ianuarie 2027",
+      "articolIntrareInVigoare": "art. 35 alin. (1)",
+      "referintaDiferentaTranzitorie": "decembrie 2026",
+      "articolDiferentaTranzitorie": "art. 32",
+      "limitaDiferentaTranzitorie": "31 decembrie 2031",
+      "numarArticole": 37,
+      "fisiere": {
+        "coeficienti": "../coefficients.min.json",
+        "soldeGrad": "2026-05-25.solde-grad.json"
+      },
+      "surse": [
+        {
+          "titlu": "MMFTSS — anunțul publicării proiectului (25 mai 2026)",
+          "url": "https://mmuncii.gov.ro/ministerul-muncii-familiei-tineretului-si-solidaritatii-sociale-a-publicat-proiectul-legii-salarizarii-pentru-personalul-platit-din-fonduri-publice/"
+        },
+        {
+          "titlu": "Proiect lege — text final (docx, copie locală)",
+          "url": "/sources/Proiect-lege-MMFTSS-25-mai-2026_final.docx"
+        },
+        {
+          "titlu": "Coeficienții 1–8 (xlsx, copie locală)",
+          "url": "/sources/Proiect-COEFICIENTI-1-8-MMFTSS-25.05.2026-16.37-.xlsx"
+        }
+      ],
+      "note": [
+        "Prima formă publicată în consultare. Datele sunt cele importate inițial (2.627 rânduri), păstrate neschimbate.",
+        "Valoarea de referință: 4.100 lei pentru 2027 (art. 35 alin. 2); intrare în vigoare la 1 ianuarie 2027.",
+        "Diferența salarială tranzitorie (art. 32) se raportează la salariul din decembrie 2026 și se plătește cel târziu până la 31 decembrie 2031.",
+        "Anexa II cap. I.1 (funcții de conducere din sănătate): coeficienți minim/maxim pe Grad I / Grad II.",
+        "Anexa VI cap. I.2 — solda de grad: Mareșal 1,00 → Soldat 0,10."
+      ]
+    },
+    {
+      "id": "2026-07-17",
+      "numar": "II",
+      "eticheta": "17 iulie 2026",
+      "etichetaLunga": "Varianta II — proiectul MMFTSS din 16/17 iulie 2026",
+      "data": "2026-07-17",
+      "valoareReferinta": 4100,
+      "perioadaValoareReferinta": "decembrie 2026 și 2027",
+      "articolValoareReferinta": "art. 36 alin. (2)",
+      "intrareInVigoare": "2026-12-01",
+      "intrareInVigoareText": "1 decembrie 2026",
+      "articolIntrareInVigoare": "art. 36 alin. (1)",
+      "referintaDiferentaTranzitorie": "noiembrie 2026",
+      "articolDiferentaTranzitorie": "art. 33",
+      "limitaDiferentaTranzitorie": null,
+      "numarArticole": 38,
+      "fisiere": {
+        "coeficienti": "2026-07-17.min.json",
+        "soldeGrad": "2026-07-17.solde-grad.json"
+      },
+      "surse": [
+        {
+          "titlu": "MMFTSS — pagina „Legea salarizării” (varianta din iulie)",
+          "url": "https://mmuncii.gov.ro/legea-salarizarii/"
+        },
+        {
+          "titlu": "Coeficienții 1–8 — xlsx MMFTSS 16.07.2026",
+          "url": "https://mmuncii.gov.ro/wp-content/uploads/2026/07/Proiect-COEFICIENTI-1-8-MMFTSS-16.07.2026-1000.xlsx"
+        },
+        {
+          "titlu": "Coeficienții 1–8 (xlsx, copie locală — oglinda SNPPC a fișierului MMFTSS)",
+          "url": "/sources/proiect-coeficienti-16-iulie-2026.xlsx"
+        },
+        {
+          "titlu": "Proiect lege 16 iulie 2026 (docx, copie locală)",
+          "url": "/sources/proiect-lege-salarizare-16-iulie-2026.docx"
+        }
+      ],
+      "note": [
+        "Intrare în vigoare mutată la 1 decembrie 2026; valoarea de referință 4.100 lei pentru decembrie 2026 și 2027 (art. 36 alin. 2).",
+        "Aproximativ 85% dintre codurile de funcție au coeficientul modificat față de 25 mai (1.143 din 1.342 coduri comune).",
+        "Anexa VI cap. I.2 — solda de grad recalibrată: Mareșal 1,10 → Soldat 0,40 (la 25 mai: 1,00 → 0,10).",
+        "Anexa IX (demnitari): coeficienți eșalonați pe coloanele 2026/2027, 2028, 2029, 2030, 2031 — calculatorul folosește coloana 2026/2027; restul sunt în câmpul coeficientEsalonat.",
+        "Anexa VII: adăugată secțiunea pentru instituțiile din venituri proprii din subordinea autorităților locale (38 → 76 rânduri).",
+        "Diferența salarială tranzitorie (art. 33) se raportează la salariul aflat în plată în noiembrie 2026; textul nu mai prevede limita 31 decembrie 2031.",
+        "Plafonul sporurilor de 20% (art. 21) și gradațiile art. 13 sunt identice cu varianta din 25 mai."
+      ]
+    },
+    {
+      "id": "2026-08-20",
+      "numar": "III",
+      "eticheta": "20 august 2026",
+      "etichetaLunga": "Varianta III — proiectul din 20 august 2026 (ultimul text oficial)",
+      "data": "2026-08-20",
+      "valoareReferinta": 4000,
+      "perioadaValoareReferinta": "decembrie 2026 și 2027",
+      "articolValoareReferinta": "art. 38 alin. (3)",
+      "intrareInVigoare": "2026-12-01",
+      "intrareInVigoareText": "1 decembrie 2026",
+      "articolIntrareInVigoare": "art. 38 alin. (1)",
+      "referintaDiferentaTranzitorie": "noiembrie 2026",
+      "articolDiferentaTranzitorie": "art. 33",
+      "limitaDiferentaTranzitorie": null,
+      "numarArticole": 41,
+      "fisiere": {
+        "coeficienti": "2026-08-20.min.json",
+        "soldeGrad": "2026-08-20.solde-grad.json"
+      },
+      "surse": [
+        {
+          "titlu": "Publisind — Legea salarizării, varianta III (20 august 2026)",
+          "url": "https://publisind.ro/legea-salarizarii-varianta-iii-20-august-2026/"
+        },
+        {
+          "titlu": "Coeficienții 1–8 — xlsx publicat de Publisind",
+          "url": "https://publisind.ro/wp-content/uploads/2026/08/Proiect-COEFICIENTI-1-8-2008-1.xlsx"
+        },
+        {
+          "titlu": "Solidaritatea Sanitară — proiectul legii salarizării, varianta 20.08.2026",
+          "url": "https://solidaritatea-sanitara.ro/proiectul-legii-salarizarii-varianta-20-08-2026/"
+        },
+        {
+          "titlu": "Coeficienții 1–8 (xlsx, copie locală)",
+          "url": "/sources/Proiect-COEFICIENTI-1-8-20-august-2026.xlsx"
+        },
+        {
+          "titlu": "Proiect lege 20 august 2026 (pdf, copie locală)",
+          "url": "/sources/Proiect-lege-20-august-2026.pdf"
+        }
+      ],
+      "note": [
+        "Valoarea de referință scade la 4.000 lei pentru decembrie 2026 și 2027 (art. 38 alin. 3); Guvernul o poate modifica prin HG în 2027 (alin. 4).",
+        "Aproximativ 17% dintre codurile de funcție au coeficientul modificat față de 17 iulie (224 din 1.342), mai ales în Anexele I și II.",
+        "Anexa II (sănătate): coeficienții din xlsx sunt cei pentru „Categoria II” de unități; cap. II introduce 6 categorii de unități și factori de multiplicare pe grupe (min. 8/6/4/2%) stabiliți anual prin HG — NU pot fi modelați fără HG.",
+        "Anexa II cap. I.2: medicii și farmaciștii sunt pe un singur rând cu gradul (primar/specialist/fără grad); rezidenții sunt despărțiți pe ani (an VI 2,56; an V 2,45; an IV 2,35 …).",
+        "Anexa III cap. V (case de cultură, cămine culturale) lipsește din xlsx-ul publicat — 43 de rânduri din varianta din mai nu au corespondent.",
+        "Anexa VIII administrație locală: 5 trepte de populație în loc de 4 (noi: 120.001–200.000 și 50.001–120.000 locuitori — sheet-urile „(2)” din xlsx); funcționarii publici primesc gradele noi „superior 4/3/2”.",
+        "Anexa IX (demnitari): coeficienți eșalonați 2026/2027 → 2031; Anexa IX C (aleși locali) detaliată pe 28 de trepte de populație.",
+        "Titlul științific de doctor: indemnizație fixă de 500 lei brut/lună, în afara plafonului (art. 39) — NU este modelată în calculator.",
+        "Diferența salarială tranzitorie (art. 33) raportată la noiembrie 2026, fără limita 2031."
+      ]
+    }
+  ]
+}

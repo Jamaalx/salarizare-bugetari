@@ -20,15 +20,19 @@ export const metadata = {
 const TOOLS = [
   {
     name: "search_function",
-    desc: "Caută funcția în datasetul de 2627 de funcții bugetare. Returnează coeficientul, anexa, gradul, studiile cerute.",
+    desc: "Caută funcția în datasetul variantei alese (2.627 / 2.809 / 3.000 de funcții — 25 mai / 17 iulie / 20 august 2026). Returnează coeficientul, anexa, gradul, studiile cerute.",
   },
   {
     name: "calculate_salary",
-    desc: "Calculează salariul brut și net pentru o funcție, cu gradații de vechime, sporuri și impozitare (CAS/CASS/impozit).",
+    desc: "Calculează salariul brut și net pentru o funcție, cu gradații de vechime, sporuri și impozitare (CAS/CASS/impozit). Parametrul opțional `varianta` alege textul proiectului (implicit 20 august 2026, VR 4.000 lei).",
   },
   {
     name: "list_anexe",
     desc: "Listează cele 9 familii ocupaționale (anexele I-IX) cu numărul de funcții din fiecare.",
+  },
+  {
+    name: "list_variante",
+    desc: "Cele trei variante oficiale ale proiectului (25 mai, 17 iulie, 20 august 2026): valoare de referință, intrare în vigoare, solde de grad, ce s-a schimbat și ce nu este modelat.",
   },
   {
     name: "get_gradatii_table",
@@ -36,7 +40,7 @@ const TOOLS = [
   },
   {
     name: "get_law_article",
-    desc: "Rezumat al articolelor cheie din proiectul de lege MMFTSS (1-47).",
+    desc: "Rezumat al articolelor cheie din proiectul de lege (1-41), pe varianta aleasă.",
   },
 ];
 

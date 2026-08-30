@@ -1,0 +1,134 @@
+[
+  {
+    "nrCrt": 35,
+    "key": "g35",
+    "label": "Mareșal",
+    "coef": 1
+  },
+  {
+    "nrCrt": 36,
+    "key": "g36",
+    "label": "General; amiral; Chestor general de poliţie; chestor șef de poliție penitenciară",
+    "coef": 0.9
+  },
+  {
+    "nrCrt": 37,
+    "key": "g37",
+    "label": "General-locotenent; viceamiral; Chestor-şef de poliţie; chestor șef adjunct de poliție penitenciară",
+    "coef": 0.85
+  },
+  {
+    "nrCrt": 38,
+    "key": "g38",
+    "label": "General-maior; contraamiral; Chestor principal de poliţie; chestor principal de poliție penitenciară",
+    "coef": 0.81
+  },
+  {
+    "nrCrt": 39,
+    "key": "g39",
+    "label": "General de brigadă/de flotilă aeriană; contraamiral de flotilă; Chestor de poliţie; chestor de poliție penitenciară",
+    "coef": 0.77
+  },
+  {
+    "nrCrt": 40,
+    "key": "g40",
+    "label": "Colonel; comandor; Comisar-şef de poliţie; comisar-șef de poliție penitenciară",
+    "coef": 0.735804
+  },
+  {
+    "nrCrt": 41,
+    "key": "g41",
+    "label": "Locotenent-colonel; căpitan-comandor; Comisar de poliţie; comisar de poliție penitenciară",
+    "coef": 0.69848
+  },
+  {
+    "nrCrt": 42,
+    "key": "g42",
+    "label": "Maior; locotenent-comandor; Subcomisar de poliţie; subcomisar de poliție penitenciară",
+    "coef": 0.69848
+  },
+  {
+    "nrCrt": 43,
+    "key": "g43",
+    "label": "Căpitan; Inspector principal de poliţie; inspector principal de poliție penitenciară",
+    "coef": 0.642495
+  },
+  {
+    "nrCrt": 44,
+    "key": "g44",
+    "label": "Locotenent; Inspector de poliţie; inspector de poliție penitenciară",
+    "coef": 0.623834
+  },
+  {
+    "nrCrt": 45,
+    "key": "g45",
+    "label": "Sublocotenent; aspirant; Subinspector de poliţie; subinspector de poliție penitenciară",
+    "coef": 0.605172
+  },
+  {
+    "nrCrt": 46,
+    "key": "g46",
+    "label": "Maistru militar principal; Plutonier adjutant principal; Agent-şef principal de poliţie; agent-şef principal de poliție penitenciară",
+    "coef": 0.58651
+  },
+  {
+    "nrCrt": 47,
+    "key": "g47",
+    "label": "Maistru militar clasa I; Plutonier adjutant; Agent-şef de poliţie; agent șef de poliție penitenciară",
+    "coef": 0.567849
+  },
+  {
+    "nrCrt": 48,
+    "key": "g48",
+    "label": "Maistru militar clasa a II-a; Plutonier major; Agent-şef adjunct de poliţie; agent-şef adjunct de poliție penitenciară",
+    "coef": 0.47454
+  },
+  {
+    "nrCrt": 49,
+    "key": "g49",
+    "label": "Maistru militar clasa a III-a; Plutonier; Agent principal de poliţie; agent principal de poliție penitenciară",
+    "coef": 0.455878
+  },
+  {
+    "nrCrt": 50,
+    "key": "g50",
+    "label": "Maistru militar clasa a IV-a; Sergent-major; Agent de poliţie; agent de poliție penitenciară",
+    "coef": 0.437217
+  },
+  {
+    "nrCrt": 51,
+    "key": "g51",
+    "label": "Maistru militar clasa a V-a; Sergent",
+    "coef": 0.418555
+  },
+  {
+    "nrCrt": 52,
+    "key": "g52",
+    "label": "Caporal clasa I",
+    "coef": 0.399893
+  },
+  {
+    "nrCrt": 53,
+    "key": "g53",
+    "label": "Caporal clasa a II-a",
+    "coef": 0.3
+  },
+  {
+    "nrCrt": 54,
+    "key": "g54",
+    "label": "Caporal clasa a III-a",
+    "coef": 0.25
+  },
+  {
+    "nrCrt": 55,
+    "key": "g55",
+    "label": "Fruntaş",
+    "coef": 0.2
+  },
+  {
+    "nrCrt": 56,
+    "key": "g56",
+    "label": "Soldat",
+    "coef": 0.1
+  }
+]
