@@ -1,17 +1,16 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useVarianta } from "@/lib/varianta-context";
 import {
   calcBrut,
   aplicaGradatie,
   GRADATII,
   SPORURI_STANDARD,
-  VALOARE_REFERINTA_DEFAULT,
   ORE_NORMA_REPER,
   gradatieDinVechime,
   sporuriPentruAnexa,
   clampNumber,
-  SOLDE_GRAD,
   soldaGradByKey,
   soldaGradPentruFunctie,
   esteRandSoldaDeGrad,
@@ -30,14 +29,28 @@ type CoefEntry = {
   coeficient: number;
   cod: string;
   nrCrt: number | null;
+  subcapitol?: string;
+  coeficientEsalonat?: Record<string, number>;
 };
 
 type Props = {
   initialData: { sheets: any[]; data: CoefEntry[] };
 };
 
+// Text fără diacritice, litere mici — pentru căutare.
+const foldText = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[șş]/g, "s")
+    .replace(/[țţ]/g, "t")
+    .replace(/[ăâ]/g, "a")
+    .replace(/î/g, "i")
+    .replace(/\s+/g, " ")
+    .trim();
+
 export default function Calculator({ initialData }: Props) {
   const all = initialData.data;
+  const variant = useVarianta();
 
   // Corecturi de denumire vs `anexaNume` din date: Anexa VII e „instituții din
   // venituri proprii" (nu „Cercetare"); cercetătorii (CS I/II/III) sunt în Anexa I.
@@ -59,7 +72,7 @@ export default function Calculator({ initialData }: Props) {
   const [search, setSearch] = useState("");
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
 
-  const [valRef, setValRef] = useState<number>(VALOARE_REFERINTA_DEFAULT);
+  const [valRef, setValRef] = useState<number>(variant.valoareReferinta);
   const [aniVechime, setAniVechime] = useState<number>(10);
   const [gradatieManual, setGradatieManual] = useState<number | null>(null);
 
@@ -88,18 +101,17 @@ export default function Calculator({ initialData }: Props) {
     let list = all;
     if (anexa) list = list.filter((e) => e.anexa === anexa);
     // Anexa VI: soldele de grad (cap. I.2) nu sunt funcții — se aleg separat.
-    list = list.filter((e) => !esteRandSoldaDeGrad(e));
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter(
-        (e) =>
-          e.functie.toLowerCase().includes(q) ||
-          e.capitol.toLowerCase().includes(q) ||
-          e.cod.toLowerCase().includes(q)
-      );
+    list = list.filter((e) => !esteRandSoldaDeGrad(e, variant.soldeGrad));
+    // Toate cuvintele căutate trebuie să apară, fără diacritice.
+    const tokens = foldText(search).split(" ").filter(Boolean);
+    if (tokens.length) {
+      list = list.filter((e) => {
+        const h = foldText([e.functie, e.grad, e.capitol, e.subcapitol ?? "", e.cod].join(" "));
+        return tokens.every((t) => h.includes(t));
+      });
     }
     return list.slice(0, 200);
-  }, [all, anexa, search]);
+  }, [all, anexa, search, variant]);
 
   const selected = selectedIdx !== null ? all[selectedIdx] : null;
 
@@ -143,7 +155,7 @@ export default function Calculator({ initialData }: Props) {
   const soldaGradKeyEfectiv = aplicaSoldaGrad
     ? soldaGradKey ?? soldaGradPentruFunctie(selected!.functie)
     : null;
-  const soldaGradEntry = soldaGradByKey(soldaGradKeyEfectiv);
+  const soldaGradEntry = soldaGradByKey(soldaGradKeyEfectiv, variant.soldeGrad);
   const soldaGradCoef = aplicaSoldaGrad && soldaGradEntry ? soldaGradEntry.coef : 0;
 
   const taxResult = useMemo(() => {
@@ -182,7 +194,10 @@ export default function Calculator({ initialData }: Props) {
     <section className="mx-auto max-w-6xl px-4 py-8 md:py-12 space-y-8">
       {/* Pasul 1: Parametri generali */}
       <div className="grid md:grid-cols-2 gap-6">
-        <Panel title="1. Valoarea de referință" hint="4100 lei pentru anul 2027">
+        <Panel
+          title="1. Valoarea de referință"
+          hint={`${variant.valoareReferinta} lei pentru ${variant.perioadaValoareReferinta}`}
+        >
           <div className="flex items-center gap-3">
             <input
               type="number"
@@ -194,8 +209,9 @@ export default function Calculator({ initialData }: Props) {
             <span className="text-sm text-slate-600">lei</span>
           </div>
           <p className="mt-2 text-xs text-slate-500">
-            Valoarea pentru <strong>2027</strong> este fixată prin art. 47 alin. (2) din
-            proiect: <strong>{VALOARE_REFERINTA_DEFAULT} lei</strong>. Din 2028 încolo
+            Valoarea pentru <strong>{variant.perioadaValoareReferinta}</strong> este fixată
+            prin {variant.articolValoareReferinta} din proiect (varianta din{" "}
+            {variant.eticheta}): <strong>{variant.valoareReferinta} lei</strong>. Din 2028 încolo
             va fi stabilită anual prin HG (art. 9 alin. 3).
           </p>
         </Panel>
@@ -314,6 +330,7 @@ export default function Calculator({ initialData }: Props) {
                               e.studii && `Studii: ${e.studii}`,
                               e.grad,
                               e.vechime,
+                              e.subcapitol,
                             ]
                               .filter(Boolean)
                               .join(" · ")}
@@ -486,7 +503,7 @@ export default function Calculator({ initialData }: Props) {
             onChange={(e) => setSoldaGradKey(e.target.value || null)}
             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
           >
-            {SOLDE_GRAD.map((g) => (
+            {variant.soldeGrad.map((g) => (
               <option key={g.key} value={g.key}>
                 {g.coef.toFixed(3)} — {g.label}
               </option>
@@ -599,6 +616,7 @@ function ResultPanel({
 }) {
   const fmt = (n: number) => n.toLocaleString("ro-RO", { maximumFractionDigits: 0 });
 
+  const variant = useVarianta();
   const areSoldaGrad = soldaGrad > 0;
   const bazaTotala = salariuBaza + soldaGrad;
   const diferentaTranzitorie = Math.max(0, salariuActual - taxResult.salariuBrut);
@@ -613,6 +631,7 @@ function ResultPanel({
           {functie.studii && ` · Studii ${functie.studii}`}
           {functie.grad && ` · ${functie.grad}`}
           {functie.vechime && ` · ${functie.vechime}`}
+          {functie.subcapitol && ` · ${functie.subcapitol}`}
         </p>
       </div>
 
@@ -698,15 +717,15 @@ function ResultPanel({
 
       <div className="border-t border-slate-200 bg-slate-50 px-5 py-4">
         <h3 className="text-sm font-semibold text-slate-700 mb-2">
-          Diferența salarială tranzitorie (Art. 32)
+          Diferența salarială tranzitorie ({variant.articolDiferentaTranzitorie})
         </h3>
         <p className="text-xs text-slate-600 mb-3">
-          Dacă salariul brut decembrie 2026 este mai mare decât cel calculat aici, primești
+          Dacă salariul brut din {variant.referintaDiferentaTranzitorie} este mai mare decât cel calculat aici, primești
           diferența ca drept individual până la egalizare.
         </p>
         <div className="flex items-center gap-3 flex-wrap">
           <label className="text-sm text-slate-700">
-            Salariul brut actual (dec. 2026):
+            Salariul brut actual ({variant.referintaDiferentaTranzitorie}):
             <input
               type="number"
               className="ml-2 w-32 rounded border border-slate-300 px-2 py-1"

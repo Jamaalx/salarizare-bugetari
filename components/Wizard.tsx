@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect, useRef } from "react";
+import { useVarianta } from "@/lib/varianta-context";
 import {
   Wallet,
   GraduationCap,
@@ -35,7 +36,6 @@ import {
   aplicaGradatie,
   GRADATII,
   SPORURI_STANDARD,
-  VALOARE_REFERINTA_DEFAULT,
   ORE_NORMA_REPER,
   gradatieDinVechime,
   gradatiiForAnexa,
@@ -43,7 +43,6 @@ import {
   sporuriGrupate,
   clampNumber,
   COEFICIENTI_CONDUCERE_JUSTITIE,
-  SOLDE_GRAD,
   soldaGradByKey,
   soldaGradPentruFunctie,
   esteRandSoldaDeGrad,
@@ -63,9 +62,34 @@ type CoefEntry = {
   coeficient: number;
   cod: string;
   nrCrt: number | null;
+  // treapta de populație (Anexa VIII administrație locală) — din iulie 2026
+  subcapitol?: string;
+  // Anexa IX (iulie/august): coeficienții eșalonați pe ani, "2027" … "2031"
+  coeficientEsalonat?: Record<string, number>;
 };
 
 type Props = { initialData: { sheets: any[]; data: CoefEntry[] } };
+
+// Eticheta scurtă a variantei curente („20 august 2026"), pentru texte inline.
+function EtichetaVarianta() {
+  const v = useVarianta();
+  return <>{v.eticheta}</>;
+}
+
+// Text fără diacritice, litere mici, spații normalizate — pentru căutare.
+const foldText = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[șş]/g, "s")
+    .replace(/[țţ]/g, "t")
+    .replace(/[ăâ]/g, "a")
+    .replace(/î/g, "i")
+    .replace(/\s+/g, " ")
+    .trim();
+
+// Butoanele rapide pentru valoarea de referință: cea din varianta curentă + alte repere.
+const valoriRapide = (vr: number) =>
+  [vr, ...[4000, 4100, 4300, 4500].filter((v) => v !== vr)].slice(0, 4);
 
 const FAMILII = [
   { anexa: "I", nume: "Învățământ și cercetare", Icon: GraduationCap, desc: "Profesori, educatori, didactic auxiliar, cercetători (CS I/II/III), institute de cercetare" },
@@ -111,7 +135,7 @@ type WizardState = {
   salariuActualExcluderi: number;
 };
 
-const INITIAL: WizardState = {
+const initialState = (valRef: number): WizardState => ({
   step: 0,
   anexa: "",
   functieIdx: null,
@@ -120,7 +144,7 @@ const INITIAL: WizardState = {
   sporuri: {},
   oreNorma: 0,
   salariuActual: 0,
-  valRef: VALOARE_REFERINTA_DEFAULT,
+  valRef,
   scutireImpozit: false,
   conducereOverride: null,
   persoaneInIntretinere: 0,
@@ -130,7 +154,7 @@ const INITIAL: WizardState = {
   reducerePiccj: false,
   esteDsp: false,
   salariuActualExcluderi: 0,
-};
+});
 
 // Detectie funcții de conducere — art. 13 (1) excepție: coeficientul lor include
 // deja vechimea la nivel maxim, deci gradațiile nu se mai aplică deasupra.
@@ -139,11 +163,12 @@ const FUNCTII_CONDUCERE_RE =
   /\b(rector|prorector|decan|prodecan|director|[șs]ef\b|şefă\b|manager(?:ial)?|prefect|subprefect|primar|viceprimar|pre[șs]edinte|vicepre[șs]edinte|comandant|inspector\s+(?:general|[șs]ef|şef)|secretar\s+general|secretar[- ]?[șs]ef|secretar-?\s*şef|contabil-?[șs]ef|contabil-?\s*şef|subsecretar\s+de\s+stat|demnitar|guvernator|ambasador|judec[ăa]tor|procuror|magistrat[- ]?asistent|prim[- ]?grefier|grefier[- ]?[șs]ef|înalt[ăa]?\s+func[țt]ionar\s+public)\b/i;
 // Coloana grad: doar "Grad I/II/III" sau "Grad Managerial" cu G mare → conducere.
 // "grad I" cu g mic / "gradul I" sunt grade de execuție personal contractual.
-const GRAD_CONDUCERE_RE = /^Grad\s+(I{1,3}|[Mm]anagerial)$/;
+const GRAD_CONDUCERE_RE = /^Grad\s+(I{1,3}|[Mm]anagerial)(\s*\((minim|maxim)\))?$/;
 
 export default function Wizard({ initialData }: Props) {
   const all = initialData.data;
-  const [s, setS] = useState<WizardState>(INITIAL);
+  const variant = useVarianta();
+  const [s, setS] = useState<WizardState>(() => initialState(variant.valoareReferinta));
 
   const selected = s.functieIdx !== null ? all[s.functieIdx] : null;
 
@@ -219,7 +244,7 @@ export default function Wizard({ initialData }: Props) {
   const soldaGradKeyEfectiv = aplicaSoldaGrad
     ? s.soldaGradKey ?? soldaGradPentruFunctie(selected!.functie)
     : null;
-  const soldaGradEntry = soldaGradByKey(soldaGradKeyEfectiv);
+  const soldaGradEntry = soldaGradByKey(soldaGradKeyEfectiv, variant.soldeGrad);
   const soldaGradCoef = aplicaSoldaGrad && soldaGradEntry ? soldaGradEntry.coef : 0;
   const soldaGradLei = soldaGradCoef * s.valRef;
 
@@ -251,7 +276,7 @@ export default function Wizard({ initialData }: Props) {
 
   const next = () => setS((p) => ({ ...p, step: Math.min(p.step + 1, visibleSteps.length - 1) }));
   const prev = () => setS((p) => ({ ...p, step: Math.max(0, p.step - 1) }));
-  const reset = () => setS(INITIAL);
+  const reset = () => setS(initialState(variant.valoareReferinta));
   const goTo = (idx: number) => setS((p) => ({ ...p, step: idx }));
 
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -486,7 +511,7 @@ function StepIntro({ onNext }: { onNext: () => void }) {
         o ocupi, vechimea ta și sporurile pe care le primești. La final îți spun salariul
         estimat în baza{" "}
         <span className="font-semibold text-slate-800">noului proiect de lege</span>{" "}
-        (MMFTSS, 25 mai 2026).
+        (varianta din <EtichetaVarianta />).
       </p>
       <p className="mt-3 text-xs text-slate-500 max-w-md mx-auto">
         Durează ~1 minut. Datele nu se trimit nicăieri — calculul se face în browser-ul tău.
@@ -568,22 +593,24 @@ function StepFunctie({
   onNext: () => void;
 }) {
   const [query, setQuery] = useState("");
+  const variant = useVarianta();
   const filtered = useMemo(() => {
     let list = all;
     if (anexa) list = list.filter((e) => e.anexa === anexa);
-    // Anexa VI: rândurile cap. I.2 (soldele de grad, coef ≤ 1.0) NU sunt funcții —
+    // Anexa VI: rândurile cap. I.2 (soldele de grad, coef ≤ 1.0 / 1.1) NU sunt funcții —
     // se aleg separat ca grad militar. Le scoatem din lista de funcții.
-    list = list.filter((e) => !esteRandSoldaDeGrad(e));
-    if (query.trim()) {
-      const q = query.toLowerCase();
-      list = list.filter(
-        (e) =>
-          e.functie.toLowerCase().includes(q) ||
-          e.capitol.toLowerCase().includes(q)
-      );
+    list = list.filter((e) => !esteRandSoldaDeGrad(e, variant.soldeGrad));
+    // Toate cuvintele căutate trebuie să apară (în nume, grad, capitol sau treaptă),
+    // fără diacritice — „medic primar" găsește și „Medic *1)" + grad „primar".
+    const tokens = foldText(query).split(" ").filter(Boolean);
+    if (tokens.length) {
+      list = list.filter((e) => {
+        const h = foldText([e.functie, e.grad, e.capitol, e.subcapitol ?? ""].join(" "));
+        return tokens.every((t) => h.includes(t));
+      });
     }
     return list.slice(0, 150);
-  }, [all, anexa, query]);
+  }, [all, anexa, query, variant]);
 
   const fam = FAMILII.find((f) => f.anexa === anexa);
 
@@ -652,6 +679,7 @@ function StepFunctie({
                             e.studii && `Studii ${e.studii}`,
                             e.grad,
                             e.vechime,
+                            e.subcapitol,
                           ]
                             .filter(Boolean)
                             .join(" · ")}
@@ -1101,6 +1129,7 @@ function StepActual({
   setConducereOverride: (b: boolean | null) => void;
   coefIncludeVechime: boolean;
 }) {
+  const variant = useVarianta();
   return (
     <div>
       <StepHeader
@@ -1298,7 +1327,7 @@ function StepActual({
                 onChange={(e) => setSoldaGradKey(e.target.value || null)}
                 className="mt-3 w-full rounded-xl border border-sky-300 px-3 py-2.5 text-sm focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-100"
               >
-                {SOLDE_GRAD.map((g) => (
+                {variant.soldeGrad.map((g) => (
                   <option key={g.key} value={g.key}>
                     {g.coef.toFixed(3)} — {g.label}
                   </option>
@@ -1449,10 +1478,10 @@ function StepActual({
         <div className="rounded-2xl border border-slate-200 p-5 bg-slate-50">
           <label className="block">
             <span className="text-sm font-semibold text-slate-800 block">
-              Salariul tău BRUT actual TOTAL (decembrie 2026)
+              Salariul tău BRUT actual TOTAL ({variant.referintaDiferentaTranzitorie})
             </span>
             <span className="block text-xs text-slate-500 mt-0.5">
-              Opțional — pentru calcul diferență tranzitorie (art. 32). Introdu valoarea
+              Opțional — pentru calcul diferență tranzitorie ({variant.articolDiferentaTranzitorie}). Introdu valoarea
               TOTALĂ brută (cu toate sporurile/premiile/stimulentele). Excluderile le bifezi
               mai jos.
             </span>
@@ -1472,7 +1501,7 @@ function StepActual({
             <div className="mt-4 pt-4 border-t border-slate-200">
               <label className="block">
                 <span className="text-sm font-semibold text-amber-800 block">
-                  Sporuri/premii actuale EXCLUSE din baza de comparație (art. 32 alin. 2-4)
+                  Sporuri/premii actuale EXCLUSE din baza de comparație ({variant.articolDiferentaTranzitorie} alin. 2-4)
                 </span>
                 <span className="block text-xs text-slate-600 mt-0.5 leading-snug">
                   Suma TOTALĂ lunară a sporurilor care, conform legii, NU intră în baza de
@@ -1518,10 +1547,11 @@ function StepActual({
               Valoarea de referință
             </span>
             <span className="block text-xs text-slate-500 mt-0.5">
-              Pentru <strong>2027</strong> este fixată prin lege la{" "}
-              <strong>{VALOARE_REFERINTA_DEFAULT} lei</strong> (art. 35 alin. 2). Din
-              2028 va fi stabilită anual prin HG. Modifică dacă vrei să simulezi alte
-              valori.
+              Pentru <strong>{variant.perioadaValoareReferinta}</strong> este fixată prin
+              lege la{" "}
+              <strong>{variant.valoareReferinta.toLocaleString("ro-RO")} lei</strong> (
+              {variant.articolValoareReferinta}, varianta din {variant.eticheta}). Din 2028
+              va fi stabilită anual prin HG. Modifică dacă vrei să simulezi alte valori.
             </span>
             <div className="mt-3 flex items-center gap-2 flex-wrap">
               <input
@@ -1533,7 +1563,7 @@ function StepActual({
               />
               <span className="text-sm text-slate-600">lei</span>
               <div className="ml-auto flex gap-1">
-                {[4100, 4300, 4500, 4800].map((v) => (
+                {valoriRapide(variant.valoareReferinta).map((v) => (
                   <button
                     key={v}
                     onClick={() => setValRef(v)}
@@ -1593,6 +1623,7 @@ function StepRezultat({
 }) {
   const fmt = (n: number) => n.toLocaleString("ro-RO", { maximumFractionDigits: 0 });
   // Pentru militari (Anexa VI), salariul de bază afișat = solda de funcție + solda de grad.
+  const variant = useVarianta();
   const areSoldaGrad = soldaGrad > 0;
   const bazaTotala = Math.round(salariuBaza) + soldaGrad;
   // Art. 32 alin. (2)-(4): baza de comparație exclude sporurile UE, gestionare fonduri,
@@ -1675,11 +1706,11 @@ function StepRezultat({
           }
         >
           <h3 className="text-sm font-semibold text-slate-700 mb-2">
-            Comparație cu salariul actual (art. 32)
+            Comparație cu salariul actual ({variant.articolDiferentaTranzitorie})
           </h3>
           <div className="grid sm:grid-cols-2 gap-2 text-sm text-slate-600 mb-3">
             <div>
-              Brut actual total (dec. 2026):{" "}
+              Brut actual total ({variant.referintaDiferentaTranzitorie}):{" "}
               <strong className="tabular-nums text-slate-900">{fmt(salariuActual)} lei</strong>
             </div>
             <div>
@@ -1693,7 +1724,7 @@ function StepRezultat({
                   <strong className="tabular-nums text-amber-700">−{fmt(salariuActualExcluderi)} lei</strong>
                 </div>
                 <div>
-                  = Bază comparație art. 32:{" "}
+                  = Bază comparație {variant.articolDiferentaTranzitorie}:{" "}
                   <strong className="tabular-nums text-slate-900">{fmt(bazaComparatie)} lei</strong>
                 </div>
               </>
@@ -1723,7 +1754,10 @@ function StepRezultat({
           </div>
           {diferentaTranzitorie > 0 && (
             <p className="mt-2 text-xs text-amber-800/80">
-              Drept individual până la egalizare — art. 32. Acordat lunar până la 31 decembrie 2031.
+              Drept individual până la egalizare — {variant.articolDiferentaTranzitorie}.
+              {variant.limitaDiferentaTranzitorie
+                ? ` Acordat lunar, cel târziu până la ${variant.limitaDiferentaTranzitorie}.`
+                : " Se reduce pe măsura creșterilor salariale ulterioare, până la stingere (fără dată-limită în această variantă)."}
             </p>
           )}
         </div>
@@ -1872,8 +1906,9 @@ function StepRezultat({
       </div>
 
       <p className="text-xs text-slate-500 pt-3 border-t border-slate-100 leading-relaxed">
-        Estimare orientativă. Valoarea de referință reală nu e încă stabilită prin HG;
-        calculele se bazează pe versiunea de proiect a legii din 25 mai 2026 (MMFTSS).
+        Estimare orientativă. Proiectul de lege nu este adoptat; calculele se bazează pe
+        varianta {variant.numar} a proiectului ({variant.eticheta}), cu valoarea de
+        referință de {variant.valoareReferinta.toLocaleString("ro-RO")} lei.
         Verifică fluturașul de salariu emis de angajator pentru valorile exacte.
       </p>
     </div>

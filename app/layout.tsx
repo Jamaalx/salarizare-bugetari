@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Calculator Salariu Bugetari — Proiect Lege 2026",
   description:
-    "Calculator interactiv pentru noul sistem de salarizare al personalului plătit din fonduri publice (proiect MMFTSS, 25 mai 2026). Estimează salariul brut și net pe baza coeficienților 1–8.",
+    "Calculator interactiv pentru noul sistem de salarizare al personalului plătit din fonduri publice — cele trei variante ale proiectului MMFTSS (25 mai, 17 iulie, 20 august 2026). Estimează salariul brut și net pe baza coeficienților 1–8.",
   keywords: [
     "salarizare bugetari",
     "calculator salariu",

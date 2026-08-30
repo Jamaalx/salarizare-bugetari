@@ -2,12 +2,19 @@ import { Calendar, FileCheck, ExternalLink, Heart, Coffee } from "lucide-react";
 import ModeSwitcher from "@/components/ModeSwitcher";
 import Sources from "@/components/Sources";
 import ChatWidget from "@/components/ChatWidget";
-
-const FUNCTII_INDEXATE = 2627;
+import BannerNeadoptat from "@/components/BannerNeadoptat";
+import Variante from "@/components/Variante";
+import { VARIANTE, VARIANTA_IMPLICITA } from "@/lib/variants";
+import { numarFunctii } from "@/lib/variants-data";
 
 export default function HomePage() {
+  const implicita = VARIANTE.find((v) => v.id === VARIANTA_IMPLICITA)!;
+  const functii = VARIANTE.map((v) => ({ id: v.id, eticheta: v.eticheta, n: numarFunctii(v.id) }));
+
   return (
     <main className="min-h-screen">
+      <BannerNeadoptat />
+
       <header className="relative overflow-hidden bg-gradient-to-br from-brand-700 via-brand-600 to-brand-500 text-white">
         <div className="absolute inset-0 opacity-10 pointer-events-none" aria-hidden>
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -20,36 +27,49 @@ export default function HomePage() {
           </svg>
         </div>
         <div className="relative mx-auto max-w-6xl px-4 py-5 md:py-8">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold tracking-wide uppercase backdrop-blur-sm">
+          <div className="inline-flex flex-wrap items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold tracking-wide uppercase backdrop-blur-sm">
             <Calendar className="w-3.5 h-3.5" />
-            Proiect lege MMFTSS — 25 mai 2026
+            Proiect lege salarizare 2026 — 3 variante oficiale
             <span className="mx-1 text-white/60">·</span>
-            Intră în vigoare 1 ianuarie 2027
+            25 mai · 17 iul · 20 aug
+            <span className="mx-1 text-white/60">·</span>
+            neadoptat
           </div>
           <h1 className="mt-3 text-2xl md:text-4xl font-bold tracking-tight leading-[1.1]">
             Calculator Salariu Bugetari
           </h1>
           <p className="mt-2 max-w-2xl text-sm md:text-base text-white/90 leading-relaxed">
-            Află în 1 minut cât vei avea salariul tău conform noii legi a salarizării
-            personalului plătit din fonduri publice.
+            Află în 1 minut cât ai avea salariul conform noii legi a salarizării personalului
+            plătit din fonduri publice — pe oricare dintre cele trei variante publicate ale
+            proiectului (implicit: {implicita.eticheta}, valoare de referință{" "}
+            {implicita.valoareReferinta.toLocaleString("ro-RO")} lei).
           </p>
           <div className="mt-4 flex flex-wrap gap-4 text-sm text-white/85">
             <span className="inline-flex items-center gap-1.5">
               <FileCheck className="w-4 h-4" />
-              {FUNCTII_INDEXATE.toLocaleString("ro")} funcții indexate
+              {functii.map((f) => f.n.toLocaleString("ro")).join(" / ")} funcții indexate (pe variantă)
             </span>
+            <a
+              href="#variante"
+              className="inline-flex items-center gap-1.5 underline-offset-2 hover:underline"
+            >
+              <ExternalLink className="w-4 h-4" />
+              Ce s-a schimbat între variante
+            </a>
             <a
               href="#sources"
               className="inline-flex items-center gap-1.5 underline-offset-2 hover:underline"
             >
               <ExternalLink className="w-4 h-4" />
-              Documentele oficiale ale legii
+              Documentele oficiale
             </a>
           </div>
         </div>
       </header>
 
       <ModeSwitcher />
+
+      <Variante />
 
       <Sources />
 
@@ -64,8 +84,8 @@ export default function HomePage() {
           <p className="mt-3 text-sm md:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
             Am construit acest calculator pentru cei ~1,3 milioane de bugetari din
             România care vor să înțeleagă cum îi afectează noua lege a salarizării —
-            fără să trebuiască să citească 47 de articole și 9 anexe Excel. Proiect
-            independent, open-source, neafiliat cu vreo instituție publică.
+            fără să trebuiască să citească zeci de articole și 9 anexe Excel, de trei ori.
+            Proiect independent, open-source, neafiliat cu vreo instituție publică.
           </p>
           <p className="mt-3 text-xs text-slate-500">
             Dacă ți-a fost util și vrei să mă susții ca să-l țin online și actualizat:
@@ -90,13 +110,21 @@ export default function HomePage() {
             informativ</strong>, dezvoltat independent și oferit{" "}
             <strong className="text-white">gratuit</strong> personalului din sectorul
             bugetar. Nu suntem afiliați cu Ministerul Muncii, cu Guvernul României sau
-            cu vreo altă instituție publică. Calculele se bazează pe versiunea de
-            proiect a legii din 25 mai 2026 (MMFTSS) și pe coeficienții publicați
-            împreună cu proiectul — proiectul nu este adoptat încă, iar conținutul lui
-            se poate modifica până la promulgare. Valoarea de referință pentru 2027
-            este fixată la <strong className="text-white">4100 lei</strong> prin art.
-            47 alin. (2); pentru anii următori va fi stabilită prin Hotărâre de
-            Guvern.
+            cu vreo altă instituție publică. Calculele se bazează pe cele trei variante
+            publicate ale proiectului de lege (25 mai, 17 iulie și 20 august 2026) și pe
+            coeficienții publicați împreună cu fiecare — proiectul{" "}
+            <strong className="text-white">nu este adoptat</strong>, iar conținutul lui se
+            poate modifica până la promulgare. Valoarea de referință fixată prin proiect este{" "}
+            {VARIANTE.map((v, i) => (
+              <span key={v.id}>
+                {i > 0 && (i === VARIANTE.length - 1 ? " și " : ", ")}
+                <strong className="text-white">
+                  {v.valoareReferinta.toLocaleString("ro-RO")} lei
+                </strong>{" "}
+                ({v.eticheta}, {v.articolValoareReferinta})
+              </span>
+            ))}
+            ; pentru anii următori va fi stabilită prin Hotărâre de Guvern.
           </p>
           <p className="text-slate-400 leading-relaxed">
             Nu garantăm corectitudinea calculelor și nu ne asumăm răspunderea pentru
@@ -108,13 +136,31 @@ export default function HomePage() {
             Sursa coeficienților:{" "}
             <a
               className="text-brand-300 hover:text-brand-200 underline-offset-2 hover:underline"
-              href="https://mmuncii.ro/j33/index.php/ro/transparenta/proiecte-in-dezbatere"
+              href="https://mmuncii.gov.ro/legea-salarizarii/"
               target="_blank"
               rel="noopener noreferrer"
             >
-              Ministerul Muncii — proiecte în dezbatere
-            </a>
-            .
+              Ministerul Muncii — Legea salarizării
+            </a>{" "}
+            (25 mai, 17 iulie) și{" "}
+            <a
+              className="text-brand-300 hover:text-brand-200 underline-offset-2 hover:underline"
+              href="https://publisind.ro/legea-salarizarii-varianta-iii-20-august-2026/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Publisind
+            </a>{" "}
+            /{" "}
+            <a
+              className="text-brand-300 hover:text-brand-200 underline-offset-2 hover:underline"
+              href="https://solidaritatea-sanitara.ro/proiectul-legii-salarizarii-varianta-20-08-2026/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Solidaritatea Sanitară
+            </a>{" "}
+            (20 august).
           </p>
           <p className="text-slate-500 text-xs pt-2 border-t border-slate-800 flex items-center justify-center flex-wrap gap-1">
             Construit cu
