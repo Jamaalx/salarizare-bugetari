@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Lint & build (Node 22)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
+      # Variabilele din .env.example sunt opționale la build (rutele /api/chat și
+      # /oauth/* le citesc doar la runtime). Le setăm cu valori dummy ca să nu
+      # depindem de fallback-uri și să nu se schimbe comportamentul build-ului.
+      NVIDIA_API_KEY: ci-dummy-key
+      NVIDIA_MODEL: meta/llama-3.3-70b-instruct
+      OAUTH_SIGNING_SECRET: ci-dummy-oauth-signing-secret
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install (npm ci)
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Audit (doar high/critical)
+        run: npm audit --audit-level=high
