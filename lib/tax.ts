@@ -1,6 +1,9 @@
-// Calcul brut → net conform proiectului de lege MMFTSS (25 mai 2026)
-// intrat în vigoare 1 ianuarie 2027. Acoperă regulile fiscale RO valabile
-// la momentul redactării. Rezultatele sunt estimări orientative.
+// Calcul brut → net conform proiectului de lege a salarizării (MMFTSS 2026).
+// Formulele sunt identice în cele trei variante oficiale (25 mai, 17 iulie,
+// 20 august 2026); ce diferă per variantă — valoarea de referință, grila
+// soldelor de grad, coeficienții, etichetele — vine din lib/variants.ts și e
+// transmis ca parametru. Acoperă regulile fiscale RO valabile la momentul
+// redactării. Rezultatele sunt estimări orientative.
 
 export const SAL_MIN_BRUT_2026 = 4050; // salariul minim brut pe țară 2026 (RO)
 
@@ -291,6 +294,10 @@ export function gradatiiForAnexa(anexa: string): GradatieInfo[] {
 // Coeficienții de mai jos sunt preluați integral din cap. I.2 al Anexei VI
 // (Proiect-COEFICIENTI MMFTSS 25.05.2026). Nota: rândurile nrCrt 48–56 lipseau
 // din importul `coefficients.json` (shift de coloană în xlsx) — sunt incluse aici.
+// ATENȚIE: aceasta e grila din VARIANTA 25 MAI (Mareșal 1,00 → Soldat 0,10).
+// Variantele din 17 iulie și 20 august au altă grilă (1,10 → 0,40) —
+// data/variants/<id>.solde-grad.json, expusă prin `Varianta.soldeGrad`
+// (lib/variants.ts). Funcțiile de mai jos primesc grila ca parametru.
 export interface SoldaGrad {
   nrCrt: number;
   key: string; // "g{nrCrt}"
@@ -323,9 +330,17 @@ export const SOLDE_GRAD: SoldaGrad[] = [
   { nrCrt: 56, key: "g56", label: "Soldat", coef: 0.1 },
 ];
 
-export function soldaGradByKey(key: string | null | undefined): SoldaGrad | null {
+export function soldaGradByKey(
+  key: string | null | undefined,
+  grila: SoldaGrad[] = SOLDE_GRAD,
+): SoldaGrad | null {
   if (!key) return null;
-  return SOLDE_GRAD.find((g) => g.key === key) ?? null;
+  return grila.find((g) => g.key === key) ?? null;
+}
+
+/** Cel mai mare coeficient din grila soldelor de grad (1,00 la 25 mai; 1,10 din iulie). */
+export function pragSoldaGrad(grila: SoldaGrad[] = SOLDE_GRAD): number {
+  return grila.reduce((m, g) => (g.coef > m ? g.coef : m), 0);
 }
 
 // Reguli de auto-deducere: din numele funcției ("Funcţii corespunzătoare gradului
@@ -368,11 +383,16 @@ export function soldaGradPentruFunctie(functie: string): string | null {
 
 /**
  * Adevărat pentru rândurile soldei de grad (cap. I.2) importate din greșeală ca
- * funcții selectabile în Anexa VI. Coeficientul lor (≤ 1.0) e sub orice funcție
- * din cap. I.1 (minim 1.14 — soldat), deci pragul separă curat cele două capitole.
+ * funcții selectabile în Anexa VI (setul din 25 mai). Coeficientul lor (≤ 1,00,
+ * respectiv ≤ 1,10 în grilele din iulie/august) e sub orice funcție din cap. I.1
+ * (minim 1,14 — soldat), deci pragul separă curat cele două capitole. Seturile
+ * din iulie/august nu mai conțin astfel de rânduri (importatorul le separă).
  */
-export function esteRandSoldaDeGrad(e: { anexa: string; coeficient: number }): boolean {
-  return e.anexa === "VI" && e.coeficient <= 1.0;
+export function esteRandSoldaDeGrad(
+  e: { anexa: string; coeficient: number },
+  grila: SoldaGrad[] = SOLDE_GRAD,
+): boolean {
+  return e.anexa === "VI" && e.coeficient <= pragSoldaGrad(grila);
 }
 
 /**
@@ -474,7 +494,7 @@ export const SPORURI_STANDARD: Spor[] = [
     inclusInPlafon20: false,
     descriere:
       "Art. 19 alin. (1) proiect MMFTSS — citat: „spor de 15% din valoarea de referință\". " +
-      "Cuantum FIX (15% × 4100 = 615 lei pentru 2027), NU procent din salariul de bază. " +
+      "Cuantum FIX (15% × valoarea de referință: 615 lei la 4.100 lei, 600 lei la 4.000 lei), NU procent din salariul de bază. " +
       "Atenție: Legea 153/2017 (vechi) avea 15% din salariul de bază — proiectul nou a redus acest spor pentru funcțiile mari. " +
       "Conform art. 19 alin. (2), nu intră în plafonul de 20%.",
   },
@@ -1398,6 +1418,10 @@ export function sporuriGrupate(anexa: string): {
  * Valoarea de referință pentru anul 2027 — stabilită prin art. 35 alin. (2)
  * din dispozițiile finale ale proiectului de lege MMFTSS (25 mai 2026).
  * Începând cu 2028 se stabilește anual prin HG.
+ *
+ * @deprecated Păstrată pentru compatibilitate (varianta din 25 mai; și 17 iulie
+ * are 4.100). Varianta din 20 august are 4.000 lei — folosește
+ * `getVarianta(id).valoareReferinta` din lib/variants.ts.
  */
 export const VALOARE_REFERINTA_DEFAULT = 4100;
 
