@@ -1,5 +1,10 @@
-/* Fonturile licențiate (RT Gotham) se servesc de pe site-ul platformei. */
-@import url("https://romaniatransparenta.eu/assets/css/fonts.css");
+/* Fonturile licențiate (RT Gotham). Servite din aplicație, NU de pe
+   romaniatransparenta.eu: CSP-ul e `style-src 'self'` și o foaie cross-origin
+   ar fi blocată tăcut, lăsând pagina pe fontul implicit. */
+@font-face { font-family: "RT Gotham"; font-weight: 400; font-display: swap; src: url("/fonts/Gotham-Book.woff2") format("woff2"); }
+@font-face { font-family: "RT Gotham"; font-weight: 500; font-display: swap; src: url("/fonts/Gotham-Medium.woff2") format("woff2"); }
+@font-face { font-family: "RT Gotham"; font-weight: 700; font-display: swap; src: url("/fonts/Gotham-Bold.woff2") format("woff2"); }
+@font-face { font-family: "RT Gotham"; font-weight: 900; font-display: swap; src: url("/fonts/Gotham-Black.woff2") format("woff2"); }
 
 @tailwind base;
 @tailwind components;
