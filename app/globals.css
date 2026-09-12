@@ -1,3 +1,6 @@
+/* Fonturile licențiate (RT Gotham) se servesc de pe site-ul platformei. */
+@import url("https://romaniatransparenta.eu/assets/css/fonts.css");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,7 +10,7 @@
 }
 
 html, body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  @apply bg-rt-paper text-rt-ink antialiased;
 }
 
 * { box-sizing: border-box; }

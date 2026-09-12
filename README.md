@@ -1,7 +1,7 @@
 # Calculator Salariu Bugetari — Proiect Lege MMFTSS 2026
 
 [![CI](https://github.com/Jamaalx/salarizare-bugetari/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/Jamaalx/salarizare-bugetari/actions/workflows/ci.yml)
-[![Live](https://img.shields.io/badge/live-salarizare.zed--zen.com-2ea44f)](https://salarizare.zed-zen.com)
+[![Live](https://img.shields.io/badge/live-salarii.romaniatransparenta.eu-2ea44f)](https://salarii.romaniatransparenta.eu)
 [![Licență MIT](https://img.shields.io/badge/licen%C8%9B%C4%83-MIT-blue)](LICENSE)
 
 Webapp interactiv pentru calculul salariului brut/net al personalului plătit din fonduri publice conform **proiectului de lege a salarizării (MMFTSS 2026)** — în toate cele **trei variante oficiale publicate**: 25 mai, 17 iulie și 20 august 2026.
@@ -92,7 +92,7 @@ Configurat pentru deploy via Docker pe Coolify, cu DNS la Cloudflare.
    - Repo URL: `https://github.com/<user>/salarizare-bugetari`
    - Build pack: **Dockerfile** (auto-detected)
    - Port: 3000
-   - Domain: `salarizare.zed-zen.com` (sau alt subdomeniu)
+   - Domain: `salarii.romaniatransparenta.eu` (sau alt subdomeniu)
 
 3. **DNS Cloudflare**:
    - CNAME `salarizare` → `<IP-server>` sau `<server>.coolify`

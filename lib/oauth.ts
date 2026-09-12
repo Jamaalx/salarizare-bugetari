@@ -60,6 +60,6 @@ export function baseUrl(req: Request): string {
   const host =
     req.headers.get("x-forwarded-host") ||
     req.headers.get("host") ||
-    "salarizare.zed-zen.com";
+    "salarii.romaniatransparenta.eu";
   return `${proto}://${host}`;
 }

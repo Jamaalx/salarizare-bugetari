@@ -203,7 +203,7 @@ export async function GET(req: NextRequest) {
   const host =
     req.headers.get("x-forwarded-host") ||
     req.headers.get("host") ||
-    "salarizare.zed-zen.com";
+    "salarii.romaniatransparenta.eu";
   const proto = req.headers.get("x-forwarded-proto") || "https";
   return NextResponse.json({
     name: "salarizare-bugetari-ro",

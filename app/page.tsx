@@ -15,7 +15,7 @@ export default function HomePage() {
     <main className="min-h-screen">
       <BannerNeadoptat />
 
-      <header className="relative overflow-hidden bg-gradient-to-br from-brand-700 via-brand-600 to-brand-500 text-white">
+      <header className="relative overflow-hidden bg-gradient-to-br from-brand-900 via-brand-700 to-brand-500 text-white">
         <div className="absolute inset-0 opacity-10 pointer-events-none" aria-hidden>
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <defs>

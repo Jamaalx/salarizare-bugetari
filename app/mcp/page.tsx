@@ -44,7 +44,7 @@ const TOOLS = [
   },
 ];
 
-const PUBLIC_HOST = "salarizare.zed-zen.com";
+const PUBLIC_HOST = "salarii.romaniatransparenta.eu";
 const mcpUrl = `https://${PUBLIC_HOST}/api/mcp`;
 
 export default function McpPage() {

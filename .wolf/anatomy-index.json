@@ -1,0 +1,1541 @@
+{
+  "version": 1,
+  "meta": {
+    "lastScanned": "2026-09-12T07:36:14.772Z",
+    "fileCount": 54,
+    "hits": 0,
+    "misses": 0,
+    "renderedHash": "415415e5ff4815c9a0b7e121a67aba982e424d4e765084a8d14c5a34b67e233f",
+    "storeUpdatedAt": "2026-09-12T07:36:14.772Z",
+    "rootHash": "e34501f954d687df"
+  },
+  "files": {
+    ".dockerignore": {
+      "description": "Docker ignore rules",
+      "tokens": 29,
+      "hash": "186a058d26fed857",
+      "size": 108,
+      "mtimeMs": 1789198572227.2466,
+      "updatedAt": "2026-09-12T07:36:12.375Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    ".github/dependabot.yml": {
+      "description": "",
+      "tokens": 354,
+      "hash": "56f459713cfcbd7c",
+      "size": 1251,
+      "mtimeMs": 1789198572227.2466,
+      "updatedAt": "2026-09-12T07:36:12.375Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    ".github/workflows/ci.yml": {
+      "description": "CI: CI",
+      "tokens": 352,
+      "hash": "03fbcfcbc7d580bd",
+      "size": 1240,
+      "mtimeMs": 1789198572227.2466,
+      "updatedAt": "2026-09-12T07:36:12.376Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    ".gitignore": {
+      "description": "Git ignore rules",
+      "tokens": 30,
+      "hash": "bb62afe883e63e22",
+      "size": 111,
+      "mtimeMs": 1789198572227.2466,
+      "updatedAt": "2026-09-12T07:36:12.376Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "app/.well-known/oauth-authorization-server/route.ts": {
+      "description": "Next.js API route: GET, OPTIONS",
+      "tokens": 294,
+      "hash": "e411124d381e77e5",
+      "size": 1026,
+      "mtimeMs": 1789198572228.2466,
+      "updatedAt": "2026-09-12T07:36:12.376Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "app/.well-known/oauth-protected-resource/route.ts": {
+      "description": "Next.js API route: GET, OPTIONS",
+      "tokens": 219,
+      "hash": "374f0d6c6b48f22f",
+      "size": 765,
+      "mtimeMs": 1789198572228.2466,
+      "updatedAt": "2026-09-12T07:36:12.376Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "app/api/chat/route.ts": {
+      "description": "Next.js API route: POST",
+      "tokens": 2618,
+      "hash": "ca47b470b3071952",
+      "size": 9284,
+      "mtimeMs": 1789198572228.2466,
+      "updatedAt": "2026-09-12T07:36:12.378Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "OPENAI_TOOLS",
+          "kind": "fn",
+          "startLine": 52,
+          "endLine": 59,
+          "tokens": 68
+        },
+        {
+          "name": "ChatMessage",
+          "kind": "section",
+          "startLine": 61,
+          "endLine": 67,
+          "tokens": 45
+        },
+        {
+          "name": "executeToolCall",
+          "kind": "fn",
+          "startLine": 69,
+          "endLine": 79,
+          "tokens": 125
+        },
+        {
+          "name": "callNvidia",
+          "kind": "fn",
+          "startLine": 81,
+          "endLine": 122,
+          "tokens": 286
+        },
+        {
+          "name": "POST",
+          "kind": "fn",
+          "startLine": 124,
+          "endLine": 253,
+          "tokens": 1052
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "const OPENAI_TOOLS = TOOL_DEFINITIONS.map((t) => ({\ntype ChatMessage = {\nasync function executeToolCall(name: string, args: any): Promise<string> {\nasync function callNvidia(messages: ChatMessage[], useTools = true): Promise<any> {\nexport async function POST(req: NextRequest) {",
+      "importance": 0.2483
+    },
+    "app/api/coeficienti/[varianta]/route.ts": {
+      "description": "Setul de coeficienți al unei variante a proiectului, în formatul citit de",
+      "tokens": 294,
+      "hash": "54e8ee8c7bc6cdd4",
+      "size": 1030,
+      "mtimeMs": 1789198572228.2466,
+      "updatedAt": "2026-09-12T07:36:12.378Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "app/api/mcp/route.ts": {
+      "description": "MCP server stateless cu HTTP transport simplificat.",
+      "tokens": 1884,
+      "hash": "20a2cf76f1428321",
+      "size": 6614,
+      "mtimeMs": 1789198572228.2466,
+      "updatedAt": "2026-09-12T07:36:12.378Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "buildServer",
+          "kind": "fn",
+          "startLine": 27,
+          "endLine": 71,
+          "tokens": 343
+        },
+        {
+          "name": "handleRpc",
+          "kind": "fn",
+          "startLine": 77,
+          "endLine": 137,
+          "tokens": 562
+        },
+        {
+          "name": "POST",
+          "kind": "fn",
+          "startLine": 139,
+          "endLine": 187,
+          "tokens": 353
+        },
+        {
+          "name": "GET",
+          "kind": "fn",
+          "startLine": 189,
+          "endLine": 221,
+          "tokens": 298
+        },
+        {
+          "name": "OPTIONS",
+          "kind": "fn",
+          "startLine": 223,
+          "endLine": 225,
+          "tokens": 25
+        }
+      ],
+      "symbolSource": "ts",
+      "importance": 0.2483
+    },
+    "app/diplomatie/page.tsx": {
+      "description": "DiplomatiePage — uses useState, useMemo",
+      "tokens": 3289,
+      "hash": "8456276f7fa97a43",
+      "size": 11622,
+      "mtimeMs": 1789198572229.2466,
+      "updatedAt": "2026-09-12T07:36:12.379Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Valuta",
+          "kind": "section",
+          "startLine": 20,
+          "endLine": 20,
+          "tokens": 8
+        },
+        {
+          "name": "DiplomatiePage",
+          "kind": "fn",
+          "startLine": 22,
+          "endLine": 250,
+          "tokens": 3185
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "type Valuta = \"EUR\" | \"USD\";\nexport default function DiplomatiePage() {",
+      "importance": 0.2483
+    },
+    "app/globals.css": {
+      "description": "Styles: 5 rules, 1 animations",
+      "tokens": 148,
+      "hash": "d7cde58de0babadb",
+      "size": 516,
+      "mtimeMs": 1789198572229.2466,
+      "updatedAt": "2026-09-12T07:36:12.379Z",
+      "source": "scan",
+      "importance": 0.4594
+    },
+    "app/layout.tsx": {
+      "description": "metadata",
+      "tokens": 298,
+      "hash": "ccb51a87c652e2cc",
+      "size": 1057,
+      "mtimeMs": 1789198572229.2466,
+      "updatedAt": "2026-09-12T07:36:12.379Z",
+      "source": "scan",
+      "imports": [
+        "app/globals.css"
+      ],
+      "importance": 0.2483
+    },
+    "app/mcp/page.tsx": {
+      "description": "metadata",
+      "tokens": 3156,
+      "hash": "327ebf87f7fc049f",
+      "size": 11163,
+      "mtimeMs": 1789198572229.2466,
+      "updatedAt": "2026-09-12T07:36:12.380Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "McpPage",
+          "kind": "fn",
+          "startLine": 50,
+          "endLine": 261,
+          "tokens": 2619
+        },
+        {
+          "name": "SamplePrompt",
+          "kind": "fn",
+          "startLine": 263,
+          "endLine": 270,
+          "tokens": 67
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "export default function McpPage() {\nfunction SamplePrompt({ text }: { text: string }) {",
+      "importance": 0.2483
+    },
+    "app/oauth/authorize/route.ts": {
+      "description": "Next.js API route: GET",
+      "tokens": 512,
+      "hash": "4a7d44985ef22f7a",
+      "size": 1791,
+      "mtimeMs": 1789198572229.2466,
+      "updatedAt": "2026-09-12T07:36:12.380Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "GET",
+          "kind": "fn",
+          "startLine": 7,
+          "endLine": 64,
+          "tokens": 463
+        }
+      ],
+      "symbolSource": "ts",
+      "importance": 0.2483
+    },
+    "app/oauth/register/route.ts": {
+      "description": "Next.js API route: POST, OPTIONS",
+      "tokens": 347,
+      "hash": "06e1b55e73125094",
+      "size": 1213,
+      "mtimeMs": 1789198572229.2466,
+      "updatedAt": "2026-09-12T07:36:12.380Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "app/oauth/token/route.ts": {
+      "description": "Next.js API route: POST, OPTIONS",
+      "tokens": 866,
+      "hash": "1147fa21e11fa70a",
+      "size": 3029,
+      "mtimeMs": 1789198572229.2466,
+      "updatedAt": "2026-09-12T07:36:12.380Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "POST",
+          "kind": "fn",
+          "startLine": 12,
+          "endLine": 102,
+          "tokens": 704
+        },
+        {
+          "name": "OPTIONS",
+          "kind": "fn",
+          "startLine": 104,
+          "endLine": 113,
+          "tokens": 80
+        }
+      ],
+      "symbolSource": "ts",
+      "importance": 0.2483
+    },
+    "app/page.tsx": {
+      "description": "HomePage",
+      "tokens": 2515,
+      "hash": "98eeef457f31c437",
+      "size": 8897,
+      "mtimeMs": 1789198572229.2466,
+      "updatedAt": "2026-09-12T07:36:12.380Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "HomePage",
+          "kind": "fn",
+          "startLine": 10,
+          "endLine": 184,
+          "tokens": 2386
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "export default function HomePage() {",
+      "importance": 0.2483
+    },
+    "app/robots.ts": {
+      "description": "Exports robots",
+      "tokens": 66,
+      "hash": "a38ab66f4d9b6179",
+      "size": 229,
+      "mtimeMs": 1789198572229.2466,
+      "updatedAt": "2026-09-12T07:36:12.380Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "CHANGELOG.md": {
+      "description": "Change log",
+      "tokens": 753,
+      "hash": "603e2c36d1c43eb4",
+      "size": 3127,
+      "mtimeMs": 1789198572227.2466,
+      "updatedAt": "2026-09-12T07:36:12.381Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "CLAUDE.md": {
+      "description": "OpenWolf",
+      "tokens": 99,
+      "hash": "074d6b42b583729a",
+      "size": 395,
+      "mtimeMs": 1789198572362.2476,
+      "updatedAt": "2026-09-12T07:36:12.381Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "components/BannerNeadoptat.tsx": {
+      "description": "Banner permanent: proiectul de lege NU a fost adoptat (26 august 2026).",
+      "tokens": 348,
+      "hash": "d704d8eca03d2152",
+      "size": 1235,
+      "mtimeMs": 1789198572229.2466,
+      "updatedAt": "2026-09-12T07:36:12.381Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "components/Calculator.tsx": {
+      "description": "foldText — uses useMemo, useState",
+      "tokens": 9022,
+      "hash": "63fecfe8819c4723",
+      "size": 31870,
+      "mtimeMs": 1789198572229.2466,
+      "updatedAt": "2026-09-12T07:36:12.382Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "CoefEntry",
+          "kind": "section",
+          "startLine": 20,
+          "endLine": 34,
+          "tokens": 86
+        },
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 36,
+          "endLine": 38,
+          "tokens": 20
+        },
+        {
+          "name": "foldText",
+          "kind": "fn",
+          "startLine": 41,
+          "endLine": 49,
+          "tokens": 57
+        },
+        {
+          "name": "Calculator",
+          "kind": "fn",
+          "startLine": 51,
+          "endLine": 568,
+          "tokens": 6373
+        },
+        {
+          "name": "Panel",
+          "kind": "fn",
+          "startLine": 570,
+          "endLine": 588,
+          "tokens": 136
+        },
+        {
+          "name": "ResultPanel",
+          "kind": "fn",
+          "startLine": 590,
+          "endLine": 758,
+          "tokens": 1888
+        },
+        {
+          "name": "BigStat",
+          "kind": "fn",
+          "startLine": 760,
+          "endLine": 785,
+          "tokens": 165
+        },
+        {
+          "name": "LineItem",
+          "kind": "fn",
+          "startLine": 787,
+          "endLine": 818,
+          "tokens": 176
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "type CoefEntry = {\ntype Props = {\nconst foldText = (s: string) =>\nexport default function Calculator({ initialData }: Props) {\nfunction Panel({\nfunction ResultPanel({\nfunction BigStat({\nfunction LineItem({",
+      "importance": 0.3539
+    },
+    "components/ChatWidget.tsx": {
+      "description": "ChatWidget — uses useState",
+      "tokens": 798,
+      "hash": "90f6a1dd63b051cc",
+      "size": 2811,
+      "mtimeMs": 1789198572230.2466,
+      "updatedAt": "2026-09-12T07:36:12.382Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "ChatWidget",
+          "kind": "fn",
+          "startLine": 6,
+          "endLine": 67,
+          "tokens": 765
+        }
+      ],
+      "symbolSource": "ts",
+      "importance": 0.2483
+    },
+    "components/ModeSwitcher.tsx": {
+      "description": "cache — uses useEffect",
+      "tokens": 2135,
+      "hash": "e1978c5700b56a27",
+      "size": 7497,
+      "mtimeMs": 1789198572230.2466,
+      "updatedAt": "2026-09-12T07:36:12.383Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "CoefPayload",
+          "kind": "section",
+          "startLine": 17,
+          "endLine": 17,
+          "tokens": 15
+        },
+        {
+          "name": "ModeSwitcher",
+          "kind": "fn",
+          "startLine": 22,
+          "endLine": 186,
+          "tokens": 1962
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "type CoefPayload = { sheets: any[]; data: any[] };\nexport default function ModeSwitcher() {",
+      "imports": [
+        "components/Wizard.tsx",
+        "components/Calculator.tsx"
+      ],
+      "importance": 0.2483
+    },
+    "components/Sources.tsx": {
+      "description": "SURSE_MAI",
+      "tokens": 2956,
+      "hash": "1d7d214957f1c5ec",
+      "size": 10449,
+      "mtimeMs": 1789198572230.2466,
+      "updatedAt": "2026-09-12T07:36:12.383Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "SourceItem",
+          "kind": "section",
+          "startLine": 11,
+          "endLine": 16,
+          "tokens": 36
+        },
+        {
+          "name": "iconFor",
+          "kind": "fn",
+          "startLine": 100,
+          "endLine": 111,
+          "tokens": 71
+        },
+        {
+          "name": "colorFor",
+          "kind": "fn",
+          "startLine": 113,
+          "endLine": 124,
+          "tokens": 94
+        },
+        {
+          "name": "tipDinUrl",
+          "kind": "fn",
+          "startLine": 126,
+          "endLine": 130,
+          "tokens": 51
+        },
+        {
+          "name": "Sources",
+          "kind": "fn",
+          "startLine": 132,
+          "endLine": 254,
+          "tokens": 1714
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "type SourceItem = {\nconst iconFor = (type: SourceItem[\"type\"]) => {\nconst colorFor = (type: SourceItem[\"type\"]) => {\nfunction tipDinUrl(url: string): SourceItem[\"type\"] {\nexport default function Sources() {",
+      "importance": 0.2483
+    },
+    "components/Variante.tsx": {
+      "description": "RANDURI — renders table",
+      "tokens": 2275,
+      "hash": "6a2d0e8ab03ce2bf",
+      "size": 8146,
+      "mtimeMs": 1789198572230.2466,
+      "updatedAt": "2026-09-12T07:36:12.383Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Rand",
+          "kind": "section",
+          "startLine": 4,
+          "endLine": 4,
+          "tokens": 24
+        },
+        {
+          "name": "Variante",
+          "kind": "fn",
+          "startLine": 77,
+          "endLine": 170,
+          "tokens": 1262
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "type Rand = { criteriu: string; valori: [string, string, string]; nota?: string };\nexport default function Variante() {",
+      "importance": 0.2483
+    },
+    "components/Wizard.tsx": {
+      "description": "EtichetaVarianta — uses useEffect",
+      "tokens": 23529,
+      "hash": "5b06dc384d477528",
+      "size": 83110,
+      "mtimeMs": 1789198572230.2466,
+      "updatedAt": "2026-09-12T07:36:12.386Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "CoefEntry",
+          "kind": "section",
+          "startLine": 53,
+          "endLine": 69,
+          "tokens": 130
+        },
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 71,
+          "endLine": 71,
+          "tokens": 20
+        },
+        {
+          "name": "EtichetaVarianta",
+          "kind": "fn",
+          "startLine": 74,
+          "endLine": 77,
+          "tokens": 25
+        },
+        {
+          "name": "foldText",
+          "kind": "fn",
+          "startLine": 80,
+          "endLine": 88,
+          "tokens": 57
+        },
+        {
+          "name": "valoriRapide",
+          "kind": "fn",
+          "startLine": 91,
+          "endLine": 92,
+          "tokens": 32
+        },
+        {
+          "name": "WizardState",
+          "kind": "section",
+          "startLine": 106,
+          "endLine": 136,
+          "tokens": 418
+        },
+        {
+          "name": "initialState",
+          "kind": "fn",
+          "startLine": 138,
+          "endLine": 157,
+          "tokens": 125
+        },
+        {
+          "name": "Wizard",
+          "kind": "fn",
+          "startLine": 168,
+          "endLine": 494,
+          "tokens": 4148
+        },
+        {
+          "name": "StepIntro",
+          "kind": "fn",
+          "startLine": 500,
+          "endLine": 528,
+          "tokens": 399
+        },
+        {
+          "name": "StepFamilia",
+          "kind": "fn",
+          "startLine": 530,
+          "endLine": 580,
+          "tokens": 484
+        },
+        {
+          "name": "StepFunctie",
+          "kind": "fn",
+          "startLine": 582,
+          "endLine": 707,
+          "tokens": 1425
+        },
+        {
+          "name": "StepVechime",
+          "kind": "fn",
+          "startLine": 709,
+          "endLine": 795,
+          "tokens": 1027
+        },
+        {
+          "name": "StepSporuri",
+          "kind": "fn",
+          "startLine": 797,
+          "endLine": 905,
+          "tokens": 1164
+        },
+        {
+          "name": "SubSectionSporuri",
+          "kind": "fn",
+          "startLine": 907,
+          "endLine": 1063,
+          "tokens": 1965
+        },
+        {
+          "name": "StepActual",
+          "kind": "fn",
+          "startLine": 1065,
+          "endLine": 1587,
+          "tokens": 6644
+        },
+        {
+          "name": "StepRezultat",
+          "kind": "fn",
+          "startLine": 1589,
+          "endLine": 1916,
+          "tokens": 3851
+        },
+        {
+          "name": "StepHeader",
+          "kind": "fn",
+          "startLine": 1922,
+          "endLine": 1947,
+          "tokens": 196
+        },
+        {
+          "name": "BigCard",
+          "kind": "fn",
+          "startLine": 1949,
+          "endLine": 1983,
+          "tokens": 221
+        },
+        {
+          "name": "LineItem",
+          "kind": "fn",
+          "startLine": 1985,
+          "endLine": 2018,
+          "tokens": 182
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "type CoefEntry = {\ntype Props = { initialData: { sheets: any[]; data: CoefEntry[] } };\nfunction EtichetaVarianta() {\nconst foldText = (s: string) =>\nconst valoriRapide = (vr: number) =>\ntype WizardState = {\nconst initialState = (valRef: number): WizardState => ({\nexport default function Wizard({ initialData }: Props) {\nfunction StepIntro({ onNext }: { onNext: () => void }) {\nfunction StepFamilia({\nfunction StepFunctie({\nfunction StepVechime({\nfunction StepSporuri({\nfunction SubSectionSporuri({\nfunction StepActual({\nfunction StepRezultat({\nfunction StepHeader({\nfunction BigCard({\nfunction LineItem({",
+      "importance": 0.3539
+    },
+    "data/coefficients.json": {
+      "description": "",
+      "tokens": 275152,
+      "hash": "1308ffdf37a0bbe4",
+      "size": 974296,
+      "mtimeMs": 1789198572233.2466,
+      "updatedAt": "2026-09-12T07:36:12.391Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "data/coefficients.min.json": {
+      "description": "",
+      "tokens": 195498,
+      "hash": "f6994a8a5b93c75f",
+      "size": 694348,
+      "mtimeMs": 1789198572235.2466,
+      "updatedAt": "2026-09-12T07:36:12.394Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "data/variants/2026-05-25.solde-grad.json": {
+      "description": "",
+      "tokens": 945,
+      "hash": "7d5026323682eae4",
+      "size": 3370,
+      "mtimeMs": 1789198572235.2466,
+      "updatedAt": "2026-09-12T07:36:12.395Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "data/variants/2026-07-17.min.json": {
+      "description": "",
+      "tokens": 217295,
+      "hash": "d05375c06fa51a84",
+      "size": 772379,
+      "mtimeMs": 1789198572237.2466,
+      "updatedAt": "2026-09-12T07:36:12.398Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "data/variants/2026-07-17.solde-grad.json": {
+      "description": "",
+      "tokens": 932,
+      "hash": "222be902427139dc",
+      "size": 3326,
+      "mtimeMs": 1789198572237.2466,
+      "updatedAt": "2026-09-12T07:36:12.398Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "data/variants/2026-08-20.min.json": {
+      "description": "",
+      "tokens": 236740,
+      "hash": "a55adf2221945007",
+      "size": 841464,
+      "mtimeMs": 1789198572239.2466,
+      "updatedAt": "2026-09-12T07:36:12.402Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "data/variants/2026-08-20.solde-grad.json": {
+      "description": "",
+      "tokens": 932,
+      "hash": "222be902427139dc",
+      "size": 3326,
+      "mtimeMs": 1789198572239.2466,
+      "updatedAt": "2026-09-12T07:36:12.402Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "data/variants/index.json": {
+      "description": "",
+      "tokens": 2237,
+      "hash": "4ac69c4d1887cca2",
+      "size": 8040,
+      "mtimeMs": 1789198572239.2466,
+      "updatedAt": "2026-09-12T07:36:12.403Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "Dockerfile": {
+      "description": "Docker container definition",
+      "tokens": 287,
+      "hash": "2d86b32c6046855f",
+      "size": 1073,
+      "mtimeMs": 1789198572228.2466,
+      "updatedAt": "2026-09-12T07:36:12.403Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "eslint.config.mjs": {
+      "description": "ESLint flat configuration",
+      "tokens": 215,
+      "hash": "7fcd658aa5e9a85e",
+      "size": 814,
+      "mtimeMs": 1789198572239.2466,
+      "updatedAt": "2026-09-12T07:36:12.403Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "lib/oauth.ts": {
+      "description": "API routes: GET (3 endpoints)",
+      "tokens": 580,
+      "hash": "6a6c7dd32949d00b",
+      "size": 2030,
+      "mtimeMs": 1789198572239.2466,
+      "updatedAt": "2026-09-12T07:36:12.403Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "b64url",
+          "kind": "fn",
+          "startLine": 7,
+          "endLine": 9,
+          "tokens": 30
+        },
+        {
+          "name": "fromB64url",
+          "kind": "fn",
+          "startLine": 11,
+          "endLine": 13,
+          "tokens": 26
+        },
+        {
+          "name": "signJwt",
+          "kind": "fn",
+          "startLine": 15,
+          "endLine": 26,
+          "tokens": 129
+        },
+        {
+          "name": "verifyJwt",
+          "kind": "fn",
+          "startLine": 28,
+          "endLine": 47,
+          "tokens": 186
+        },
+        {
+          "name": "pkceVerify",
+          "kind": "fn",
+          "startLine": 49,
+          "endLine": 52,
+          "tokens": 53
+        },
+        {
+          "name": "randomId",
+          "kind": "fn",
+          "startLine": 54,
+          "endLine": 56,
+          "tokens": 25
+        },
+        {
+          "name": "baseUrl",
+          "kind": "fn",
+          "startLine": 58,
+          "endLine": 65,
+          "tokens": 76
+        }
+      ],
+      "symbolSource": "ts",
+      "importance": 0.2483
+    },
+    "lib/rate-limit.ts": {
+      "description": "In-memory token-bucket rate limiter. Single-instance only.",
+      "tokens": 466,
+      "hash": "d165401cddcb34a4",
+      "size": 1631,
+      "mtimeMs": 1789198572240.2466,
+      "updatedAt": "2026-09-12T07:36:12.404Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "lib/tax.ts": {
+      "description": "Deducerea personală 2027 — pe baza Codului fiscal (OUG 16/2022, neabrogată de",
+      "tokens": 18005,
+      "hash": "0260cb3899590587",
+      "size": 64956,
+      "mtimeMs": 1789198572240.2466,
+      "updatedAt": "2026-09-12T07:36:12.404Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "clampNumber",
+          "kind": "fn",
+          "startLine": 15,
+          "endLine": 18,
+          "tokens": 45
+        },
+        {
+          "name": "SporType",
+          "kind": "section",
+          "startLine": 20,
+          "endLine": 20,
+          "tokens": 16
+        },
+        {
+          "name": "SporInputKind",
+          "kind": "section",
+          "startLine": 35,
+          "endLine": 40,
+          "tokens": 30
+        },
+        {
+          "name": "Spor",
+          "kind": "section",
+          "startLine": 42,
+          "endLine": 67,
+          "tokens": 331
+        },
+        {
+          "name": "TaxInput",
+          "kind": "section",
+          "startLine": 69,
+          "endLine": 102,
+          "tokens": 451
+        },
+        {
+          "name": "TaxBreakdown",
+          "kind": "section",
+          "startLine": 104,
+          "endLine": 126,
+          "tokens": 308
+        },
+        {
+          "name": "calculDeducere",
+          "kind": "fn",
+          "startLine": 140,
+          "endLine": 155,
+          "tokens": 170
+        },
+        {
+          "name": "calcBrut",
+          "kind": "fn",
+          "startLine": 157,
+          "endLine": 250,
+          "tokens": 1131
+        },
+        {
+          "name": "GradatieInfo",
+          "kind": "section",
+          "startLine": 253,
+          "endLine": 257,
+          "tokens": 25
+        },
+        {
+          "name": "gradatiiForAnexa",
+          "kind": "fn",
+          "startLine": 282,
+          "endLine": 284,
+          "tokens": 35
+        },
+        {
+          "name": "SoldaGrad",
+          "kind": "section",
+          "startLine": 301,
+          "endLine": 306,
+          "tokens": 43
+        },
+        {
+          "name": "soldaGradByKey",
+          "kind": "fn",
+          "startLine": 333,
+          "endLine": 339,
+          "tokens": 58
+        },
+        {
+          "name": "pragSoldaGrad",
+          "kind": "fn",
+          "startLine": 342,
+          "endLine": 344,
+          "tokens": 40
+        },
+        {
+          "name": "soldaGradPentruFunctie",
+          "kind": "fn",
+          "startLine": 373,
+          "endLine": 382,
+          "tokens": 108
+        },
+        {
+          "name": "esteRandSoldaDeGrad",
+          "kind": "fn",
+          "startLine": 391,
+          "endLine": 396,
+          "tokens": 57
+        },
+        {
+          "name": "aplicaGradatie",
+          "kind": "fn",
+          "startLine": 402,
+          "endLine": 412,
+          "tokens": 80
+        },
+        {
+          "name": "gradatieDinVechime",
+          "kind": "fn",
+          "startLine": 414,
+          "endLine": 434,
+          "tokens": 166
+        },
+        {
+          "name": "sporuriPentruAnexa",
+          "kind": "fn",
+          "startLine": 1387,
+          "endLine": 1392,
+          "tokens": 59
+        },
+        {
+          "name": "sporuriGrupate",
+          "kind": "fn",
+          "startLine": 1400,
+          "endLine": 1415,
+          "tokens": 116
+        },
+        {
+          "name": "CoefConducereJustitie",
+          "kind": "section",
+          "startLine": 1435,
+          "endLine": 1440,
+          "tokens": 35
+        },
+        {
+          "name": "FunctieDiplomatieMisiune",
+          "kind": "section",
+          "startLine": 1468,
+          "endLine": 1473,
+          "tokens": 39
+        },
+        {
+          "name": "calcSalariuDiplomatieValuta",
+          "kind": "fn",
+          "startLine": 1511,
+          "endLine": 1517,
+          "tokens": 52
+        },
+        {
+          "name": "clasaPrimaMisiune",
+          "kind": "fn",
+          "startLine": 1525,
+          "endLine": 1527,
+          "tokens": 31
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "export function clampNumber(n: number, min: number, max: number): number {\nexport type SporType = \"procent\" | \"valoare\" | \"lei\";\nexport type SporInputKind =\nexport interface Spor {\nexport interface TaxInput {\nexport interface TaxBreakdown {\nexport function calculDeducere(\nexport function calcBrut(input: TaxInput): TaxBreakdown {\nexport interface GradatieInfo {\nexport function gradatiiForAnexa(anexa: string): GradatieInfo[] {\nexport interface SoldaGrad {\nexport function soldaGradByKey(\nexport function pragSoldaGrad(grila: SoldaGrad[] = SOLDE_GRAD): number {\nexport function soldaGradPentruFunctie(functie: string): string | null {\nexport function esteRandSoldaDeGrad(\nexport function aplicaGradatie(\nexport function gradatieDinVechime(\nexport function sporuriPentruAnexa(anexa: string): Spor[] {\nexport function sporuriGrupate(anexa: string): {\nexport interface CoefConducereJustitie {\nexport interface FunctieDiplomatieMisiune {\nexport function calcSalariuDiplomatieValuta(\nexport function clasaPrimaMisiune(esteRepetata: boolean): \"I\" | \"II\" {",
+      "importance": 1
+    },
+    "lib/tools.ts": {
+      "description": "Tools partajate între MCP server și chat AI.",
+      "tokens": 5134,
+      "hash": "75718c8c7e3120b6",
+      "size": 18385,
+      "mtimeMs": 1789198572240.2466,
+      "updatedAt": "2026-09-12T07:36:12.405Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "fold",
+          "kind": "fn",
+          "startLine": 37,
+          "endLine": 45,
+          "tokens": 56
+        },
+        {
+          "name": "searchFunction",
+          "kind": "fn",
+          "startLine": 136,
+          "endLine": 168,
+          "tokens": 339
+        },
+        {
+          "name": "calculateSalary",
+          "kind": "fn",
+          "startLine": 170,
+          "endLine": 234,
+          "tokens": 625
+        },
+        {
+          "name": "listAnexe",
+          "kind": "fn",
+          "startLine": 236,
+          "endLine": 249,
+          "tokens": 116
+        },
+        {
+          "name": "listVariante",
+          "kind": "fn",
+          "startLine": 251,
+          "endLine": 283,
+          "tokens": 467
+        },
+        {
+          "name": "getGradatiiTable",
+          "kind": "fn",
+          "startLine": 285,
+          "endLine": 292,
+          "tokens": 121
+        },
+        {
+          "name": "getLawArticle",
+          "kind": "fn",
+          "startLine": 294,
+          "endLine": 308,
+          "tokens": 175
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "const fold = (s: string) =>\nexport function searchFunction(input: z.infer<typeof searchFunctionSchema>) {\nexport function calculateSalary(input: z.infer<typeof calculateSalarySchema>) {\nexport function listAnexe(input: z.infer<typeof listAnexeSchema> = {}) {\nexport function listVariante() {\nexport function getGradatiiTable() {\nexport function getLawArticle(input: z.infer<typeof getLawArticleSchema>) {",
+      "imports": [
+        "lib/variants-data.ts"
+      ],
+      "importance": 0.2483
+    },
+    "lib/varianta-context.tsx": {
+      "description": "VariantaContext — uses useContext",
+      "tokens": 154,
+      "hash": "f97cf40f25d161c0",
+      "size": 545,
+      "mtimeMs": 1789198572240.2466,
+      "updatedAt": "2026-09-12T07:36:12.405Z",
+      "source": "scan",
+      "imports": [
+        "lib/variants.ts"
+      ],
+      "importance": 0.2483
+    },
+    "lib/variants-data.ts": {
+      "description": "Seturile de coeficienți pe variante — DOAR server-side (tools MCP/chat,",
+      "tokens": 763,
+      "hash": "26ce4f94d8ca3bab",
+      "size": 2701,
+      "mtimeMs": 1789198572240.2466,
+      "updatedAt": "2026-09-12T07:36:12.405Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "CoefEntry",
+          "kind": "section",
+          "startLine": 15,
+          "endLine": 31,
+          "tokens": 135
+        },
+        {
+          "name": "normalize",
+          "kind": "fn",
+          "startLine": 40,
+          "endLine": 59,
+          "tokens": 163
+        },
+        {
+          "name": "getCoeficienti",
+          "kind": "fn",
+          "startLine": 68,
+          "endLine": 70,
+          "tokens": 25
+        },
+        {
+          "name": "getFunctii",
+          "kind": "fn",
+          "startLine": 73,
+          "endLine": 76,
+          "tokens": 49
+        },
+        {
+          "name": "numarFunctii",
+          "kind": "fn",
+          "startLine": 78,
+          "endLine": 80,
+          "tokens": 26
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "lib/variants.ts",
+        "lib/tax.ts"
+      ],
+      "importance": 0.4594
+    },
+    "lib/variants.ts": {
+      "description": "Variantele oficiale ale proiectului de lege a salarizării (MMFTSS 2026).",
+      "tokens": 1248,
+      "hash": "9a530a6c8be2fd07",
+      "size": 4450,
+      "mtimeMs": 1789198572240.2466,
+      "updatedAt": "2026-09-12T07:36:12.405Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "VariantaId",
+          "kind": "section",
+          "startLine": 16,
+          "endLine": 16,
+          "tokens": 16
+        },
+        {
+          "name": "VariantaSursa",
+          "kind": "section",
+          "startLine": 18,
+          "endLine": 21,
+          "tokens": 19
+        },
+        {
+          "name": "Varianta",
+          "kind": "section",
+          "startLine": 23,
+          "endLine": 50,
+          "tokens": 275
+        },
+        {
+          "name": "VariantaJson",
+          "kind": "section",
+          "startLine": 52,
+          "endLine": 55,
+          "tokens": 38
+        },
+        {
+          "name": "esteVariantaId",
+          "kind": "fn",
+          "startLine": 63,
+          "endLine": 65,
+          "tokens": 42
+        },
+        {
+          "name": "VARIANTE",
+          "kind": "fn",
+          "startLine": 67,
+          "endLine": 72,
+          "tokens": 85
+        },
+        {
+          "name": "getVarianta",
+          "kind": "fn",
+          "startLine": 79,
+          "endLine": 82,
+          "tokens": 62
+        },
+        {
+          "name": "ANEXA_NUME",
+          "kind": "fn",
+          "startLine": 97,
+          "endLine": 99,
+          "tokens": 32
+        },
+        {
+          "name": "etichetaAplicare",
+          "kind": "fn",
+          "startLine": 104,
+          "endLine": 106,
+          "tokens": 39
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "lib/tax.ts"
+      ],
+      "importance": 0.6546
+    },
+    "LICENSE": {
+      "description": "Project license",
+      "tokens": 288,
+      "hash": "4db54d91726814a9",
+      "size": 1080,
+      "mtimeMs": 1789198572228.2466,
+      "updatedAt": "2026-09-12T07:36:12.405Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "next.config.mjs": {
+      "description": "Next.js configuration",
+      "tokens": 451,
+      "hash": "ca4f79fdeb3df0b2",
+      "size": 1689,
+      "mtimeMs": 1789198572240.2466,
+      "updatedAt": "2026-09-12T07:36:12.405Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "package.json": {
+      "description": "Node.js package manifest",
+      "tokens": 294,
+      "hash": "a70720ecddd9b711",
+      "size": 1026,
+      "mtimeMs": 1789198572241.2468,
+      "updatedAt": "2026-09-12T07:36:12.405Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "postcss.config.mjs": {
+      "description": "",
+      "tokens": 22,
+      "hash": "e32657baf631d7c5",
+      "size": 81,
+      "mtimeMs": 1789198572242.2468,
+      "updatedAt": "2026-09-12T07:36:12.406Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "public/coefficients.json": {
+      "description": "",
+      "tokens": 197429,
+      "hash": "167317ab22c65875",
+      "size": 701602,
+      "mtimeMs": 1789198572242.2468,
+      "updatedAt": "2026-09-12T07:36:12.409Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "README.md": {
+      "description": "Project documentation",
+      "tokens": 2796,
+      "hash": "b92d8d586bccffb0",
+      "size": 11708,
+      "mtimeMs": 1789198572228.2466,
+      "updatedAt": "2026-09-12T07:36:12.410Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "scripts/import-coeficienti.mjs": {
+      "description": "Importă coeficienții de salarizare din xlsx-ul publicat de MMFTSS",
+      "tokens": 6158,
+      "hash": "64cca81b3c38e7b3",
+      "size": 24562,
+      "mtimeMs": 1789198572256.2468,
+      "updatedAt": "2026-09-12T07:36:12.410Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "die",
+          "kind": "fn",
+          "startLine": 66,
+          "endLine": 69,
+          "tokens": 18
+        },
+        {
+          "name": "fold",
+          "kind": "fn",
+          "startLine": 90,
+          "endLine": 98,
+          "tokens": 56
+        },
+        {
+          "name": "clean",
+          "kind": "fn",
+          "startLine": 99,
+          "endLine": 99,
+          "tokens": 28
+        },
+        {
+          "name": "isBlank",
+          "kind": "fn",
+          "startLine": 100,
+          "endLine": 100,
+          "tokens": 29
+        },
+        {
+          "name": "dashOrEmpty",
+          "kind": "fn",
+          "startLine": 101,
+          "endLine": 101,
+          "tokens": 22
+        },
+        {
+          "name": "toNumber",
+          "kind": "fn",
+          "startLine": 104,
+          "endLine": 111,
+          "tokens": 68
+        },
+        {
+          "name": "isCoefValue",
+          "kind": "fn",
+          "startLine": 112,
+          "endLine": 112,
+          "tokens": 21
+        },
+        {
+          "name": "parseNrCrt",
+          "kind": "fn",
+          "startLine": 114,
+          "endLine": 118,
+          "tokens": 53
+        },
+        {
+          "name": "phasedKey",
+          "kind": "fn",
+          "startLine": 121,
+          "endLine": 127,
+          "tokens": 49
+        },
+        {
+          "name": "warn",
+          "kind": "fn",
+          "startLine": 142,
+          "endLine": 142,
+          "tokens": 14
+        },
+        {
+          "name": "round6",
+          "kind": "fn",
+          "startLine": 420,
+          "endLine": 422,
+          "tokens": 17
+        },
+        {
+          "name": "codeOk",
+          "kind": "fn",
+          "startLine": 427,
+          "endLine": 427,
+          "tokens": 18
+        },
+        {
+          "name": "codeEmpty",
+          "kind": "fn",
+          "startLine": 428,
+          "endLine": 428,
+          "tokens": 15
+        },
+        {
+          "name": "missingAnexe",
+          "kind": "fn",
+          "startLine": 431,
+          "endLine": 431,
+          "tokens": 21
+        },
+        {
+          "name": "viLow",
+          "kind": "fn",
+          "startLine": 433,
+          "endLine": 433,
+          "tokens": 22
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "function die(msg) {\nconst fold = (s) =>\nconst clean = (v) => (v === null || v === undefined ? \"\" : String(v).replace(/\\s+/g, \" \").trim());\nconst isBlank = (v) => v === null || v === undefined || (typeof v === \"string\" && v.trim() === \"\");\nconst dashOrEmpty = (s) => (s === \"-\" || s === \"–\" || s === \"—\" ? \"\" : s);\nfunction toNumber(v) {\nconst isCoefValue = (n) => n !== null && n >= COEF_MIN && n <= COEF_MAX;\nfunction parseNrCrt(v) {\nfunction phasedKey(v) {\nconst warn = (m) => report.avertismente.push(m);\nfunction round6(n) {\nconst codeOk = data.filter((e) => CODE_RE.test(e.cod)).length;\nconst codeEmpty = data.filter((e) => !e.cod).length;\nconst missingAnexe = Object.keys(ANEXA_NUME).filter((a) => !perAnexa[a]);\nconst viLow = data.filter((e) => e.anexa === \"VI\" && e.coeficient <= 1.1);",
+      "importance": 0.2483
+    },
+    "scripts/verify-variants.mjs": {
+      "description": "Verifică integritatea seturilor de date pe variante (rulat în CI):",
+      "tokens": 2256,
+      "hash": "a62dad74f41d9d87",
+      "size": 8575,
+      "mtimeMs": 1789198572256.2468,
+      "updatedAt": "2026-09-12T07:36:12.410Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "ok",
+          "kind": "fn",
+          "startLine": 23,
+          "endLine": 23,
+          "tokens": 14
+        },
+        {
+          "name": "fail",
+          "kind": "fn",
+          "startLine": 24,
+          "endLine": 27,
+          "tokens": 20
+        },
+        {
+          "name": "check",
+          "kind": "fn",
+          "startLine": 28,
+          "endLine": 28,
+          "tokens": 17
+        },
+        {
+          "name": "near",
+          "kind": "fn",
+          "startLine": 29,
+          "endLine": 29,
+          "tokens": 14
+        },
+        {
+          "name": "fold",
+          "kind": "fn",
+          "startLine": 32,
+          "endLine": 33,
+          "tokens": 46
+        },
+        {
+          "name": "coefSanatate",
+          "kind": "fn",
+          "startLine": 36,
+          "endLine": 46,
+          "tokens": 107
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "const ok = (msg) => console.log(`  ✓ ${msg}`);\nconst fail = (msg) => {\nconst check = (cond, msg) => (cond ? ok(msg) : fail(msg));\nconst near = (a, b) => Math.abs(a - b) < 1e-6;\nconst fold = (s) =>\nfunction coefSanatate(rows, functieRe, { grad = null, studii = \"S\" } = {}) {",
+      "importance": 0.2483
+    },
+    "tailwind.config.ts": {
+      "description": "Tailwind CSS configuration",
+      "tokens": 117,
+      "hash": "a8a6d2a68646b42a",
+      "size": 407,
+      "mtimeMs": 1789198572256.2468,
+      "updatedAt": "2026-09-12T07:36:12.410Z",
+      "source": "scan",
+      "importance": 0.2483
+    },
+    "tsconfig.json": {
+      "description": "TypeScript configuration",
+      "tokens": 161,
+      "hash": "f6c45b018bb65e85",
+      "size": 562,
+      "mtimeMs": 1789198572256.2468,
+      "updatedAt": "2026-09-12T07:36:12.410Z",
+      "source": "scan",
+      "importance": 0.2483
+    }
+  },
+  "preamble": [
+    "> Project structure index. Auto-maintained by OpenWolf hooks and daemon.",
+    "> Run `openwolf scan` to generate, or wait for the first Claude Code session.",
+    "> Status: Pending initial scan"
+  ]
+}
