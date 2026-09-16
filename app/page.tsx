@@ -1,4 +1,9 @@
 import { Calendar, FileCheck, ExternalLink, Heart, Coffee } from "lucide-react";
+
+// Moștenire: îndemnul la donații („Buy me a coffee") și textul la persoana întâi.
+// Calculatorul apare acum ca parte din România Transparentă; se reactivează la build cu
+// NEXT_PUBLIC_LEGACY_PERSONAL=1.
+const LEGACY_PERSONAL = process.env.NEXT_PUBLIC_LEGACY_PERSONAL === "1";
 import ModeSwitcher from "@/components/ModeSwitcher";
 import Sources from "@/components/Sources";
 import ChatWidget from "@/components/ChatWidget";
@@ -81,24 +86,44 @@ export default function HomePage() {
           <h2 className="text-xl md:text-2xl font-bold text-slate-900">
             Gratuit, fără reclame, fără tracking
           </h2>
-          <p className="mt-3 text-sm md:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
-            Am construit acest calculator pentru cei ~1,3 milioane de bugetari din
-            România care vor să înțeleagă cum îi afectează noua lege a salarizării —
-            fără să trebuiască să citească zeci de articole și 9 anexe Excel, de trei ori.
-            Proiect independent, open-source, neafiliat cu vreo instituție publică.
-          </p>
-          <p className="mt-3 text-xs text-slate-500">
-            Dacă ți-a fost util și vrei să mă susții ca să-l țin online și actualizat:
-          </p>
-          <a
-            href="https://buymeacoffee.com/alexmantello"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 inline-flex items-center gap-2 rounded-full bg-amber-400 hover:bg-amber-500 text-slate-900 font-semibold px-5 py-2.5 text-sm shadow-md shadow-amber-200 transition hover:scale-105"
-          >
-            <Coffee className="w-4 h-4" strokeWidth={2.25} />
-            Buy me a coffee
-          </a>
+          {LEGACY_PERSONAL ? (
+            <>
+            <p className="mt-3 text-sm md:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
+              Am construit acest calculator pentru cei ~1,3 milioane de bugetari din
+              România care vor să înțeleagă cum îi afectează noua lege a salarizării —
+              fără să trebuiască să citească zeci de articole și 9 anexe Excel, de trei ori.
+              Proiect independent, open-source, neafiliat cu vreo instituție publică.
+            </p>
+            <p className="mt-3 text-xs text-slate-500">
+              Dacă ți-a fost util și vrei să mă susții ca să-l țin online și actualizat:
+            </p>
+            <a
+              href="https://buymeacoffee.com/alexmantello"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center gap-2 rounded-full bg-amber-400 hover:bg-amber-500 text-slate-900 font-semibold px-5 py-2.5 text-sm shadow-md shadow-amber-200 transition hover:scale-105"
+            >
+              <Coffee className="w-4 h-4" strokeWidth={2.25} />
+              Buy me a coffee
+            </a>
+            </>
+          ) : (
+            <>
+              <p className="mt-3 text-sm md:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
+                Calculatorul e făcut pentru cei ~1,3 milioane de bugetari din România care vor să
+                înțeleagă cum îi afectează noua lege a salarizării — fără să citească zeci de articole
+                și 9 anexe Excel, de trei ori. Proiect independent, open-source, neafiliat cu vreo
+                instituție publică.
+              </p>
+              <a
+                href="https://romaniatransparenta.eu/despre/"
+                className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-slate-900 underline underline-offset-4 hover:text-brand-700"
+              >
+                Face parte din România Transparentă
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            </>
+          )}
         </div>
       </section>
 
