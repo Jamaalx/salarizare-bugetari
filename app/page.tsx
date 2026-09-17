@@ -200,6 +200,18 @@ export default function HomePage() {
               GitHub
             </a>
           </p>
+          <p className="text-center text-[13px] tracking-[.02em] text-slate-300/70">
+            Design, cod, funcționalități &amp; hosting:{" "}
+            <a
+              href="https://zed-zen.com"
+              target="_blank"
+              rel="noopener"
+              title="ZEDZEN — web design, dezvoltare & hosting"
+              className="font-bold text-slate-300 no-underline border-b border-current hover:text-white"
+            >
+              ZEDZEN
+            </a>
+          </p>
         </div>
       </footer>
 
