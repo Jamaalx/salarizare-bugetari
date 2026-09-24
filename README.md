@@ -40,7 +40,7 @@ Metadatele fiecărei variante (valoare de referință, articole, note despre ce 
 
 - Next.js 15.5 (App Router, standalone build)
 - React 19
-- TypeScript 5.7
+- TypeScript 5.9
 - Tailwind CSS 3.4
 - SheetJS (`xlsx`, devDependency) pentru importul coeficienților
 
@@ -95,7 +95,7 @@ Configurat pentru deploy via Docker pe Coolify, cu DNS la Cloudflare.
    - Domain: `salarii.romaniatransparenta.eu` (sau alt subdomeniu)
 
 3. **DNS Cloudflare**:
-   - CNAME `salarizare` → `<IP-server>` sau `<server>.coolify`
+   - CNAME `salarii` → `<IP-server>` sau `<server>.coolify`
    - SSL: Full (Coolify emite cert via Let's Encrypt sau folosește Cloudflare proxy)
 
 4. Auto-deploy on push: configurat default de Coolify când conectezi GitHub.

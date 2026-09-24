@@ -5,6 +5,12 @@ Formatul urmează [Keep a Changelog](https://keepachangelog.com/ro/1.1.0/).
 
 ## [Nepublicat]
 
+### Mentenanță (24 septembrie 2026)
+- Dependențe: `npm audit fix` (browserslist — high, qs, baseline-browser-mapping, postcss-selector-parser) → 0 vulnerabilități; actualizări patch/minor fără schimbări de major (Next.js 15.5.26, React 19.3, TypeScript 5.9, Tailwind 3.4.19, lucide-react 1.48). Nicio formulă, coeficient sau sumă nu s-a schimbat.
+- `/api/chat`, `/api/mcp`: limita pe IP folosește întâi `cf-connecting-ip` (primul element din `X-Forwarded-For` putea fi falsificat de client și ocolea limita).
+- `/api/chat`: timeout de 30 s la apelul NVIDIA NIM.
+- README: stack-ul la zi, CNAME-ul corect (`salarii`).
+
 ### Adăugat
 - **Trei variante ale proiectului de lege** (25 mai, 17 iulie, 20 august 2026), selectabile din bara de sus; implicit se calculează pe varianta din 20 august (ultimul text oficial). Selecția se reflectă în URL (`?varianta=2026-07-17`) pentru link-uri partajabile.
 - `scripts/import-coeficienti.mjs` — importator reproductibil din xlsx-ul MMFTSS în schema `data/coefficients.min.json`, cu raport complet (rânduri neinterpretate, coloane ignorate, sheet-uri duplicate, comparație cu un set de referință). Separă soldele de grad (Anexa VI cap. I.2) în `*.solde-grad.json`, desparte rândurile Grad I / Grad II, citește coloana „Grad/treaptă” din Anexa II (aug) și coloanele eșalonate 2026/2027 → 2031 din Anexa IX (`coeficientEsalonat`).
