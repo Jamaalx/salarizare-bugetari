@@ -118,6 +118,9 @@ type WizardState = {
   // null = folosește auto-detecția; true/false = override manual
   conducereOverride: boolean | null;
   persoaneInIntretinere: number;
+  // Deducerea personală suplimentară — art. 77 alin. (10) Cod fiscal
+  sub26Ani: boolean;
+  copiiInvatamant: number;
   coefSuplimentConducere: number; // pentru Anexa V conducere (judecători/procurori)
   // Anexa VI Art. 3(5) — coef. suplim. risc apărare/ordine publică (max +0.40)
   coefSuplimRiscAparare: number;
@@ -148,6 +151,8 @@ const initialState = (valRef: number): WizardState => ({
   scutireImpozit: false,
   conducereOverride: null,
   persoaneInIntretinere: 0,
+  sub26Ani: false,
+  copiiInvatamant: 0,
   coefSuplimentConducere: 0,
   coefSuplimRiscAparare: 0,
   soldaGradKey: null,
@@ -256,6 +261,8 @@ export default function Wizard({ initialData }: Props) {
         oreNormaLunara: s.oreNorma,
         scutireImpozit: s.scutireImpozit,
         persoaneInIntretinere: s.persoaneInIntretinere,
+        sub26Ani: s.sub26Ani,
+        copiiInvatamant: s.copiiInvatamant,
         coefSuplimentConducere: aplicaCoefSupliment ? s.coefSuplimentConducere : 0,
         soldaGradCoef,
       })
@@ -413,6 +420,10 @@ export default function Wizard({ initialData }: Props) {
             setScutireImpozit={(b) => setS((p) => ({ ...p, scutireImpozit: b }))}
             persoaneInIntretinere={s.persoaneInIntretinere}
             setPersoaneInIntretinere={(n) => setS((p) => ({ ...p, persoaneInIntretinere: n }))}
+            sub26Ani={s.sub26Ani}
+            setSub26Ani={(b) => setS((p) => ({ ...p, sub26Ani: b }))}
+            copiiInvatamant={s.copiiInvatamant}
+            setCopiiInvatamant={(n) => setS((p) => ({ ...p, copiiInvatamant: n }))}
             aplicaCoefSupliment={aplicaCoefSupliment}
             coefSuplimentConducere={s.coefSuplimentConducere}
             setCoefSuplimentConducere={(n) => setS((p) => ({ ...p, coefSuplimentConducere: n }))}
@@ -1071,6 +1082,10 @@ function StepActual({
   setScutireImpozit,
   persoaneInIntretinere,
   setPersoaneInIntretinere,
+  sub26Ani,
+  setSub26Ani,
+  copiiInvatamant,
+  setCopiiInvatamant,
   aplicaCoefSupliment,
   coefSuplimentConducere,
   setCoefSuplimentConducere,
@@ -1104,6 +1119,10 @@ function StepActual({
   setScutireImpozit: (b: boolean) => void;
   persoaneInIntretinere: number;
   setPersoaneInIntretinere: (n: number) => void;
+  sub26Ani: boolean;
+  setSub26Ani: (b: boolean) => void;
+  copiiInvatamant: number;
+  setCopiiInvatamant: (n: number) => void;
   aplicaCoefSupliment: boolean;
   coefSuplimentConducere: number;
   setCoefSuplimentConducere: (n: number) => void;
@@ -1266,6 +1285,36 @@ function StepActual({
                 className="w-24 rounded-xl border border-slate-300 px-3 py-2.5 text-lg tabular-nums focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
               />
               <span className="text-sm text-slate-600">persoane</span>
+            </div>
+          </label>
+          <span className="block text-xs text-slate-500 mt-2">
+            Deducerea de bază (art. 77 alin. 4 Cod fiscal) se acordă doar pentru un venit brut de până
+            la salariul minim + 2.000 lei; peste, doar deducerile de mai jos.
+          </span>
+          <label className="mt-4 flex items-center gap-2 text-sm text-slate-700">
+            <input
+              type="checkbox"
+              checked={sub26Ani}
+              onChange={(e) => setSub26Ani(e.target.checked)}
+              className="h-4 w-4 rounded border-slate-300"
+            />
+            Am până la 26 de ani (deducere suplimentară 15% din salariul minim, art. 77 alin. 10 lit. a)
+          </label>
+          <label className="mt-3 block">
+            <span className="text-sm text-slate-700">
+              Copii până la 18 ani înscriși la școală/grădiniță (100 lei/copil, art. 77 alin. 10 lit. b) — o
+              singură dată, la unul dintre părinți
+            </span>
+            <div className="mt-2 flex items-center gap-2">
+              <input
+                type="number"
+                min={0}
+                max={20}
+                value={copiiInvatamant}
+                onChange={(e) => setCopiiInvatamant(clampNumber(Number(e.target.value), 0, 20))}
+                className="w-24 rounded-xl border border-slate-300 px-3 py-2 tabular-nums focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+              />
+              <span className="text-sm text-slate-600">copii</span>
             </div>
           </label>
         </div>

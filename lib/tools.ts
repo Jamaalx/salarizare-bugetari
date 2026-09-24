@@ -116,6 +116,24 @@ export const calculateSalarySchema = z.object({
     .describe(
       "DOAR Anexa VI (militari/poliție/penitenciare): coeficientul soldei de grad / salariului gradului profesional (cap. I.2). Grila depinde de variantă: 25 mai 0.1 (soldat) … 1.0 (mareșal); 17 iulie și 20 august 0.40 (soldat) … 1.10 (mareșal) — vezi list_variante. Solda lunară = soldă de funcție (coeficient de mai sus, cu gradații) + soldă de grad (acest coef × val. ref., FĂRĂ gradații — art. 2 alin. 2, art. 4 alin. 3, art. 6 alin. 4). Omite pentru celelalte anexe.",
     ),
+  persoaneInIntretinere: z
+    .number()
+    .int()
+    .min(0)
+    .max(10)
+    .optional()
+    .describe("Persoane în întreținere pentru deducerea personală de bază (art. 77 alin. 4 Cod fiscal; 4 = „4 și peste”). Lipsă → 0."),
+  sub26Ani: z
+    .boolean()
+    .optional()
+    .describe("Contribuabil de până la 26 de ani — deducere suplimentară 15% din salariul minim (art. 77 alin. 10 lit. a Cod fiscal)."),
+  copiiInvatamant: z
+    .number()
+    .int()
+    .min(0)
+    .max(20)
+    .optional()
+    .describe("Copii de până la 18 ani înscriși în învățământ — 100 lei/copil (art. 77 alin. 10 lit. b Cod fiscal)."),
   varianta: variantaSchema,
 });
 
@@ -192,6 +210,9 @@ export function calculateSalary(input: z.infer<typeof calculateSalarySchema>) {
     valoareReferinta: valRef,
     oreNormaLunara: input.oreNormaLunara,
     soldaGradCoef: input.soldaGradCoef,
+    persoaneInIntretinere: input.persoaneInIntretinere,
+    sub26Ani: input.sub26Ani,
+    copiiInvatamant: input.copiiInvatamant,
   });
 
   return {
@@ -224,6 +245,7 @@ export function calculateSalary(input: z.infer<typeof calculateSalarySchema>) {
       cas25: tax.cas,
       cass10: tax.cass,
       impozit10: tax.impozit,
+      deducerePersonala: tax.deductibil,
     },
     salariuNet: tax.salariuNet,
     moneda: "RON",

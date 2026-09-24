@@ -97,6 +97,9 @@ export interface TaxInput {
   scutireImpozit?: boolean;
   // Persoane în întreținere pentru calculul deducerii personale (Cod fiscal).
   persoaneInIntretinere?: number;
+  // Deducerea personală suplimentară — art. 77 alin. (10) Cod fiscal.
+  sub26Ani?: boolean;
+  copiiInvatamant?: number;
   // Pentru funcțiile de conducere din Anexa V (justiție), un coeficient
   // suplimentar din valoarea de referință se adaugă la salariul de bază.
   // Ex: președinte ICCJ +0.5 × val. ref.
@@ -133,32 +136,66 @@ export interface TaxBreakdown {
 }
 
 /**
- * Deducerea personală 2027 — pe baza Codului fiscal (OUG 16/2022, neabrogată de
- * proiectul MMFTSS). Aplicabilă pentru salarii brute până la 2.000 lei peste
- * salariul minim brut pe țară. Mecanismul exact e o tabelă degresivă; aici
- * folosim o simplificare orientativă:
- *   - deducere bază: 510 lei pentru fără persoane în întreținere
- *   - +160 lei per persoană în întreținere, până la 4 persoane
- *   - se elimină gradat când brut > 2.000 + sal.min.
+ * Deducerea personală — art. 77 Cod fiscal (Legea 227/2015), forma
+ * consolidată pe legislatie.just.ro la 08.08.2026 (articolul are forma dată de
+ * OG 16/2022, în vigoare de la 01.01.2023; nemodificat ulterior).
  *
- * Acoperă cazul tipic (salarii mici cu copii) fără a încerca să replice exact
- * formula complexă din Codul fiscal — pentru sume oficiale, fluturașul.
+ * Deducerea personală de bază (alin. 3-4): procent din salariul minim brut pe
+ * țară, pentru venit brut lunar de până la salariul minim + 2.000 lei:
+ *   - brut ≤ salariul minim: 20% / 25% / 30% / 35% / 45%
+ *     (fără / 1 / 2 / 3 / 4 și peste persoane în întreținere);
+ *   - pe fiecare tranșă de 50 lei peste minim (min+1…min+50, min+51…min+100, …)
+ *     procentul scade cu 0,5 puncte, până la tranșa min+1.951…min+2.000
+ *     (0% / 5% / 10% / 15% / 25%);
+ *   - brut > salariul minim + 2.000 lei: 0.
+ * Deducerea personală suplimentară (alin. 10):
+ *   a) 15% din salariul minim pentru tinerii de până la 26 de ani cu venit brut
+ *      de până la salariul minim + 2.000 lei;
+ *   b) 100 lei/lună pentru fiecare copil de până la 18 ani înscris într-o
+ *      unitate de învățământ, indiferent de nivelul venitului.
+ * Totalul se acordă în limita venitului impozabil lunar (alin. 2) — limitarea
+ * se face în calcBrut. Legea nu prevede rotunjirea deducerii; o păstrăm la bani.
  */
+// sursa: Legea 227/2015 (Codul fiscal), art. 77 alin. (4) — tabelul (forma din 08.08.2026)
+const DEDUCERE_BAZA_PROCENT = [20, 25, 30, 35, 45];
+
+export interface DeducereOptiuni {
+  /** contribuabil cu vârsta de până la 26 de ani — art. 77 alin. (10) lit. a) */
+  sub26Ani?: boolean;
+  /** copii de până la 18 ani înscriși în învățământ — art. 77 alin. (10) lit. b) */
+  copiiInvatamant?: number;
+}
+
+/** Procentul deducerii personale de bază (din salariul minim), art. 77 alin. (4). */
+export function procentDeducereBaza(
+  salariuBrut: number,
+  persoaneInIntretinere: number,
+  salariuMinim: number = SAL_MIN_BRUT,
+): number {
+  if (salariuBrut <= 0) return 0;
+  const p = Math.floor(clampNumber(persoaneInIntretinere, 0, 4));
+  const peste = salariuBrut - salariuMinim;
+  // sursa: Codul fiscal art. 77 alin. (3) — peste minim + 2.000 lei nu se acordă
+  if (peste > 2000) return 0;
+  if (peste <= 0) return DEDUCERE_BAZA_PROCENT[p];
+  const transa = Math.ceil(peste / 50); // 1 = min+1…min+50, …, 40 = min+1.951…min+2.000
+  return Math.max(0, DEDUCERE_BAZA_PROCENT[p] - 0.5 * transa);
+}
+
 export function calculDeducere(
   salariuBrut: number,
   persoaneInIntretinere: number,
-  salariuMinim: number = SAL_MIN_BRUT_2026,
+  salariuMinim: number = SAL_MIN_BRUT,
+  optiuni: DeducereOptiuni = {},
 ): number {
   if (salariuBrut <= 0) return 0;
-  if (salariuBrut > salariuMinim + 2000) return 0;
-  const baza = 510;
-  const perPersoana = 160;
-  const p = clampNumber(persoaneInIntretinere, 0, 4);
-  // degresiv pe paliere de 100 lei peste minim
-  const overMin = Math.max(0, salariuBrut - salariuMinim);
-  const palier = Math.floor(overMin / 100); // 0..20
-  const factor = Math.max(0, 1 - palier / 20);
-  return Math.round((baza + perPersoana * p) * factor);
+  // sursa: Codul fiscal art. 77 alin. (3)-(4) (forma din 08.08.2026)
+  const baza = (procentDeducereBaza(salariuBrut, persoaneInIntretinere, salariuMinim) / 100) * salariuMinim;
+  // sursa: Codul fiscal art. 77 alin. (10) lit. a) — 15% din salariul minim, sub 26 de ani
+  const tineri = optiuni.sub26Ani && salariuBrut <= salariuMinim + 2000 ? 0.15 * salariuMinim : 0;
+  // sursa: Codul fiscal art. 77 alin. (10) lit. b) — 100 lei/copil înscris în învățământ
+  const copii = 100 * Math.floor(clampNumber(optiuni.copiiInvatamant ?? 0, 0, 20));
+  return Math.round((baza + tineri + copii) * 100) / 100;
 }
 
 export function calcBrut(input: TaxInput): TaxBreakdown {
@@ -231,7 +268,14 @@ export function calcBrut(input: TaxInput): TaxBreakdown {
   const cass = Math.round(salariuBrut * 0.1);
   const venitImpozabil = salariuBrut - cas - cass;
 
-  const deductibil = calculDeducere(salariuBrut, input.persoaneInIntretinere ?? 0);
+  // sursa: Codul fiscal art. 77 alin. (2) — deducerea se acordă în limita venitului impozabil lunar
+  const deductibil = Math.min(
+    Math.max(0, venitImpozabil),
+    calculDeducere(salariuBrut, input.persoaneInIntretinere ?? 0, SAL_MIN_BRUT, {
+      sub26Ani: input.sub26Ani,
+      copiiInvatamant: input.copiiInvatamant,
+    }),
+  );
 
   const impozitCalculat = Math.round(Math.max(0, venitImpozabil - deductibil) * 0.1);
   const impozit = input.scutireImpozit ? 0 : impozitCalculat;
