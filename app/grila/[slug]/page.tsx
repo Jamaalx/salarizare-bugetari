@@ -226,6 +226,17 @@ export default async function GrilaPage({ params }: { params: Promise<{ slug: st
               </li>
             ))}
           </ul>
+          <p className="mt-4 text-sm text-slate-600">
+            Cum se calculează salariul de bază, gradațiile și netul:{" "}
+            <Link href="/ghiduri/cum-se-calculeaza-salariul-de-baza" className="text-brand-700 underline underline-offset-2">ghidul de calcul</Link>
+            {g.anexa === "II" && (
+              <>
+                {" · "}
+                <Link href="/ghiduri/salariu-asistent-medical-noua-lege" className="text-brand-700 underline underline-offset-2">salariul asistentului medical, pe trepte</Link>
+              </>
+            )}
+            .
+          </p>
           {g.anexa === "II" && (
             <p className="mt-4 text-sm text-slate-600">
               Cât se plătește azi, pe legea în vigoare, în spitalele publice:{" "}

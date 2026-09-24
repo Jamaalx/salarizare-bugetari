@@ -110,6 +110,8 @@ export default function HomePage() {
           <p className="mt-1 text-sm text-slate-600">
             Coeficienții și salariul de bază din varianta din {implicita.eticheta}, anexă cu anexă.{" "}
             <Link href="/grila" className="text-brand-700 underline underline-offset-2">Toate grilele</Link>
+            {" · "}
+            <Link href="/ghiduri" className="text-brand-700 underline underline-offset-2">Ghiduri: cum se calculează, pe funcții</Link>
           </p>
           <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3 text-sm">
             {GRILE.map((g) => (

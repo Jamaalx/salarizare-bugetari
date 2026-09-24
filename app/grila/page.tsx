@@ -47,7 +47,8 @@ export default function GrilePage() {
         </ul>
         <p className="mt-6 text-sm text-slate-600">
           Pentru salariul tău, cu gradație, sporuri și net, pe oricare dintre cele trei variante:{" "}
-          <Link href="/" className="font-semibold text-brand-700 underline underline-offset-2">calculatorul</Link>.
+          <Link href="/" className="font-semibold text-brand-700 underline underline-offset-2">calculatorul</Link>. Cum se
+          calculează salariul de bază și ce prevede proiectul pe funcții: <Link href="/ghiduri" className="font-semibold text-brand-700 underline underline-offset-2">ghidurile</Link>.
         </p>
       </div>
     </main>

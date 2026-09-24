@@ -1,5 +1,6 @@
 import { GRILE, SITE_URL, VARIANTE_TEXT, grilaDupaSlug } from "@/lib/seo";
 import { getVarianta, VARIANTA_IMPLICITA } from "@/lib/variants";
+import { ghiduri } from "@/lib/ghiduri";
 
 export const dynamic = "force-static";
 
@@ -21,6 +22,11 @@ Reguli pentru citare:
 ${GRILE.map((g) => `- [Anexa ${g.anexa}: ${grilaDupaSlug(g.slug)!.nume}](${SITE_URL}/grila/${g.slug}): ${g.titlu}`).join("\n")}
 - [Misiuni permanente în străinătate](${SITE_URL}/diplomatie): calculatorul salariului în valută
 - [Conectorul MCP](${SITE_URL}/mcp): calculatorul ca tool pentru asistenți AI (endpoint ${SITE_URL}/api/mcp)
+
+## Ghiduri
+
+${ghiduri().map((g) => `- [${g.titlu}](${SITE_URL}/ghiduri/${g.slug}): ${g.raspuns}`).join("\n")}
+- [Toate ghidurile](${SITE_URL}/ghiduri) · [RSS](${SITE_URL}/ghiduri/feed.xml)
 
 ## Legate
 
