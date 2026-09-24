@@ -224,7 +224,8 @@ principal: oprește-te și raportează.
 cd "$WT"
 git add lib/ghiduri/<slug>.ts lib/ghiduri/index.ts BLOG-AUTOPILOT.md
 git status --short          # doar cele 3 fișiere
-git commit -m "Ghiduri: <titlul articolului>
+# identitatea: aceeași ca în ultimele commit-uri (repo-ul poate să nu aibă user.name configurat)
+git -c user.name="$(git log -1 --format=%an origin/HEAD 2>/dev/null || git log -1 --format=%an)" -c user.email="$(git log -1 --format=%ae origin/HEAD 2>/dev/null || git log -1 --format=%ae)" commit -m "Ghiduri: <titlul articolului>
 
 Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
 git fetch -q origin
