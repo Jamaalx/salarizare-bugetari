@@ -251,6 +251,7 @@ export function calculateSalary(input: z.infer<typeof calculateSalarySchema>) {
       adaosGradatii: salariuBaza - Math.round(salariuG0),
       soldaDeFunctie: tax.soldaGrad > 0 ? salariuBaza : undefined,
       soldaDeGrad: tax.soldaGrad > 0 ? tax.soldaGrad : undefined,
+      completareSalariuMinim: tax.completareSalariuMinim > 0 ? tax.completareSalariuMinim : undefined,
       sporuriInPlafon: tax.sporuriProcent,
       sporuriExceptate: tax.sporuriExceptate,
       sporuriDepasescPlafon: tax.sporuriDepasescPlafon,

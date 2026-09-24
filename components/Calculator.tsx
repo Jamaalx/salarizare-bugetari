@@ -702,6 +702,13 @@ function ResultPanel({
           ) : (
             <LineItem label="= Salariu de bază" value={`${fmt(salariuBaza)} lei`} bold />
           )}
+          {taxResult.completareSalariuMinim > 0 && (
+            <LineItem
+              label="+ Completare până la salariul minim brut (art. 10 alin. 8)"
+              value={`+${fmt(taxResult.completareSalariuMinim)} lei`}
+              positive
+            />
+          )}
           <LineItem
             label="+ Sporuri (incluse în plafon 20%)"
             value={`+${fmt(taxResult.sporuriProcent)} lei`}

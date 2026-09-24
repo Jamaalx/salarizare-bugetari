@@ -1845,6 +1845,13 @@ function StepRezultat({
           ) : (
             <LineItem label="= Salariu de bază" value={`${fmt(salariuBaza)} lei`} bold />
           )}
+          {tax.completareSalariuMinim > 0 && (
+            <LineItem
+              label="+ Completare până la salariul minim brut (art. 10 alin. 8)"
+              value={`+${fmt(tax.completareSalariuMinim)} lei`}
+              positive
+            />
+          )}
           {tax.sporuriProcent > 0 && (
             <LineItem
               label="+ Sporuri în plafon"

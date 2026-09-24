@@ -109,11 +109,18 @@ export interface TaxInput {
   // (salariuBaza, cu gradații) + soldă de grad (coef × val. ref., FĂRĂ gradații).
   // Art. 2 alin. (2) + art. 6 alin. (4) + art. 4 alin. (3) din Anexa VI.
   soldaGradCoef?: number;
+  // Art. 10 alin. (8) din proiect: dacă salariul de bază / solda de funcție
+  // (normă de 8 ore) iese sub salariul minim brut pe țară, se plătește o sumă
+  // egală cu salariul minim. Implicit SAL_MIN_BRUT; `false` dezactivează.
+  salariuMinimGarantat?: number | false;
 }
 
 export interface TaxBreakdown {
   salariuBaza: number; // soldă de funcție + soldă de grad (pt. militari); altfel salariul de bază
   soldaGrad: number; // în lei, solda de grad / salariul gradului profesional (Anexa VI), 0 altfel
+  // în lei, suma adăugată ca salariul de bază/solda de funcție să ajungă la
+  // salariul minim brut pe țară (art. 10 alin. 8 din proiect); 0 altfel
+  completareSalariuMinim: number;
   sporuriProcent: number; // în lei, sporuri procentuale care intră în plafon (NU mai sunt capate)
   sporuriValoare: number; // în lei, sporuri valorice
   sporuriExceptate: number; // în lei, sporuri în afara plafonului
@@ -199,7 +206,18 @@ export function calculDeducere(
 }
 
 export function calcBrut(input: TaxInput): TaxBreakdown {
-  const sb = input.salariuBaza + (input.coefSuplimentConducere ?? 0) * input.valoareReferinta;
+  const sbCalculat = input.salariuBaza + (input.coefSuplimentConducere ?? 0) * input.valoareReferinta;
+  // sursa: proiect MMFTSS art. 10 alin. (8) (25 mai / 17 iul. / 20 aug. 2026; în
+  // varianta 20 aug. la pag. 8-9) + art. 7 lit. z) pentru solda de funcție:
+  // sub salariul minim brut pe țară garantat în plată se plătește o sumă egală
+  // cu acesta. Folosim salariul minim în vigoare (HG 146/2026: 4.325 lei); cel
+  // din 2027 nu e încă stabilit. Normă întreagă — timpul parțial nu e modelat.
+  const salMinGarantat = input.salariuMinimGarantat === false ? 0 : input.salariuMinimGarantat ?? SAL_MIN_BRUT;
+  const completareSalariuMinim =
+    sbCalculat > 0 && sbCalculat < salMinGarantat ? salMinGarantat - sbCalculat : 0;
+  // Sporurile rămân calculate la salariul de bază din grilă (`sb`): proiectul
+  // nu spune dacă suma de completare intră în baza sporurilor.
+  const sb = sbCalculat;
   // Solda de grad (Anexa VI) = coef cap. I.2 × val. ref. Se adaugă în solda lunară,
   // dar NU primește gradații (art. 4 alin. 3) și NU intră în baza sporurilor calculate
   // „din solda de funcție" (ex. art. 10) — de aceea e ținut separat de `sb`.
@@ -261,7 +279,7 @@ export function calcBrut(input: TaxInput): TaxBreakdown {
   const plafon20 = sb * 0.2;
   const sporuriDepasesc = sporuriProcent > plafon20;
 
-  const salariuBrut = sb + soldaGrad + sporuriProcent + sporuriExceptate + sporuriValoare;
+  const salariuBrut = sb + completareSalariuMinim + soldaGrad + sporuriProcent + sporuriExceptate + sporuriValoare;
 
   // CAS 25%, CASS 10%
   const cas = Math.round(salariuBrut * 0.25);
@@ -282,8 +300,9 @@ export function calcBrut(input: TaxInput): TaxBreakdown {
   const salariuNet = venitImpozabil - impozit;
 
   return {
-    salariuBaza: Math.round(sb + soldaGrad),
+    salariuBaza: Math.round(sb + completareSalariuMinim + soldaGrad),
     soldaGrad: Math.round(soldaGrad),
+    completareSalariuMinim: Math.round(completareSalariuMinim),
     sporuriProcent,
     sporuriValoare,
     sporuriExceptate,
