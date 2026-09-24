@@ -11,6 +11,11 @@ import BannerNeadoptat from "@/components/BannerNeadoptat";
 import Variante from "@/components/Variante";
 import { VARIANTE, VARIANTA_IMPLICITA } from "@/lib/variants";
 import { numarFunctii } from "@/lib/variants-data";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { GRILE, RT_ORGANIZATIE, SITE_URL, VARIANTE_TEXT, grilaDupaSlug, jsonLd } from "@/lib/seo";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 export default function HomePage() {
   const implicita = VARIANTE.find((v) => v.id === VARIANTA_IMPLICITA)!;
@@ -18,6 +23,27 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLd({
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "@id": `${SITE_URL}/#aplicatie`,
+              name: "Calculator Salariu Bugetari",
+              url: `${SITE_URL}/`,
+              applicationCategory: "FinanceApplication",
+              operatingSystem: "Any",
+              inLanguage: "ro",
+              isAccessibleForFree: true,
+              offers: { "@type": "Offer", price: "0", priceCurrency: "RON" },
+              description: `Calculează salariul brut și net al personalului plătit din fonduri publice pe proiectul noii legi a salarizării, în variantele: ${VARIANTE_TEXT}. Proiect neadoptat.`,
+              publisher: RT_ORGANIZATIE,
+            },
+            { "@type": "WebSite", "@id": `${SITE_URL}/#site`, name: "Calculator Salariu Bugetari", url: `${SITE_URL}/`, inLanguage: "ro", publisher: RT_ORGANIZATIE },
+          ],
+        })}
+      />
       <BannerNeadoptat />
 
       <header className="relative overflow-hidden bg-gradient-to-br from-brand-900 via-brand-700 to-brand-500 text-white">
@@ -77,6 +103,25 @@ export default function HomePage() {
       <Variante />
 
       <Sources />
+
+      <section id="grile" className="border-t bg-white">
+        <div className="mx-auto max-w-6xl px-4 py-10">
+          <h2 className="text-xl md:text-2xl font-bold text-slate-900">Grilele de salarizare, pe domenii</h2>
+          <p className="mt-1 text-sm text-slate-600">
+            Coeficienții și salariul de bază din varianta din {implicita.eticheta}, anexă cu anexă.{" "}
+            <Link href="/grila" className="text-brand-700 underline underline-offset-2">Toate grilele</Link>
+          </p>
+          <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3 text-sm">
+            {GRILE.map((g) => (
+              <li key={g.slug}>
+                <Link href={`/grila/${g.slug}`} className="text-brand-700 underline-offset-2 hover:underline">
+                  Anexa {g.anexa}: {grilaDupaSlug(g.slug)!.nume}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
 
       <section className="border-t bg-gradient-to-br from-amber-50 via-white to-amber-50">
         <div className="mx-auto max-w-3xl px-4 py-10 text-center">

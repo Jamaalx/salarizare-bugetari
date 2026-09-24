@@ -45,6 +45,20 @@ const nextConfig = {
       },
     ];
   },
+  async redirects() {
+    // http → https: Cloudflare trimite schema cererii originale în CF-Visitor (healthcheck-ul local nu îl are).
+    // /api, /mcp, /oauth și /.well-known rămân neatinse: clienții MCP deja înregistrați.
+    const http = [{ type: 'header', key: 'cf-visitor', value: '.*"scheme":"http".*' }];
+    return [
+      { source: '/', has: http, destination: 'https://salarii.romaniatransparenta.eu/', permanent: true },
+      {
+        source: '/:path((?!api/|mcp|oauth|\\.well-known).*)',
+        has: http,
+        destination: 'https://salarii.romaniatransparenta.eu/:path',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

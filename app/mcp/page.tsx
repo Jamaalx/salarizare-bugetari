@@ -15,6 +15,7 @@ export const metadata = {
   title: "MCP — Calculator Salariu Bugetari ca tool pentru AI",
   description:
     "Conectează acest calculator la Claude.ai, ChatGPT sau orice asistent AI prin Model Context Protocol (MCP). Endpoint public, gratis.",
+  alternates: { canonical: "/mcp" },
 };
 
 const TOOLS = [

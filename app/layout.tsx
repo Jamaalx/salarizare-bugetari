@@ -4,10 +4,9 @@ import BaraPlatforma from "@/components/BaraPlatforma";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://salarii.romaniatransparenta.eu"),
-  alternates: { canonical: "/" },
-  title: "Calculator Salariu Bugetari — România Transparentă",
+  title: "Calculator Salariu Bugetari 2026 — noua lege a salarizării",
   description:
-    "Calculator interactiv pentru noul sistem de salarizare al personalului plătit din fonduri publice — cele trei variante ale proiectului MMFTSS (25 mai, 17 iulie, 20 august 2026). Estimează salariul brut și net pe baza coeficienților 1–8.",
+    "Calculează salariul brut și net pe noua lege a salarizării bugetarilor, în cele trei variante ale proiectului MMFTSS (25 mai, 17 iulie, 20 august 2026).",
   keywords: [
     "salarizare bugetari",
     "calculator salariu",
@@ -24,7 +23,9 @@ export const metadata: Metadata = {
     url: "https://salarii.romaniatransparenta.eu",
     locale: "ro_RO",
     type: "website",
+    images: [{ url: "https://romaniatransparenta.eu/og-image.png", width: 1200, height: 630 }],
   },
+  twitter: { card: "summary_large_image" },
   robots: { index: true, follow: true },
 };
 
