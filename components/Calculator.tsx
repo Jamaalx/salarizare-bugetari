@@ -5,10 +5,10 @@ import { useVarianta } from "@/lib/varianta-context";
 import {
   calcBrut,
   aplicaGradatie,
-  GRADATII,
   SPORURI_STANDARD,
   ORE_NORMA_REPER,
   gradatieDinVechime,
+  gradatiiForAnexa,
   sporuriPentruAnexa,
   clampNumber,
   soldaGradByKey,
@@ -127,14 +127,20 @@ export default function Calculator({ initialData }: Props) {
   // gradațiile — el doar selectează coeficientul de bază.
   const skipGradatii = esteConducere || selected?.anexa === "V" || selected?.anexa === "IX";
 
+  // Tabelul de gradații: Anexa VI (militari, polițiști, polițiști de
+  // penitenciare) NU folosește cele 6 gradații civile, ci 7 gradații de 3%.
+  // sursa: proiect MMFTSS art. 13 alin. (1) (excepția) + Anexa VI cap. II
+  // art. 4 alin. (1)-(3) (forma din 20 mai 2026, identică în 17 iul./20 aug.)
+  const tabelGradatii = gradatiiForAnexa(selected?.anexa ?? "");
   // calcul salariu de bază
-  const gradatie = skipGradatii
+  const gradatieCalc = skipGradatii
     ? 0
     : gradatieManual !== null
     ? gradatieManual
-    : gradatieDinVechime(aniVechime);
+    : gradatieDinVechime(aniVechime, tabelGradatii);
+  const gradatie = Math.min(gradatieCalc, tabelGradatii.length - 1);
   const salariuG0 = selected ? selected.coeficient * valRef : 0;
-  const salariuBaza = selected ? aplicaGradatie(salariuG0, gradatie) : 0;
+  const salariuBaza = selected ? aplicaGradatie(salariuG0, gradatie, tabelGradatii) : 0;
   const salariuBazaRot = Math.round(salariuBaza);
 
   // Sporurile aplicabile pe anexa funcției selectate (ex: medicii NU primesc
@@ -231,11 +237,14 @@ export default function Calculator({ initialData }: Props) {
             />
             <span className="text-sm text-slate-600">ani</span>
             <span className="ml-auto inline-flex items-center gap-2 rounded-full bg-brand-100 px-3 py-1 text-sm font-medium text-brand-700">
-              Gradația {gradatie} ({GRADATII[gradatie].numeRange})
+              Gradația {gradatie} ({tabelGradatii[gradatie].numeRange})
             </span>
           </div>
-          <div className="mt-3 grid grid-cols-6 gap-1 text-xs">
-            {GRADATII.map((g) => (
+          <div
+            className="mt-3 grid gap-1 text-xs"
+            style={{ gridTemplateColumns: `repeat(${tabelGradatii.length}, minmax(0, 1fr))` }}
+          >
+            {tabelGradatii.map((g) => (
               <button
                 key={g.nivel}
                 onClick={() => setGradatieManual(g.nivel)}

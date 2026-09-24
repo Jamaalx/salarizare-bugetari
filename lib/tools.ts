@@ -11,6 +11,7 @@ import {
   calcBrut,
   aplicaGradatie,
   GRADATII,
+  GRADATII_APARARE,
   SPORURI_STANDARD,
   gradatieDinVechime,
 } from "./tax";
@@ -68,7 +69,15 @@ export const calculateSalarySchema = z.object({
     .min(0)
     .max(60)
     .default(0)
-    .describe("Ani vechime totală în muncă (inclusiv sectorul privat)"),
+    .describe(
+      "Ani vechime totală în muncă (inclusiv sectorul privat). Pentru Anexa VI (militari/poliție/penitenciare): timpul servit ca militar/polițist — 7 gradații de 3% la 3/6/9/12/15/18/21 ani",
+    ),
+  anexa: z
+    .enum(["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"])
+    .optional()
+    .describe(
+      "Anexa funcției (din search_function). Contează pentru gradații: Anexa VI folosește cele 7 gradații de 3% (Anexa VI art. 4), celelalte cele 6 gradații din art. 13. Lipsă → Anexa VI dacă e dat soldaGradCoef, altfel regimul general.",
+    ),
   valoareReferinta: z
     .number()
     .optional()
@@ -188,10 +197,15 @@ export function searchFunction(input: z.infer<typeof searchFunctionSchema>) {
 export function calculateSalary(input: z.infer<typeof calculateSalarySchema>) {
   const variant = getVarianta(input.varianta);
   const valRef = input.valoareReferinta ?? variant.valoareReferinta;
-  const gradatie = input.coefIncludeVechime ? 0 : gradatieDinVechime(input.aniVechime);
+  // Militarii/polițiștii/polițiștii de penitenciare au 7 gradații de 3% (3–21 ani).
+  // sursa: proiect MMFTSS art. 13 alin. (1) (excepția) + Anexa VI cap. II art. 4 alin. (3)
+  // (forma din 20 mai 2026). Fără `anexa`, soldaGradCoef > 0 identifică Anexa VI.
+  const esteAnexaVI = input.anexa === "VI" || (input.anexa === undefined && (input.soldaGradCoef ?? 0) > 0);
+  const tabel = esteAnexaVI ? GRADATII_APARARE : GRADATII;
+  const gradatie = input.coefIncludeVechime ? 0 : gradatieDinVechime(input.aniVechime, tabel);
 
   const salariuG0 = input.coeficient * valRef;
-  const salariuBaza = Math.round(aplicaGradatie(salariuG0, gradatie));
+  const salariuBaza = Math.round(aplicaGradatie(salariuG0, gradatie, tabel));
 
   const sporuriState = SPORURI_STANDARD.map((sp) => {
     const found = input.sporuri.find((s) => s.id === sp.id);
@@ -228,6 +242,7 @@ export function calculateSalary(input: z.infer<typeof calculateSalarySchema>) {
       valoareReferinta: valRef,
       aniVechime: input.aniVechime,
       gradatie: gradatie,
+      regimGradatii: esteAnexaVI ? "Anexa VI art. 4 (7 × 3%)" : "art. 13 (6 gradații)",
       coefIncludeVechime: input.coefIncludeVechime,
     },
     salariuDeBaza: tax.salariuBaza,
@@ -251,7 +266,7 @@ export function calculateSalary(input: z.infer<typeof calculateSalarySchema>) {
     moneda: "RON",
     note: input.coefIncludeVechime
       ? "Pentru această funcție gradațiile nu se aplică — coef include deja vechimea sau e funcție de conducere"
-      : `Gradația ${gradatie} aplicată (${GRADATII[gradatie].numeRange})`,
+      : `Gradația ${gradatie} aplicată (${tabel[gradatie].numeRange}${esteAnexaVI ? ", regimul Anexei VI: +3% pe gradație" : ""})`,
   };
 }
 
@@ -307,9 +322,15 @@ export function listVariante() {
 export function getGradatiiTable() {
   return {
     descriere:
-      "Gradațiile se aplică succesiv (compus) pe salariul de bază. Excepție: funcții de conducere și învățământ universitar/sanitar — coef include deja vechimea. Tabelul este identic în toate cele trei variante ale proiectului.",
+      "Gradațiile se aplică succesiv (compus) pe salariul de bază; coeficienții de execuție din anexe sunt la gradația 0 (art. 13 alin. 2). Excepții (art. 13 alin. 1): demnitate publică, funcții de conducere și înalți funcționari publici (gradația e inclusă) și militarii/polițiștii/polițiștii de penitenciare, care au regimul propriu din Anexa VI (câmpul anexaVI). Tabelele sunt identice în toate cele trei variante ale proiectului.",
     referintaLegala: "Art. 13 din proiectul de lege MMFTSS (25 mai / 17 iulie / 20 august 2026)",
     gradatii: GRADATII,
+    anexaVI: {
+      descriere:
+        "Militari, polițiști și polițiști de penitenciare (exceptați de la art. 13 alin. 1): 7 gradații, fiecare +3% aplicat succesiv la solda/salariul de funcție; solda de grad nu primește gradații.",
+      referintaLegala: "Anexa VI cap. II art. 4 alin. (1)-(3) din proiectul MMFTSS",
+      gradatii: GRADATII_APARARE,
+    },
   };
 }
 
@@ -387,7 +408,7 @@ export const TOOL_DEFINITIONS = [
   {
     name: "calculate_salary",
     description:
-      "Calculează salariul brut și net pentru o funcție, dat coeficientul. Aplică gradații de vechime, sporuri configurabile, deduce impozitele (CAS 25%, CASS 10%, impozit pe venit 10%). Valoarea de referință implicită depinde de variantă (4100 lei la 25 mai/17 iulie, 4000 lei la 20 august). Pentru funcții de conducere sau învățământ universitar/sanitar, setează coefIncludeVechime=true.",
+      "Calculează salariul brut și net pentru o funcție, dat coeficientul. Aplică gradații de vechime, sporuri configurabile, deduce impozitele (CAS 25%, CASS 10%, impozit pe venit 10%). Valoarea de referință implicită depinde de variantă (4100 lei la 25 mai/17 iulie, 4000 lei la 20 august). Pentru funcții de conducere, Anexa V și Anexa IX setează coefIncludeVechime=true; pentru Anexa VI trimite anexa=\"VI\" (7 gradații de 3%).",
     schema: calculateSalarySchema,
     handler: calculateSalary,
   },
@@ -408,7 +429,7 @@ export const TOOL_DEFINITIONS = [
   {
     name: "get_gradatii_table",
     description:
-      "Returnează tabelul cu cele 6 gradații de vechime și cotele de majorare conform art. 13 (identic în toate variantele).",
+      "Returnează tabelul cu cele 6 gradații de vechime din art. 13 și, separat, cele 7 gradații de 3% ale militarilor/polițiștilor (Anexa VI art. 4) — identice în toate variantele.",
     schema: z.object({}),
     handler: getGradatiiTable,
   },
