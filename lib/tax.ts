@@ -5,7 +5,14 @@
 // transmis ca parametru. Acoperă regulile fiscale RO valabile la momentul
 // redactării. Rezultatele sunt estimări orientative.
 
-export const SAL_MIN_BRUT_2026 = 4050; // salariul minim brut pe țară 2026 (RO)
+// Salariul de bază minim brut pe țară garantat în plată, în vigoare la data
+// verificării (24.09.2026). Folosit pentru deducerea personală (art. 77 Cod
+// fiscal) și pentru garanția de la art. 10 alin. (8) din proiect.
+// sursa: HG nr. 146/2026 (M.Of. 13.03.2026) — 4.325 lei de la 1 iulie 2026
+// (1 ian.–30 iun. 2026: 4.050 lei, HG nr. 1506/2024).
+export const SAL_MIN_BRUT = 4325;
+/** @deprecated nume istoric — valoarea urmează salariul minim în vigoare (SAL_MIN_BRUT). */
+export const SAL_MIN_BRUT_2026 = SAL_MIN_BRUT;
 
 // Reper orientativ pentru programul lunar de lucru (medie ~165 h/lună la normă
 // întreagă). Folosit DOAR ca text ajutător — utilizatorul introduce numărul
