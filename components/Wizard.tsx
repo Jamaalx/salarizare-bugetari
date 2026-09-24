@@ -265,6 +265,7 @@ export default function Wizard({ initialData }: Props) {
         copiiInvatamant: s.copiiInvatamant,
         coefSuplimentConducere: aplicaCoefSupliment ? s.coefSuplimentConducere : 0,
         soldaGradCoef,
+        plafonIncludeSoldaGrad: variant.id !== "2026-05-25",
       })
     : null;
 

@@ -113,6 +113,10 @@ export interface TaxInput {
   // (normă de 8 ore) iese sub salariul minim brut pe țară, se plătește o sumă
   // egală cu salariul minim. Implicit SAL_MIN_BRUT; `false` dezactivează.
   salariuMinimGarantat?: number | false;
+  // Art. 21 alin. (2): baza plafonului de 20% cuprinde și soldele de grad în
+  // variantele 17 iul. / 20 aug.; în varianta 25 mai textul nu le enumera.
+  // Implicit true.
+  plafonIncludeSoldaGrad?: boolean;
 }
 
 export interface TaxBreakdown {
@@ -228,7 +232,10 @@ export function calcBrut(input: TaxInput): TaxBreakdown {
   const tarifOrar = oreNorma > 0 ? sb / oreNorma : 0;
 
   let sporuriProcent = 0;
-  let sporuriValoare = 0;
+  // Câmp păstrat pentru compatibilitate: sporurile „% din valoarea de referință"
+  // (tip "valoare") sunt însumate în sporuriProcent/sporuriExceptate după
+  // inclusInPlafon20, deci aici rămâne 0 — nu se pierde nicio sumă.
+  const sporuriValoare = 0;
   let sporuriExceptate = 0;
   let sumeOneOff = 0;
   let oreNormaLipsa = false;
@@ -276,7 +283,9 @@ export function calcBrut(input: TaxInput): TaxBreakdown {
   // Plafonul de 20% conform art. 21 alin. (2) se aplică AGREGAT pe ordonatorul
   // principal de credite (instituție), NU per persoană. La nivel individual nu
   // cap-uim suma sporurilor — doar marcăm dacă depășește media de 20% (avertisment).
-  const plafon20 = sb * 0.2;
+  // sursa: proiect MMFTSS art. 21 alin. (2) (17 iul. / 20 aug. 2026) — baza cuprinde
+  // și soldele de grad/salariile gradului profesional deținut (lipsesc în textul din 25 mai).
+  const plafon20 = (sb + (input.plafonIncludeSoldaGrad === false ? 0 : soldaGrad)) * 0.2;
   const sporuriDepasesc = sporuriProcent > plafon20;
 
   const salariuBrut = sb + completareSalariuMinim + soldaGrad + sporuriProcent + sporuriExceptate + sporuriValoare;

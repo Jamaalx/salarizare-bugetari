@@ -224,6 +224,7 @@ export function calculateSalary(input: z.infer<typeof calculateSalarySchema>) {
     valoareReferinta: valRef,
     oreNormaLunara: input.oreNormaLunara,
     soldaGradCoef: input.soldaGradCoef,
+    plafonIncludeSoldaGrad: variant.id !== "2026-05-25",
     persoaneInIntretinere: input.persoaneInIntretinere,
     sub26Ani: input.sub26Ani,
     copiiInvatamant: input.copiiInvatamant,

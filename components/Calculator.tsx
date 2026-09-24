@@ -172,8 +172,9 @@ export default function Calculator({ initialData }: Props) {
       valoareReferinta: valRef,
       oreNormaLunara: oreNorma,
       soldaGradCoef,
+      plafonIncludeSoldaGrad: variant.id !== "2026-05-25",
     });
-  }, [selected, salariuBazaRot, sporuriVizibile, valRef, oreNorma, soldaGradCoef]);
+  }, [selected, salariuBazaRot, sporuriVizibile, valRef, oreNorma, soldaGradCoef, variant.id]);
 
   const toggleSpor = (id: string) => {
     setSporuriState((prev) =>
@@ -661,7 +662,7 @@ function ResultPanel({
           value={fmt(taxResult.salariuBrut) + " lei"}
           sub={
             taxResult.sporuriDepasescPlafon
-              ? "⚠ sporurile depășesc plafonul 20% — au fost capate"
+              ? "⚠ sporurile din plafon depășesc 20% din bază — plafonul se aplică pe instituție (art. 21 alin. 2), nu au fost tăiate"
               : "include sporurile bifate"
           }
         />
