@@ -1191,8 +1191,9 @@ function StepActual({
               <div className="text-xs text-slate-600 mt-1 leading-snug">
                 Bifează dacă te încadrezi în art. 60 din Codul fiscal: persoană cu{" "}
                 <strong>handicap grav sau accentuat</strong>, personal{" "}
-                <strong>cercetare-dezvoltare</strong> sau <strong>programator IT</strong>.
-                Impozitul pe veniturile salariale devine 0%; CAS și CASS rămân.
+                <strong>cercetare-dezvoltare-inovare</strong> (doar pentru salariul din proiectul de
+                cercetare). Scutirea pentru programatori IT a fost abrogată de la 1 ianuarie 2025 (OUG
+                156/2024). Impozitul pe veniturile salariale devine 0%; CAS și CASS rămân.
               </div>
             </div>
           </div>
