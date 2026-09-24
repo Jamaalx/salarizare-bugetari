@@ -15,6 +15,8 @@ const MODEL = process.env.NVIDIA_MODEL || "meta/llama-3.3-70b-instruct";
 const CHAT_LIMIT = 10;
 const CHAT_WINDOW_MS = 60_000;
 
+const NVIDIA_TIMEOUT_MS = 30_000;
+
 const MAX_MESSAGE_CHARS = 2000;
 const MAX_MESSAGES = 20;
 const ALLOWED_ROLES = new Set(["user", "assistant"]);
@@ -106,6 +108,8 @@ async function callNvidia(messages: ChatMessage[], useTools = true): Promise<any
       Accept: "application/json",
     },
     body: JSON.stringify(body),
+    // Fără timeout, un upstream blocat ține cererea (și workerul) deschisă la nesfârșit.
+    signal: AbortSignal.timeout(NVIDIA_TIMEOUT_MS),
   });
 
   if (!res.ok) {

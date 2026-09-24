@@ -28,16 +28,16 @@ export function rateLimit(
   return { ok: true, remaining: limit - b.count, resetAt: b.resetAt };
 }
 
+// Ordinea contează: `cf-connecting-ip` e pus (și suprascris) de Cloudflare, deci
+// clientul nu îl poate falsifica. Primul element din `x-forwarded-for` vine direct
+// de la client — un antet XFF inventat la fiecare cerere ar ocoli limita.
 export function getClientIp(req: Request): string {
   const h = req.headers;
+  const cf = h.get("cf-connecting-ip");
+  if (cf) return cf.trim();
   const xff = h.get("x-forwarded-for");
   if (xff) return xff.split(",")[0].trim();
-  return (
-    h.get("x-real-ip") ||
-    h.get("cf-connecting-ip") ||
-    h.get("fly-client-ip") ||
-    "unknown"
-  );
+  return h.get("x-real-ip") || h.get("fly-client-ip") || "unknown";
 }
 
 // Periodic cleanup so the Map doesn't grow unbounded.
