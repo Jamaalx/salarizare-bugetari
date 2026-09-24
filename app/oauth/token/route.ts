@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { signJwt, verifyJwt, pkceVerify } from "@/lib/oauth";
+import { signJwt, verifyJwt, pkceVerify, oauthEnabled, oauthDisabledResponse } from "@/lib/oauth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -10,6 +10,7 @@ const CORS = {
 };
 
 export async function POST(req: NextRequest) {
+  if (!oauthEnabled()) return oauthDisabledResponse();
   const ct = req.headers.get("content-type") || "";
   let params: URLSearchParams;
   if (ct.includes("application/x-www-form-urlencoded")) {

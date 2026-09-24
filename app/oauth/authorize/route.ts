@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { signJwt } from "@/lib/oauth";
+import { signJwt, oauthEnabled, oauthDisabledResponse, redirectUriPermis } from "@/lib/oauth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  if (!oauthEnabled()) return oauthDisabledResponse();
   const url = new URL(req.url);
   const p = url.searchParams;
   const response_type = p.get("response_type");
@@ -36,14 +37,14 @@ export async function GET(req: NextRequest) {
       { status: 400 }
     );
   }
-  const okScheme =
-    parsedRedirect.protocol === "https:" ||
-    (parsedRedirect.protocol === "http:" &&
-      (parsedRedirect.hostname === "localhost" ||
-        parsedRedirect.hostname === "127.0.0.1"));
-  if (!okScheme) {
+  // Doar redirect_uri din lista permisă (lib/oauth.ts) — altfel orice site
+  // putea primi un cod de autorizare (open redirect). Eroarea NU redirecționează.
+  if (!redirectUriPermis(redirect_uri)) {
     return NextResponse.json(
-      { error: "invalid_redirect_uri" },
+      {
+        error: "invalid_request",
+        error_description: "redirect_uri nepermis pentru acest server",
+      },
       { status: 400 }
     );
   }

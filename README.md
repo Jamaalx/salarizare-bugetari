@@ -66,7 +66,8 @@ cp .env.example .env.local   # apoi completează ce ai nevoie
 |---|---|
 | `NVIDIA_API_KEY` | cheie NVIDIA NIM pentru widget-ul de chat AI (`/api/chat`); fără ea, ruta răspunde 503 `NOT_CONFIGURED` |
 | `NVIDIA_MODEL` | modelul folosit de chat (implicit `meta/llama-3.3-70b-instruct`) |
-| `OAUTH_SIGNING_SECRET` | secretul HMAC pentru token-urile OAuth ale serverului MCP (`/oauth/*`); **obligatoriu în producție** |
+| `OAUTH_SIGNING_SECRET` | secretul HMAC (min. 32 caractere) pentru token-urile OAuth ale serverului MCP (`/oauth/*`); fără el OAuth e dezactivat (503), iar `/api/mcp` rămâne public — nu există secret de rezervă |
+| `OAUTH_REDIRECT_ALLOWLIST` | opțional: `redirect_uri` exacte suplimentare (separate prin virgulă); implicit doar conectorul Claude, ChatGPT și `localhost` |
 
 Build Docker identic cu cel din producție:
 
