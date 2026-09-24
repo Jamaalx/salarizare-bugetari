@@ -92,8 +92,8 @@ export interface TaxInput {
   oreNormaLunara?: number;
   // Persoane scutite de impozitul pe veniturile din salarii — art. 60 Cod fiscal:
   // - persoane cu handicap grav sau accentuat (pct. 1 lit. b)
-  // - personal cercetare-dezvoltare (pct. 3)
-  // - programatori IT (pct. 2)
+  // - personal cercetare-dezvoltare-inovare, pe proiecte (pct. 3)
+  // (pct. 2 — programatori IT — abrogat de la 01.01.2025 prin OUG 156/2024)
   scutireImpozit?: boolean;
   // Persoane în întreținere pentru calculul deducerii personale (Cod fiscal).
   persoaneInIntretinere?: number;
@@ -288,11 +288,20 @@ export function calcBrut(input: TaxInput): TaxBreakdown {
   const plafon20 = (sb + (input.plafonIncludeSoldaGrad === false ? 0 : soldaGrad)) * 0.2;
   const sporuriDepasesc = sporuriProcent > plafon20;
 
-  const salariuBrut = sb + completareSalariuMinim + soldaGrad + sporuriProcent + sporuriExceptate + sporuriValoare;
+  const salariuBrutExact = sb + completareSalariuMinim + soldaGrad + sporuriProcent + sporuriExceptate + sporuriValoare;
+  // Contribuțiile și impozitul se calculează pe brutul AFIȘAT (rotunjit la leu),
+  // ca identitatea brut − CAS − CASS − impozit = net să se verifice pe fluturaș.
+  // Înainte, CAS/CASS se calculau pe brutul cu bani și netul putea ieși cu ±1 leu
+  // față de suma afișată. Fiecare sumă datorată se rotunjește la leu (Math.round);
+  // Codul fiscal nu conține o regulă explicită de rotunjire pentru aceste sume.
+  const salariuBrut = Math.round(salariuBrutExact);
 
-  // CAS 25%, CASS 10%
+  // sursa: Codul fiscal art. 138 lit. a) — CAS 25%; art. 139 alin. (1) — baza = câștigul brut
+  // (militari/polițiști: contribuția individuală la bugetul de stat, tot 25% — Legea 223/2015)
   const cas = Math.round(salariuBrut * 0.25);
+  // sursa: Codul fiscal art. 156 — CASS 10%; art. 157 alin. (1) — baza = câștigul brut
   const cass = Math.round(salariuBrut * 0.1);
+  // sursa: Codul fiscal art. 78 alin. (2) lit. a) — baza = brut − contribuții − deducere personală
   const venitImpozabil = salariuBrut - cas - cass;
 
   // sursa: Codul fiscal art. 77 alin. (2) — deducerea se acordă în limita venitului impozabil lunar
@@ -304,9 +313,12 @@ export function calcBrut(input: TaxInput): TaxBreakdown {
     }),
   );
 
+  // sursa: Codul fiscal art. 78 alin. (2) lit. a) — cota de 10%
   const impozitCalculat = Math.round(Math.max(0, venitImpozabil - deductibil) * 0.1);
+  // sursa: Codul fiscal art. 60 pct. 1 lit. b) — scutire pentru handicap grav/accentuat
+  // (pct. 3 cercetare-dezvoltare rămâne; pct. 2 IT abrogat de la 01.01.2025, OUG 156/2024)
   const impozit = input.scutireImpozit ? 0 : impozitCalculat;
-  const salariuNet = venitImpozabil - impozit;
+  const salariuNet = Math.round(venitImpozabil - impozit);
 
   return {
     salariuBaza: Math.round(sb + completareSalariuMinim + soldaGrad),
@@ -315,12 +327,12 @@ export function calcBrut(input: TaxInput): TaxBreakdown {
     sporuriProcent,
     sporuriValoare,
     sporuriExceptate,
-    salariuBrut: Math.round(salariuBrut),
+    salariuBrut,
     cas,
     cass,
     deductibil,
     impozit,
-    salariuNet: Math.round(salariuNet),
+    salariuNet,
     plafon20,
     sporuriDepasescPlafon: sporuriDepasesc,
     sumeOneOff: Math.round(sumeOneOff),
