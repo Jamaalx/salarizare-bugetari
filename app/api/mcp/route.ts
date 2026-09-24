@@ -7,6 +7,7 @@ import {
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { TOOL_DEFINITIONS } from "@/lib/tools";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { baseUrl, oauthEnabled, verifyJwt } from "@/lib/oauth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -158,6 +159,35 @@ export async function POST(req: NextRequest) {
         },
       }
     );
+  }
+
+  // Autentificare: serverul rămâne PUBLIC — cererile fără Authorization merg
+  // anonim, exact ca înainte (tools/list, calculate_salary). Un token Bearer
+  // trimis TREBUIE însă să fie valid: semnătură HMAC corectă, neexpirat,
+  // typ="access". Înainte era acceptat orice șir. Token invalid → 401 cu
+  // WWW-Authenticate (RFC 6750 / MCP authorization), iar clientul reface OAuth.
+  // Cu OAuth dezactivat (fără secret) nu se poate verifica nimic, deci
+  // antetul e ignorat — conectorii care au deja un token nu se strică.
+  const auth = req.headers.get("authorization");
+  const bearer = auth ? /^Bearer\s+(\S+)\s*$/i.exec(auth) : null;
+  if (bearer && oauthEnabled()) {
+    const payload = verifyJwt(bearer[1]);
+    if (!payload || payload.typ !== "access") {
+      return NextResponse.json(
+        {
+          jsonrpc: "2.0",
+          id: null,
+          error: { code: -32001, message: "Token invalid sau expirat." },
+        },
+        {
+          status: 401,
+          headers: {
+            "WWW-Authenticate": `Bearer error="invalid_token", resource_metadata="${baseUrl(req)}/.well-known/oauth-protected-resource"`,
+            "Cache-Control": "no-store",
+          },
+        }
+      );
+    }
   }
 
   let body: any;
