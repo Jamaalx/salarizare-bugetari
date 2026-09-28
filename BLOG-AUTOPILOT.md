@@ -284,3 +284,4 @@ Ultima linie a răspunsului, mereu: `PUBLICAT: https://salarii.romaniatransparen
 |---|---|---|
 | 2026-09-24 | salariu-asistent-medical-noua-lege | salariu asistent medical noua lege |
 | 2026-09-24 | cum-se-calculeaza-salariul-de-baza | valoarea de referință 4.000 lei |
+| 2026-09-29 | salariu-profesor-noua-lege | salariu profesor noua lege |
