@@ -46,19 +46,9 @@ export default function HomePage() {
       />
       <BannerNeadoptat />
 
-      <header className="relative overflow-hidden bg-gradient-to-br from-brand-900 via-brand-700 to-brand-500 text-white">
-        <div className="absolute inset-0 opacity-10 pointer-events-none" aria-hidden>
-          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="1" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid)" />
-          </svg>
-        </div>
-        <div className="relative mx-auto max-w-6xl px-4 py-5 md:py-8">
-          <div className="inline-flex flex-wrap items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold tracking-wide uppercase backdrop-blur-sm">
+      <section className="rt-hero relative overflow-hidden bg-rt-navy text-white">
+        <div className="relative mx-auto max-w-6xl px-4 py-8 md:py-14">
+          <div className="inline-flex flex-wrap items-center gap-2 rounded-full bg-white/12 px-3 py-1 text-[13px] font-medium tracking-[.14em] uppercase">
             <Calendar className="w-3.5 h-3.5" />
             Proiect lege salarizare 2026 — 3 variante oficiale
             <span className="mx-1 text-white/60">·</span>
@@ -66,7 +56,7 @@ export default function HomePage() {
             <span className="mx-1 text-white/60">·</span>
             neadoptat
           </div>
-          <h1 className="mt-3 text-2xl md:text-4xl font-bold tracking-tight leading-[1.1]">
+          <h1 className="mt-4 text-3xl md:text-5xl font-black tracking-[-0.015em] leading-[1.05]">
             Calculator Salariu Bugetari
           </h1>
           <p className="mt-2 max-w-2xl text-sm md:text-base text-white/90 leading-relaxed">
@@ -96,7 +86,7 @@ export default function HomePage() {
             </a>
           </div>
         </div>
-      </header>
+      </section>
 
       <ModeSwitcher />
 
@@ -125,9 +115,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="border-t bg-gradient-to-br from-amber-50 via-white to-amber-50">
+      <section className="bg-white border-t border-rt-line">
         <div className="mx-auto max-w-3xl px-4 py-10 text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 mb-3">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-brand-100 text-rt-navy mb-3">
             <Heart className="w-6 h-6" strokeWidth={2} />
           </div>
           <h2 className="text-xl md:text-2xl font-bold text-slate-900">
@@ -148,7 +138,7 @@ export default function HomePage() {
               href="https://buymeacoffee.com/alexmantello"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-4 inline-flex items-center gap-2 rounded-full bg-amber-400 hover:bg-amber-500 text-slate-900 font-semibold px-5 py-2.5 text-sm shadow-md shadow-amber-200 transition hover:scale-105"
+              className="mt-4 inline-flex items-center gap-2 rt-btn rt-btn--primary rt-btn--sm"
             >
               <Coffee className="w-4 h-4" strokeWidth={2.25} />
               Buy me a coffee
@@ -164,7 +154,7 @@ export default function HomePage() {
               </p>
               <a
                 href="https://romaniatransparenta.eu/despre/"
-                className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-slate-900 underline underline-offset-4 hover:text-brand-700"
+                className="rt-btn rt-btn--primary rt-btn--sm mt-5"
               >
                 Face parte din România Transparentă
                 <ExternalLink className="w-4 h-4" />
@@ -174,10 +164,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      <footer className="border-t bg-slate-900 text-slate-300">
-        <div className="mx-auto max-w-6xl px-4 py-10 text-sm space-y-3">
-          <p className="text-slate-200 font-semibold">Disclaimer</p>
-          <p className="text-slate-400 leading-relaxed">
+      <footer className="rt-footer">
+        <div className="mx-auto max-w-6xl px-6 py-10 md:px-10 md:py-14 text-sm space-y-3">
+          <p className="text-white font-bold">Disclaimer</p>
+          <p className="text-white/85 leading-relaxed">
             Acesta este un <strong className="text-white">instrument neoficial,
             informativ</strong>, dezvoltat independent și oferit{" "}
             <strong className="text-white">gratuit</strong> personalului din sectorul
@@ -198,16 +188,16 @@ export default function HomePage() {
             ))}
             ; pentru anii următori va fi stabilită prin Hotărâre de Guvern.
           </p>
-          <p className="text-slate-400 leading-relaxed">
+          <p className="text-white/85 leading-relaxed">
             Nu garantăm corectitudinea calculelor și nu ne asumăm răspunderea pentru
             deciziile luate pe baza lor — pentru sume oficiale consultă fluturașul de
             salariu emis de angajator. Nu colectăm date personale, nu folosim cookies
             de tracking, nu rulăm reclame.
           </p>
-          <p className="text-slate-400">
+          <p className="text-white/85">
             Sursa coeficienților:{" "}
             <a
-              className="text-brand-300 hover:text-brand-200 underline-offset-2 hover:underline"
+              className="text-white underline underline-offset-2 hover:text-rt-yellow"
               href="https://mmuncii.gov.ro/legea-salarizarii/"
               target="_blank"
               rel="noopener noreferrer"
@@ -216,7 +206,7 @@ export default function HomePage() {
             </a>{" "}
             (25 mai, 17 iulie) și{" "}
             <a
-              className="text-brand-300 hover:text-brand-200 underline-offset-2 hover:underline"
+              className="text-white underline underline-offset-2 hover:text-rt-yellow"
               href="https://publisind.ro/legea-salarizarii-varianta-iii-20-august-2026/"
               target="_blank"
               rel="noopener noreferrer"
@@ -225,7 +215,7 @@ export default function HomePage() {
             </a>{" "}
             /{" "}
             <a
-              className="text-brand-300 hover:text-brand-200 underline-offset-2 hover:underline"
+              className="text-white underline underline-offset-2 hover:text-rt-yellow"
               href="https://solidaritatea-sanitara.ro/proiectul-legii-salarizarii-varianta-20-08-2026/"
               target="_blank"
               rel="noopener noreferrer"
@@ -234,27 +224,27 @@ export default function HomePage() {
             </a>{" "}
             (20 august).
           </p>
-          <p className="text-slate-500 text-xs pt-2 border-t border-slate-800 flex items-center justify-center flex-wrap gap-1">
+          <p className="text-white/85 text-xs pt-2 border-t border-white/20 flex items-center justify-center flex-wrap gap-1">
             Construit cu
-            <Heart className="w-3 h-3 inline text-rose-400 fill-rose-400" />
+            <Heart className="w-3 h-3 inline text-rt-red fill-rt-red" />
             pentru bugetarii din România · Open-source ·{" "}
             <a
               href="https://github.com/Jamaalx/salarizare-bugetari"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-brand-300 hover:text-brand-200 underline-offset-2 hover:underline"
+              className="text-white underline underline-offset-2 hover:text-rt-yellow"
             >
               GitHub
             </a>
           </p>
-          <p className="text-center text-[13px] tracking-[.02em] text-slate-300/70">
+          <p className="text-center text-[13px] tracking-[.02em] text-white/85">
             Design, cod, funcționalități &amp; hosting:{" "}
             <a
               href="https://zed-zen.com"
               target="_blank"
               rel="noopener"
               title="ZEDZEN — web design, dezvoltare & hosting"
-              className="font-bold text-slate-300 no-underline border-b border-current hover:text-white"
+              className="font-bold text-white no-underline border-b border-current hover:text-rt-yellow"
             >
               ZEDZEN
             </a>

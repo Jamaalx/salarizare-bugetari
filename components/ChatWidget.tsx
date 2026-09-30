@@ -11,7 +11,7 @@ export default function ChatWidget() {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 rounded-full bg-brand-600 text-white px-5 py-3 shadow-lg shadow-brand-500/30 hover:bg-brand-700 hover:scale-105 transition"
+          className="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 rounded-full bg-rt-navy text-white px-5 py-3 shadow-[0_10px_30px_rgba(10,34,87,.28)] hover:bg-rt-blue transition"
           aria-label="Asistent AI"
         >
           <MessageCircle className="w-5 h-5" strokeWidth={2.25} />
@@ -24,7 +24,7 @@ export default function ChatWidget() {
 
       {open && (
         <div className="fixed bottom-5 right-5 z-50 w-[calc(100vw-2.5rem)] sm:w-[360px] bg-white rounded-2xl shadow-2xl ring-1 ring-slate-200 overflow-hidden animate-slide-up">
-          <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-brand-600 to-brand-700 text-white">
+          <div className="flex items-center justify-between px-4 py-3 bg-rt-navy text-white">
             <div className="flex items-center gap-2 min-w-0">
               <div className="shrink-0 w-8 h-8 rounded-full bg-white/15 inline-flex items-center justify-center backdrop-blur-sm">
                 <Sparkles className="w-4 h-4" strokeWidth={2} />

@@ -489,7 +489,7 @@ export default function Wizard({ initialData }: Props) {
                 (current?.id === "familia" && !s.anexa) ||
                 (current?.id === "functie" && s.functieIdx === null)
               }
-              className="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 text-white px-5 py-2.5 text-sm font-semibold hover:bg-brand-700 transition disabled:opacity-30 disabled:cursor-not-allowed shadow-sm"
+              className="inline-flex items-center gap-1.5 rounded-full bg-rt-navy text-white px-5 py-2.5 text-sm font-semibold hover:bg-rt-blue transition disabled:opacity-30 disabled:cursor-not-allowed"
             >
               {currentIdx === visibleSteps.length - 1
                 ? "Vezi rezultatul"
@@ -530,7 +530,7 @@ function StepIntro({ onNext }: { onNext: () => void }) {
       </p>
       <button
         onClick={onNext}
-        className="mt-8 inline-flex items-center gap-2 rounded-xl bg-brand-600 text-white px-8 py-3.5 text-base font-semibold hover:bg-brand-700 shadow-lg shadow-brand-200 transition"
+        className="mt-8 inline-flex items-center gap-2 rounded-full bg-rt-navy text-white px-8 py-3.5 text-base font-semibold hover:bg-rt-blue transition"
       >
         Începe calculul
         <ArrowRight className="w-5 h-5" />
@@ -1942,7 +1942,7 @@ function StepRezultat({
                   .catch(() => setCopyState("err"));
               }
             }}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 text-white px-5 py-2.5 text-sm font-semibold hover:bg-brand-700 transition shadow-sm"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-rt-navy text-white px-5 py-2.5 text-sm font-semibold hover:bg-rt-blue transition"
           >
             <Share2 className="w-4 h-4" /> Trimite linkul către un coleg
           </button>

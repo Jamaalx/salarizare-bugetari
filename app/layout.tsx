@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import BaraPlatforma from "@/components/BaraPlatforma";
 
@@ -27,7 +27,17 @@ export const metadata: Metadata = {
   },
   twitter: { card: "summary_large_image" },
   robots: { index: true, follow: true },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/site.webmanifest",
 };
+
+export const viewport: Viewport = { themeColor: "#0A2257" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

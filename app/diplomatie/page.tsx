@@ -37,7 +37,7 @@ export default function DiplomatiePage() {
 
   return (
     <main className="min-h-screen bg-slate-50">
-      <header className="bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-600 text-white">
+      <header className="bg-rt-navy text-white">
         <div className="mx-auto max-w-4xl px-4 py-8 md:py-12">
           <Link
             href="/"

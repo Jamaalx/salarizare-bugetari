@@ -1,53 +1,57 @@
 /**
- * Bara platformei: leagă calculatorul de România Transparentă și de celelalte
- * instrumente. Culorile și fontul vin din brandbook (tailwind.config.ts).
+ * Antetul platformei, după antetul de pe romaniatransparenta.eu (mod „bar"):
+ * logo, navigare spre registre și un meniu fără JavaScript pe mobil.
+ * Culorile și fontul vin din brandbook (globals.css / tailwind.config.ts).
  */
-const SIGLA = (
-  <svg viewBox="-80.105 -41.663 133.167 133.167" className="h-5 w-5 shrink-0" aria-hidden>
-    <path
-      fill="#FFFFFF"
-      fillRule="evenodd"
-      d="M-39.0,0A39.0,39.0 0 1 0 39.0,0A39.0,39.0 0 1 0 -39.0,0ZM-28.0,0A28.0,28.0 0 1 1 28.0,0A28.0,28.0 0 1 1 -28.0,0Z"
-    />
-    <g transform="rotate(35.6285)">
-      <path fill="#2F66C4" d="M-3.5,42.0H3.5A2.5,2.5 0 0 1 6.0,44.5V63.0H-6.0V44.5A2.5,2.5 0 0 1 -3.5,42.0Z" />
-      <path fill="#F2C41A" d="M-6.0,63.0H6.0V84.0H-6.0V63.0Z" />
-      <path fill="#E0454F" d="M-6.0,84.0H6.0V102.5A2.5,2.5 0 0 1 3.5,105.0H-3.5A2.5,2.5 0 0 1 -6.0,102.5V84.0Z" />
-    </g>
-  </svg>
-);
+const RT = "https://romaniatransparenta.eu";
 
 const LEGATURI = [
+  { eticheta: "Registre", href: `${RT}/registre/` },
   { eticheta: "Salarii bugetari", href: "https://salarii.romaniatransparenta.eu", curent: true },
   { eticheta: "Spitale", href: "https://spitale.romaniatransparenta.eu" },
-  { eticheta: "Registrul firmelor", href: "https://registru.horecaos.org" },
+  { eticheta: "Metodologie", href: `${RT}/cum-lucram/` },
+  { eticheta: "Despre", href: `${RT}/despre/` },
 ];
 
 export default function BaraPlatforma() {
   return (
-    <div className="bg-rt-navy text-white">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-5 gap-y-1 px-4 py-2 text-[13px]">
-        <a
-          href="https://romaniatransparenta.eu"
-          className="inline-flex items-center gap-2 font-bold hover:text-rt-yellow"
-        >
-          {SIGLA}
-          România Transparentă
+    <header className="rt-bar">
+      <div className="rt-bar__inner">
+        <a href={RT} className="rt-bar__logo" aria-label="România Transparentă, prima pagină">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-navy-tricolor.svg" alt="România Transparentă" width={132} height={31} />
         </a>
-        <nav className="flex flex-wrap items-center gap-x-4 gap-y-1">
-          {LEGATURI.map((l) =>
-            l.curent ? (
-              <span key={l.href} className="text-white/85">
-                {l.eticheta}
-              </span>
-            ) : (
-              <a key={l.href} href={l.href} className="text-white/85 hover:text-rt-yellow">
+        <nav className="rt-bar__nav" aria-label="Principal">
+          {LEGATURI.map((l) => (
+            <a
+              key={l.href}
+              href={l.href}
+              className="rt-bar__item"
+              aria-current={l.curent ? "page" : undefined}
+            >
+              {l.eticheta}
+            </a>
+          ))}
+        </nav>
+        <a href={`${RT}/#implica-te`} className="rt-btn rt-btn--primary rt-btn--sm rt-bar__cta">
+          Implică-te
+        </a>
+        <details className="rt-bar__m">
+          <summary aria-label="Meniu">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+              <path d="M4 7h16M4 12h16M4 17h16" />
+            </svg>
+          </summary>
+          <div className="rt-bar__mpanel">
+            {LEGATURI.map((l) => (
+              <a key={l.href} href={l.href} aria-current={l.curent ? "page" : undefined}>
                 {l.eticheta}
               </a>
-            ),
-          )}
-        </nav>
+            ))}
+            <a href={`${RT}/#implica-te`} className="rt-btn rt-btn--primary">Implică-te</a>
+          </div>
+        </details>
       </div>
-    </div>
+    </header>
   );
 }

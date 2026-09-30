@@ -51,7 +51,7 @@ const mcpUrl = `https://${PUBLIC_HOST}/api/mcp`;
 export default function McpPage() {
   return (
     <main className="min-h-screen bg-slate-50">
-      <header className="bg-gradient-to-br from-brand-700 via-brand-600 to-brand-500 text-white">
+      <header className="bg-rt-navy text-white">
         <div className="mx-auto max-w-4xl px-4 py-8 md:py-12">
           <Link
             href="/"
@@ -250,7 +250,7 @@ export default function McpPage() {
           </p>
           <Link
             href="/"
-            className="mt-3 inline-flex items-center gap-2 rounded-lg bg-brand-600 text-white px-4 py-2 text-sm font-semibold hover:bg-brand-700 transition"
+            className="mt-3 inline-flex items-center gap-2 rounded-full bg-rt-navy text-white px-4 py-2 text-sm font-semibold hover:bg-rt-blue transition"
           >
             <CalcIcon className="w-4 h-4" />
             Înapoi la calculator
