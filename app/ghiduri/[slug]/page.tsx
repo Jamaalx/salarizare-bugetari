@@ -71,7 +71,7 @@ export default async function GhidPage({ params }: { params: Promise<{ slug: str
               url,
               mainEntityOfPage: url,
               image: OG_IMAGE,
-              author: RT_ORGANIZATIE,
+              author: g.autor ? { "@type": "Person", name: g.autor.nume, url: g.autor.url } : RT_ORGANIZATIE,
               publisher: RT_ORGANIZATIE,
               isPartOf: { "@type": "Blog", "@id": `${SITE_URL}/ghiduri#blog` },
               breadcrumb: { "@id": `${url}#breadcrumb` },
@@ -104,6 +104,15 @@ export default async function GhidPage({ params }: { params: Promise<{ slug: str
         <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-brand-700">{g.categorie}</p>
         <h1 className="mt-1 text-2xl md:text-4xl font-bold tracking-tight text-slate-900">{g.titlu}</h1>
         <p className="mt-2 text-sm text-slate-500">
+          {g.autor && (
+            <>
+              de{" "}
+              <a href={g.autor.url} rel="author" className="font-medium text-brand-700 underline-offset-2 hover:underline">
+                {g.autor.nume}
+              </a>{" "}
+              ·{" "}
+            </>
+          )}
           Publicat pe <time dateTime={g.publicat}>{dataLunga(g.publicat)}</time>
           {g.actualizat !== g.publicat && (
             <>

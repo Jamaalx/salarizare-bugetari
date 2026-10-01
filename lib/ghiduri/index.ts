@@ -7,8 +7,10 @@ import { GRILE } from "../seo";
 import { ghid as salariuAsistentMedical } from "./salariu-asistent-medical";
 import { ghid as salariulDeBaza } from "./cum-se-calculeaza-salariul-de-baza";
 import { ghid as salariuProfesor } from "./salariu-profesor-noua-lege";
+import { ghid as salariuProfesorDebutant } from "./salariu-profesor-debutant";
 
 const FABRICI: readonly (() => Ghid)[] = [
+  salariuProfesorDebutant,
   salariuProfesor,
   salariuAsistentMedical,
   salariulDeBaza,
