@@ -286,3 +286,4 @@ Ultima linie a răspunsului, mereu: `PUBLICAT: https://romaniatransparenta.eu/re
 | 2026-09-24 | cum-se-calculeaza-salariul-de-baza | valoarea de referință 4.000 lei |
 | 2026-09-29 | salariu-profesor-noua-lege | salariu profesor noua lege |
 | 2026-10-02 | salariu-profesor-debutant | salariu profesor debutant 2026 |
+| 2026-10-06 | salariu-educatoare-noua-lege | salariu educatoare noua lege |
