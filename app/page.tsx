@@ -126,7 +126,7 @@ export default function HomePage() {
           {LEGACY_PERSONAL ? (
             <>
             <p className="mt-3 text-sm md:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
-              Am construit acest calculator pentru cei ~1,3 milioane de bugetari din
+              Am construit acest calculator pentru cei circa 1,3 milioane de bugetari din
               România care vor să înțeleagă cum îi afectează noua lege a salarizării —
               fără să trebuiască să citească zeci de articole și 9 anexe Excel, de trei ori.
               Proiect independent, open-source, neafiliat cu vreo instituție publică.
@@ -147,7 +147,7 @@ export default function HomePage() {
           ) : (
             <>
               <p className="mt-3 text-sm md:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
-                Calculatorul e făcut pentru cei ~1,3 milioane de bugetari din România care vor să
+                Calculatorul e făcut pentru cei circa 1,3 milioane de bugetari din România care vor să
                 înțeleagă cum îi afectează noua lege a salarizării — fără să citească zeci de articole
                 și 9 anexe Excel, de trei ori. Proiect independent, open-source, neafiliat cu vreo
                 instituție publică.

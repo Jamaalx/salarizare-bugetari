@@ -23,7 +23,7 @@ const RANDURI: Rand[] = [
   },
   {
     criteriu: "Coeficienți",
-    valori: ["2.627 rânduri", "2.809 rânduri; ~85% din coduri modificate față de mai", "3.000 rânduri; ~17% modificate față de iulie (mai ales Anexele I și II)"],
+    valori: ["2.627 rânduri", "2.809 rânduri; circa 85% din coduri modificate față de mai", "3.000 rânduri; circa 17% modificate față de iulie (mai ales Anexele I și II)"],
   },
   {
     criteriu: "Anexa II — Sănătate (exemple)",

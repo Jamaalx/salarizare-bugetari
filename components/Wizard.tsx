@@ -526,7 +526,7 @@ function StepIntro({ onNext }: { onNext: () => void }) {
         (varianta din <EtichetaVarianta />).
       </p>
       <p className="mt-3 text-xs text-slate-500 max-w-md mx-auto">
-        Durează ~1 minut. Datele nu se trimit nicăieri — calculul se face în browser-ul tău.
+        Durează cam un minut. Datele nu se trimit nicăieri — calculul se face în browser-ul tău.
       </p>
       <button
         onClick={onNext}
@@ -1910,7 +1910,7 @@ function StepRezultat({
       <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600">
         <Info className="shrink-0 w-4 h-4 text-slate-500 mt-0.5" />
         <div>
-          <strong>Nu sunt incluse în calcul:</strong> indemnizația de hrană (~347 lei/lună),
+          <strong>Nu sunt incluse în calcul:</strong> indemnizația de hrană (circa 347 lei/lună),
           voucherele de vacanță (1.450 lei/an) și alte drepturi reglementate prin acte
           separate de proiectul MMFTSS. Aceste sume se adaugă peste salariul net afișat
           aici, fără să fie supuse impozitului pe venit.
