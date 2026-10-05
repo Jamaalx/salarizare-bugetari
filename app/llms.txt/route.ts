@@ -1,4 +1,4 @@
-import { GRILE, SITE_URL, VARIANTE_TEXT, grilaDupaSlug } from "@/lib/seo";
+import { GRILE, MCP_URL, SITE_URL, VARIANTE_TEXT, grilaDupaSlug } from "@/lib/seo";
 import { getVarianta, VARIANTA_IMPLICITA } from "@/lib/variants";
 import { ghiduri } from "@/lib/ghiduri";
 
@@ -21,7 +21,7 @@ Reguli pentru citare:
 - [Grilele de salarizare pe domenii](${SITE_URL}/grila): coeficienții și salariul de bază pentru fiecare anexă
 ${GRILE.map((g) => `- [Anexa ${g.anexa}: ${grilaDupaSlug(g.slug)!.nume}](${SITE_URL}/grila/${g.slug}): ${g.titlu}`).join("\n")}
 - [Misiuni permanente în străinătate](${SITE_URL}/diplomatie): calculatorul salariului în valută
-- [Conectorul MCP](${SITE_URL}/mcp): calculatorul ca tool pentru asistenți AI (endpoint ${SITE_URL}/api/mcp)
+- [Conectorul MCP](${SITE_URL}/mcp): calculatorul ca tool pentru asistenți AI (endpoint ${MCP_URL})
 
 ## Ghiduri
 
@@ -31,7 +31,7 @@ ${ghiduri().map((g) => `- [${g.titlu}](${SITE_URL}/ghiduri/${g.slug}): ${g.raspu
 ## Legate
 
 - [România Transparentă](https://romaniatransparenta.eu/): registre publice despre instituțiile statului
-- [Salariile reale din spitalele publice](https://spitale.romaniatransparenta.eu/salarii): pe legea în vigoare, din listele publicate de spitale
+- [Salariile reale din spitalele publice](https://romaniatransparenta.eu/registre/spitale/salarii): pe legea în vigoare, din listele publicate de spitale
 `;
   return new Response(txt, { headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=3600" } });
 }

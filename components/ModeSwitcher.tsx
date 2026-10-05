@@ -13,6 +13,7 @@ import {
   type VariantaId,
 } from "@/lib/variants";
 import { VariantaProvider } from "@/lib/varianta-context";
+import { cale } from "@/lib/shell";
 
 type CoefPayload = { sheets: any[]; data: any[] };
 
@@ -40,7 +41,7 @@ export default function ModeSwitcher() {
       return;
     }
     setData(null);
-    fetch(`/api/coeficienti/${variantaId}`)
+    fetch(cale(`/api/coeficienti/${variantaId}`))
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json();

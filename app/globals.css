@@ -1,10 +1,10 @@
 /* Fonturile licențiate (RT Gotham). Servite din aplicație, NU de pe
    romaniatransparenta.eu: CSP-ul e `style-src 'self'` și o foaie cross-origin
    ar fi blocată tăcut, lăsând pagina pe fontul implicit. */
-@font-face { font-family: "RT Gotham"; font-weight: 400; font-display: swap; src: url("/fonts/Gotham-Book.woff2") format("woff2"); }
-@font-face { font-family: "RT Gotham"; font-weight: 500; font-display: swap; src: url("/fonts/Gotham-Medium.woff2") format("woff2"); }
-@font-face { font-family: "RT Gotham"; font-weight: 700; font-display: swap; src: url("/fonts/Gotham-Bold.woff2") format("woff2"); }
-@font-face { font-family: "RT Gotham"; font-weight: 900; font-display: swap; src: url("/fonts/Gotham-Black.woff2") format("woff2"); }
+@font-face { font-family: "RT Gotham"; font-weight: 400; font-display: swap; src: url("../public/fonts/Gotham-Book.woff2") format("woff2"); }
+@font-face { font-family: "RT Gotham"; font-weight: 500; font-display: swap; src: url("../public/fonts/Gotham-Medium.woff2") format("woff2"); }
+@font-face { font-family: "RT Gotham"; font-weight: 700; font-display: swap; src: url("../public/fonts/Gotham-Bold.woff2") format("woff2"); }
+@font-face { font-family: "RT Gotham"; font-weight: 900; font-display: swap; src: url("../public/fonts/Gotham-Black.woff2") format("woff2"); }
 
 @tailwind base;
 @tailwind components;
@@ -65,10 +65,17 @@ footer :focus-visible { outline-color: #f2c41a; }
   .rt-bar__logo img { width: 120px; }
 }
 
-/* ---- subsol ---- */
-.rt-footer { margin: 16px; border-radius: 28px; background: #0a2257; color: #fff; }
-.rt-footer a { color: inherit; }
-@media (max-width: 719px) { .rt-footer { margin: 10px; border-radius: 22px; } }
+/* ---- nota de la finalul primei pagini (navy, ca subsolul site-ului) ----
+   Nu „.rt-footer": pe romaniatransparenta.eu/registre/salarii/ subsolul site-ului e în aceeași pagină
+   (SSI, vezi lib/shell.ts) și clasele lui nu trebuie atinse de aici. */
+.sl-disclaimer { margin: 16px; border-radius: 28px; background: #0a2257; color: #fff; }
+.sl-disclaimer a { color: inherit; }
+@media (max-width: 719px) { .sl-disclaimer { margin: 10px; border-radius: 22px; } }
+
+/* subsolul de rezervă, doar când pagina nu trece prin nginx-ul site-ului */
+.sl-subsol { padding: 20px 16px 28px; text-align: center; font-size: 13px; color: #4a5468; }
+.sl-subsol p { margin: 4px 0; }
+.sl-subsol a { color: #0a2257; font-weight: 700; }
 
 * { box-sizing: border-box; }
 

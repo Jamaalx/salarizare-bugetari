@@ -6,6 +6,7 @@
 import { VARIANTE, VARIANTA_IMPLICITA, getVarianta } from "../variants";
 import { getFunctii } from "../variants-data";
 import { aplicaGradatie, calcBrut, GRADATII, GRADATII_APARARE, SAL_MIN_BRUT } from "../tax";
+import { SITE_URL } from "../seo";
 import type { Ghid } from "./tip";
 
 const lei = (n: number) => n.toLocaleString("ro-RO");
@@ -113,10 +114,10 @@ Sporurile se calculează separat, după regulile fiecărei anexe, de obicei ca p
       },
     ],
     surse: [
-      { titlu: "Proiectul legii salarizării, varianta din 20 august 2026 (pdf, copie locală)", url: "https://salarii.romaniatransparenta.eu/sources/Proiect-lege-20-august-2026.pdf", nota: "art. 10, 13, 17, 21, 38" },
+      { titlu: "Proiectul legii salarizării, varianta din 20 august 2026 (pdf, copie locală)", url: `${SITE_URL}/sources/Proiect-lege-20-august-2026.pdf`, nota: "art. 10, 13, 17, 21, 38" },
       { titlu: "Publisind: Legea salarizării, varianta III (20 august 2026)", url: "https://publisind.ro/legea-salarizarii-varianta-iii-20-august-2026/" },
       { titlu: "MMFTSS: pagina „Legea salarizării”", url: "https://mmuncii.gov.ro/legea-salarizarii/", nota: "variantele din mai și iulie" },
-      { titlu: "Anexa VI: reglementări speciale pentru apărare și ordine publică (docx, copie locală)", url: "https://salarii.romaniatransparenta.eu/sources/Anexa-VI-reglementari-speciale-20-mai-2026.docx", nota: "art. 2, 4 și 6: solda de funcție, gradațiile, solda de grad" },
+      { titlu: "Anexa VI: reglementări speciale pentru apărare și ordine publică (docx, copie locală)", url: `${SITE_URL}/sources/Anexa-VI-reglementari-speciale-20-mai-2026.docx`, nota: "art. 2, 4 și 6: solda de funcție, gradațiile, solda de grad" },
       { titlu: "Codul fiscal, Legea 227/2015 (Portal legislativ)", url: "https://legislatie.just.ro/Public/DetaliiDocument/171282", nota: "art. 77, 78, 138, 156" },
     ],
     legaturi: [

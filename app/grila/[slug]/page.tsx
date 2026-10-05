@@ -240,7 +240,7 @@ export default async function GrilaPage({ params }: { params: Promise<{ slug: st
           {g.anexa === "II" && (
             <p className="mt-4 text-sm text-slate-600">
               Cât se plătește azi, pe legea în vigoare, în spitalele publice:{" "}
-              <a href="https://spitale.romaniatransparenta.eu/salarii" className="text-brand-700 underline underline-offset-2">salariile reale din listele spitalelor</a>.
+              <a href="https://romaniatransparenta.eu/registre/spitale/salarii" className="text-brand-700 underline underline-offset-2">salariile reale din listele spitalelor</a>.
             </p>
           )}
         </section>

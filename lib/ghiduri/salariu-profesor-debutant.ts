@@ -7,7 +7,7 @@
 import { VARIANTE, VARIANTA_IMPLICITA, getVarianta, type Varianta } from "../variants";
 import { getFunctii, type CoefEntry } from "../variants-data";
 import { aplicaGradatie, calcBrut, GRADATII, SAL_MIN_BRUT, SPORURI_STANDARD } from "../tax";
-import { de } from "../seo";
+import { SITE_URL, de } from "../seo";
 import type { Ghid } from "./tip";
 
 const lei = (n: number) => n.toLocaleString("ro-RO");
@@ -201,7 +201,7 @@ Plafonul de 20% al sporurilor se calculează pe ordonatorul principal de credite
       },
     ],
     surse: [
-      ...v.surse.map((s) => ({ titlu: s.titlu, url: s.url.startsWith("/") ? `https://salarii.romaniatransparenta.eu${s.url}` : s.url })),
+      ...v.surse.map((s) => ({ titlu: s.titlu, url: s.url.startsWith("/") ? `${SITE_URL}${s.url}` : s.url })),
       { titlu: "Codul fiscal, Legea 227/2015 (Portal legislativ)", url: "https://legislatie.just.ro/Public/DetaliiDocument/171282", nota: "art. 77 (deducerea personală și deducerea pentru tinerii sub 26 de ani), art. 78 (impozitul), art. 138 (CAS), art. 156 (CASS)" },
     ],
     legaturi: [

@@ -4,6 +4,7 @@ import BannerNeadoptat from "@/components/BannerNeadoptat";
 import { OG_IMAGE, RT_ORGANIZATIE, SITE_URL, breadcrumbLd, jsonLd } from "@/lib/seo";
 import { ghiduri } from "@/lib/ghiduri";
 import { dataLunga } from "@/lib/ghiduri/data";
+import { cale } from "@/lib/shell";
 
 const title = "Ghiduri despre salarizarea bugetarilor: noua lege, calculul, pe funcții";
 const description =
@@ -69,7 +70,7 @@ export default function GhiduriPage() {
           ))}
         </ul>
         <p className="mt-8 text-sm text-slate-600">
-          Articolele noi apar și în <a href="/ghiduri/feed.xml" className="text-brand-700 underline underline-offset-2">fluxul RSS</a>.
+          Articolele noi apar și în <a href={cale("/ghiduri/feed.xml")} className="text-brand-700 underline underline-offset-2">fluxul RSS</a>.
         </p>
       </div>
     </main>

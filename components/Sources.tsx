@@ -7,6 +7,7 @@ import {
   Link2,
 } from "lucide-react";
 import { VARIANTE, VARIANTA_IMPLICITA } from "@/lib/variants";
+import { cale } from "@/lib/shell";
 
 type SourceItem = {
   href: string;
@@ -169,7 +170,7 @@ export default function Sources() {
                   return (
                     <a
                       key={s.url}
-                      href={s.url}
+                      href={s.url.startsWith("/") ? cale(s.url) : s.url}
                       {...(local
                         ? { download: true }
                         : { target: "_blank", rel: "noopener noreferrer" })}
@@ -218,7 +219,7 @@ export default function Sources() {
                       return (
                         <a
                           key={s.href}
-                          href={s.href}
+                          href={cale(s.href)}
                           download
                           className="group rounded-2xl border border-slate-200 bg-white p-4 hover:border-brand-300 hover:shadow-md transition flex items-start gap-3"
                         >

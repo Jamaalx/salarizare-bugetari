@@ -1,3 +1,4 @@
+import { MCP_URL } from "@/lib/seo";
 import Link from "next/link";
 import {
   Calculator as CalcIcon,
@@ -45,8 +46,7 @@ const TOOLS = [
   },
 ];
 
-const PUBLIC_HOST = "salarii.romaniatransparenta.eu";
-const mcpUrl = `https://${PUBLIC_HOST}/api/mcp`;
+const mcpUrl = MCP_URL;
 
 export default function McpPage() {
   return (
@@ -90,7 +90,7 @@ export default function McpPage() {
           <div className="mt-4 flex items-center gap-2 rounded-xl bg-slate-900 text-emerald-300 px-4 py-3 font-mono text-sm overflow-x-auto">
             <code className="flex-1">{mcpUrl}</code>
             <a
-              href="/api/mcp"
+              href={mcpUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="shrink-0 inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700"

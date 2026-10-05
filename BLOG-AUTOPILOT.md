@@ -1,7 +1,7 @@
-# BLOG-AUTOPILOT: ghidurile de pe salarii.romaniatransparenta.eu
+# BLOG-AUTOPILOT: ghidurile de pe romaniatransparenta.eu/registre/salarii
 
 Instrucțiuni pentru agentul care publică singur, fără om, un ghid nou pe
-https://salarii.romaniatransparenta.eu/ghiduri. Rulează de două ori pe săptămână. Un articol pe rulare.
+https://romaniatransparenta.eu/registre/salarii/ghiduri. Rulează de două ori pe săptămână. Un articol pe rulare.
 Dacă ceva nu e sigur: NU publici și scrii motivul pe ultima linie a răspunsului.
 
 ## 0. Regulile de bază
@@ -76,7 +76,7 @@ ${r.slice(0, 10).map((e) => `| ${e.functie} | ${e.studii} | ${lei(baza(e.coefici
 
 > Atenție: legea nu a fost adoptată. ...`,
     faq: [{ q: "...?", a: "..." }, { q: "...?", a: "..." }, { q: "...?", a: "..." }],
-    surse: v.surse.map((s) => ({ titlu: s.titlu, url: s.url.startsWith("/") ? `https://salarii.romaniatransparenta.eu${s.url}` : s.url })),
+    surse: v.surse.map((s) => ({ titlu: s.titlu, url: s.url.startsWith("/") ? `https://romaniatransparenta.eu/registre/salarii${s.url}` : s.url })),
     legaturi: [["/grila/invatamant-cercetare", "Grila completă a învățământului (Anexa I)"], ["/", "Calculatorul"]],
   };
 }
@@ -254,10 +254,10 @@ echo $u;'
 **Verificarea live**, după `finished`:
 
 ```bash
-curl -s -o /dev/null -w '%{http_code}\n' https://salarii.romaniatransparenta.eu/ghiduri/<slug>        # 200
-curl -s https://salarii.romaniatransparenta.eu/sitemap.xml | grep -c "ghiduri/<slug>"                  # 1
-curl -s https://salarii.romaniatransparenta.eu/ghiduri | grep -c "ghiduri/<slug>"                      # ≥ 1
-curl -s https://salarii.romaniatransparenta.eu/ghiduri/<slug> | grep -c '"@type":"BlogPosting"'        # 1
+curl -s -o /dev/null -w '%{http_code}\n' https://romaniatransparenta.eu/registre/salarii/ghiduri/<slug>        # 200
+curl -s https://romaniatransparenta.eu/registre/salarii/sitemap.xml | grep -c "ghiduri/<slug>"                  # 1
+curl -s https://romaniatransparenta.eu/registre/salarii/ghiduri | grep -c "ghiduri/<slug>"                      # ≥ 1
+curl -s https://romaniatransparenta.eu/registre/salarii/ghiduri/<slug> | grep -c '"@type":"BlogPosting"'        # 1
 ```
 
 La final: `cd /root/salarizare-bugetari && git worktree remove --force "$WT" && git branch -D ghid-$AZI`
@@ -275,7 +275,7 @@ La final: `cd /root/salarizare-bugetari && git worktree remove --force "$WT" && 
 - Live nu dă 200 la 20 de minute după `finished`: scrii asta, cu codul primit.
 - Cel mult 2 încercări de reparație pe rulare.
 
-Ultima linie a răspunsului, mereu: `PUBLICAT: https://salarii.romaniatransparenta.eu/ghiduri/<slug>` sau
+Ultima linie a răspunsului, mereu: `PUBLICAT: https://romaniatransparenta.eu/registre/salarii/ghiduri/<slug>` sau
 `NEPUBLICAT: <motiv>`.
 
 ## Publicate

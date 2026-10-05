@@ -164,7 +164,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <footer className="rt-footer">
+      <section className="sl-disclaimer" aria-label="Disclaimer">
         <div className="mx-auto max-w-6xl px-6 py-10 md:px-10 md:py-14 text-sm space-y-3">
           <p className="text-white font-bold">Disclaimer</p>
           <p className="text-white/85 leading-relaxed">
@@ -237,20 +237,8 @@ export default function HomePage() {
               GitHub
             </a>
           </p>
-          <p className="text-center text-[13px] tracking-[.02em] text-white/85">
-            Design, cod, funcționalități &amp; hosting:{" "}
-            <a
-              href="https://zed-zen.com"
-              target="_blank"
-              rel="noopener"
-              title="ZEDZEN — web design, dezvoltare & hosting"
-              className="font-bold text-white no-underline border-b border-current hover:text-rt-yellow"
-            >
-              ZEDZEN
-            </a>
-          </p>
         </div>
-      </footer>
+      </section>
 
       <ChatWidget />
     </main>

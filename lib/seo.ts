@@ -6,7 +6,14 @@ import { ANEXE, VARIANTE, VARIANTA_IMPLICITA, getVarianta, type Varianta } from 
 import { getFunctii, type CoefEntry } from "./variants-data";
 import { aplicaGradatie } from "./tax";
 
-export const SITE_URL = "https://salarii.romaniatransparenta.eu";
+/** adresa publică: pagina calculatorului pe site-ul România Transparentă (canonical, sitemap, JSON-LD) */
+export const SITE_URL = "https://romaniatransparenta.eu/registre/salarii";
+/**
+ * Serverul MCP rămâne pe subdomeniu: conectorii deja înregistrați (Claude, ChatGPT) și descoperirea OAuth
+ * (/.well-known/… la rădăcina gazdei) lucrează acolo; redirecționarea subdomeniului spre site le ocolește.
+ */
+export const MCP_HOST = "salarii.romaniatransparenta.eu";
+export const MCP_URL = `https://${MCP_HOST}/api/mcp`;
 export const OG_IMAGE = "https://romaniatransparenta.eu/og-image.png";
 export const RT_ORGANIZATIE = {
   "@type": "Organization",

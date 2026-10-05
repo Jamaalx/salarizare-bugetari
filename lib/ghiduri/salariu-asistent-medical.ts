@@ -6,6 +6,7 @@
 import { VARIANTE, VARIANTA_IMPLICITA, getVarianta, type Varianta } from "../variants";
 import { getFunctii, type CoefEntry } from "../variants-data";
 import { aplicaGradatie, calcBrut, GRADATII, SAL_MIN_BRUT } from "../tax";
+import { SITE_URL } from "../seo";
 import type { Ghid } from "./tip";
 
 const lei = (n: number) => n.toLocaleString("ro-RO");
@@ -115,7 +116,7 @@ Plafonul de 20% al sporurilor se calculează pe ordonatorul principal de credite
 Proiectul prevede o diferență salarială tranzitorie (${v.articolDiferentaTranzitorie} în varianta din ${v.eticheta}), raportată la salariul din ${v.referintaDiferentaTranzitorie}: dacă salariul pe legea nouă iese mai mic, diferența se plătește în continuare. Calculatorul o estimează în modul ghidat, pornind de la salariul tău de acum.
 
 ## Cât câștigă azi un asistent medical?
-Pe legea în vigoare (Legea 153/2017), salariile reale depind de spital, de sporuri și de vechime. Salariile plătite efectiv, din listele publicate de spitalele publice, sunt pe [spitale.romaniatransparenta.eu/salarii](https://spitale.romaniatransparenta.eu/salarii). Pentru salariul tău pe proiect, cu gradație, sporuri și net, folosește [calculatorul](/).
+Pe legea în vigoare (Legea 153/2017), salariile reale depind de spital, de sporuri și de vechime. Salariile plătite efectiv, din listele publicate de spitalele publice, sunt pe [romaniatransparenta.eu/registre/spitale/salarii](https://romaniatransparenta.eu/registre/spitale/salarii). Pentru salariul tău pe proiect, cu gradație, sporuri și net, folosește [calculatorul](/).
 
 > Atenție: legea nu a fost adoptată. Pe 26 august 2026 partidele au anunțat că nu au ajuns la consens și s-au angajat să adopte legea până la sfârșitul anului. Cifrele de mai sus arată ce prevede proiectul, nu salariile în vigoare.`;
 
@@ -156,8 +157,8 @@ Pe legea în vigoare (Legea 153/2017), salariile reale depind de spital, de spor
       },
     ],
     surse: [
-      ...v.surse.map((s) => ({ titlu: s.titlu, url: s.url.startsWith("/") ? `https://salarii.romaniatransparenta.eu${s.url}` : s.url })),
-      { titlu: "Anexa II, capitolul II: reglementări specifice sănătății (docx, copie locală)", url: "https://salarii.romaniatransparenta.eu/sources/ANEXA-II-Cap-II-REGLEMENTARI-specifice-varianta-20-mai-2026.docx" },
+      ...v.surse.map((s) => ({ titlu: s.titlu, url: s.url.startsWith("/") ? `${SITE_URL}${s.url}` : s.url })),
+      { titlu: "Anexa II, capitolul II: reglementări specifice sănătății (docx, copie locală)", url: `${SITE_URL}/sources/ANEXA-II-Cap-II-REGLEMENTARI-specifice-varianta-20-mai-2026.docx` },
       { titlu: "Codul fiscal, Legea 227/2015 (Portal legislativ)", url: "https://legislatie.just.ro/Public/DetaliiDocument/171282", nota: "art. 77 (deducerea personală), art. 78 (impozitul), art. 138 (CAS), art. 156 (CASS)" },
     ],
     legaturi: [

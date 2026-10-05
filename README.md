@@ -1,7 +1,7 @@
 # Calculator Salariu Bugetari — Proiect Lege MMFTSS 2026
 
 [![CI](https://github.com/Jamaalx/salarizare-bugetari/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/Jamaalx/salarizare-bugetari/actions/workflows/ci.yml)
-[![Live](https://img.shields.io/badge/live-salarii.romaniatransparenta.eu-2ea44f)](https://salarii.romaniatransparenta.eu)
+[![Live](https://img.shields.io/badge/live-romaniatransparenta.eu%2Fregistre%2Fsalarii-2ea44f)](https://romaniatransparenta.eu/registre/salarii/)
 [![Licență MIT](https://img.shields.io/badge/licen%C8%9B%C4%83-MIT-blue)](LICENSE)
 
 Webapp interactiv pentru calculul salariului brut/net al personalului plătit din fonduri publice conform **proiectului de lege a salarizării (MMFTSS 2026)** — în toate cele **trei variante oficiale publicate**: 25 mai, 17 iulie și 20 august 2026.
@@ -100,6 +100,14 @@ Configurat pentru deploy via Docker pe Coolify, cu DNS la Cloudflare.
    - SSL: Full (Coolify emite cert via Let's Encrypt sau folosește Cloudflare proxy)
 
 4. Auto-deploy on push: configurat default de Coolify când conectezi GitHub.
+
+5. **Pagină a site-ului România Transparentă** (din octombrie 2026): calculatorul e servit la
+   `romaniatransparenta.eu/registre/salarii/` (`basePath` în `next.config.mjs`). nginx-ul site-ului face proxy spre
+   containerul aplicației, pe rețeaua Docker `coolify`, prin aliasul de rețea `salarizare-bugetari`
+   (Coolify → aplicație → Network → Network Aliases) și pune antetul/subsolul site-ului prin SSI (`lib/shell.ts`).
+   - `SALARII_REDIRECT=1` (variabilă de rulare): subdomeniile vechi trimit 301 spre site, cu aceeași cale și parametri.
+     `/api`, `/mcp`, `/oauth` și `/.well-known` rămân pe subdomeniu (conectorii MCP înregistrați). Implicit: oprit.
+   - `SALARII_HOSTS` (opțional): gazdele vechi, implicit `salarii.romaniatransparenta.eu,salarizare.zed-zen.com`.
 
 ## Importul coeficienților dintr-un xlsx nou
 

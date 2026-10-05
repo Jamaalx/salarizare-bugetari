@@ -6,6 +6,7 @@ import ArticleBody, { Inline, ancora, titluriH2 } from "@/components/ghiduri/Art
 import { OG_IMAGE, RT_ORGANIZATIE, SITE_URL, breadcrumbLd, jsonLd } from "@/lib/seo";
 import { cuvinte, ghidDupaSlug, ghiduri } from "@/lib/ghiduri";
 import { dataLunga } from "@/lib/ghiduri/data";
+import { cale as cuPrefix } from "@/lib/shell";
 
 /**
  * Un ghid, randat static: răspunsul scurt sus, „Pe scurt”, cuprins, textul, întrebări frecvente
@@ -165,7 +166,7 @@ export default async function GhidPage({ params }: { params: Promise<{ slug: str
           <ul className="mt-2 list-disc space-y-1 pl-6 text-sm">
             {g.surse.map((s) => (
               <li key={s.url + s.titlu}>
-                <a href={s.url} className="text-brand-700 underline underline-offset-2">{s.titlu}</a>
+                <a href={s.url.startsWith("/") ? cuPrefix(s.url) : s.url} className="text-brand-700 underline underline-offset-2">{s.titlu}</a>
                 {s.nota && <>: {s.nota}</>}
               </li>
             ))}

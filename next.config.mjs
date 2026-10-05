@@ -1,8 +1,15 @@
 /** @type {import('next').NextConfig} */
 const isDev = process.env.NODE_ENV !== 'production';
 
+// Calculatorul e o pagină a site-ului: romaniatransparenta.eu/registre/salarii/… (nginx-ul site-ului face proxy aici
+// și pune antetul/subsolul site-ului prin SSI, vezi lib/shell.ts). Subdomeniile vechi (salarii.romaniatransparenta.eu,
+// salarizare.zed-zen.com) trec prin middleware.ts: servesc adresele vechi sau, cu SALARII_REDIRECT=1, trimit 301 spre site.
+const BASE_PATH = '/registre/salarii';
+
 const nextConfig = {
   output: 'standalone',
+  basePath: BASE_PATH,
+  env: { NEXT_PUBLIC_BASE_PATH: BASE_PATH },
   poweredByHeader: false,
   reactStrictMode: true,
   async headers() {
@@ -27,7 +34,9 @@ const nextConfig = {
 
     return [
       {
+        // toate adresele: cu prefix (site) și fără (subdomeniile vechi)
         source: '/:path*',
+        basePath: false,
         headers: [
           { key: 'Content-Security-Policy', value: csp },
           { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
@@ -45,20 +54,7 @@ const nextConfig = {
       },
     ];
   },
-  async redirects() {
-    // http → https: Cloudflare trimite schema cererii originale în CF-Visitor (healthcheck-ul local nu îl are).
-    // /api, /mcp, /oauth și /.well-known rămân neatinse: clienții MCP deja înregistrați.
-    const http = [{ type: 'header', key: 'cf-visitor', value: '.*"scheme":"http".*' }];
-    return [
-      { source: '/', has: http, destination: 'https://salarii.romaniatransparenta.eu/', permanent: true },
-      {
-        source: '/:path((?!api/|mcp|oauth|\\.well-known).*)',
-        has: http,
-        destination: 'https://salarii.romaniatransparenta.eu/:path',
-        permanent: true,
-      },
-    ];
-  },
+
 };
 
 export default nextConfig;
