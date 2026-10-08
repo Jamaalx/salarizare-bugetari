@@ -96,7 +96,12 @@ export default function Variante() {
           </p>
         </div>
 
-        <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+        <div
+          className="overflow-x-auto rounded-2xl border border-slate-200 bg-white"
+          tabIndex={0}
+          role="region"
+          aria-label="Tabel comparativ: cele trei variante ale proiectului (se derulează lateral)"
+        >
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-slate-100 text-left text-xs uppercase tracking-wide text-slate-600">

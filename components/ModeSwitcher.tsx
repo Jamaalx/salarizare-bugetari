@@ -77,24 +77,24 @@ export default function ModeSwitcher() {
           <div className="hidden lg:flex items-center gap-4">
             <a
               href="#sources"
-              className="text-xs font-medium text-slate-500 hover:text-brand-600"
+              className="inline-flex min-h-[32px] items-center text-xs font-medium text-slate-600 hover:text-brand-600"
             >
               Documente sursă
             </a>
             <Link
               href="/diplomatie"
-              className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-brand-600"
+              className="inline-flex min-h-[32px] items-center gap-1 text-xs font-medium text-slate-600 hover:text-brand-600"
             >
               <Globe className="w-3.5 h-3.5" /> Diplomație (misiune externă)
             </Link>
             <Link
               href="/mcp"
-              className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-brand-600"
+              className="inline-flex min-h-[32px] items-center gap-1 text-xs font-medium text-slate-600 hover:text-brand-600"
             >
               <Plug className="w-3.5 h-3.5" /> MCP pentru AI
             </Link>
           </div>
-          <div className="flex items-center gap-2 ml-auto flex-wrap justify-end">
+          <div className="flex items-center gap-x-3 gap-y-2 ml-auto flex-wrap justify-end">
             <label className="inline-flex items-center gap-1.5 text-xs text-slate-500">
               <Layers className="w-3.5 h-3.5 text-brand-600" strokeWidth={2} />
               <span className="hidden sm:inline">Varianta proiectului:</span>
@@ -102,7 +102,7 @@ export default function ModeSwitcher() {
                 aria-label="Varianta proiectului de lege"
                 value={variantaId}
                 onChange={(e) => schimbaVarianta(e.target.value as VariantaId)}
-                className="rounded-full border border-brand-200 bg-brand-50 px-2.5 py-1.5 text-xs font-semibold text-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                className="min-h-[36px] max-w-full rounded-full border border-brand-200 bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-100"
               >
                 {VARIANTE.map((v) => (
                   <option key={v.id} value={v.id}>
@@ -112,12 +112,13 @@ export default function ModeSwitcher() {
                 ))}
               </select>
             </label>
-            <span className="text-xs text-slate-400 mr-1 hidden sm:inline">Mod:</span>
-            <div className="inline-flex p-0.5 rounded-full bg-slate-100">
+            <span className="text-xs text-slate-600 hidden sm:inline" aria-hidden="true">Mod:</span>
+            <div className="inline-flex gap-1 p-1 rounded-full bg-slate-100" role="group" aria-label="Modul de calcul">
               <button
                 onClick={() => setMode("wizard")}
+                aria-pressed={mode === "wizard"}
                 className={
-                  "inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full font-semibold transition " +
+                  "inline-flex min-h-[32px] items-center gap-1.5 text-xs px-3.5 py-1.5 rounded-full font-semibold transition " +
                   (mode === "wizard"
                     ? "bg-white text-brand-700 shadow-sm"
                     : "text-slate-600 hover:text-slate-900")
@@ -128,8 +129,9 @@ export default function ModeSwitcher() {
               </button>
               <button
                 onClick={() => setMode("expert")}
+                aria-pressed={mode === "expert"}
                 className={
-                  "inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full font-semibold transition " +
+                  "inline-flex min-h-[32px] items-center gap-1.5 text-xs px-3.5 py-1.5 rounded-full font-semibold transition " +
                   (mode === "expert"
                     ? "bg-white text-brand-700 shadow-sm"
                     : "text-slate-600 hover:text-slate-900")

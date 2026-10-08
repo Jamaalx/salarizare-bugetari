@@ -105,7 +105,7 @@ export default function ArticleBody({ corp }: { corp: string }) {
             if (r.length !== antet.length) throw new Error(`ghid: rând de tabel cu ${r.length} celule în loc de ${antet.length}: ${r.join(" | ")}`);
           const num = antet.map((_, c) => c > 0 && randuri.every((r) => r[c] === "—" || NUMERIC.test(r[c])));
           return (
-            <div key={i} className="mt-4 overflow-x-auto rounded-xl border border-slate-200 bg-white">
+            <div key={i} className="mt-4 overflow-x-auto rounded-xl border border-slate-200 bg-white" tabIndex={0} role="region" aria-label={`Tabel: ${antet.join(", ")}`}>
               <table className="w-full text-sm">
                 <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
                   <tr>{antet.map((a, c) => <th key={c} className={`px-3 py-2 ${num[c] ? "text-right" : ""}`}>{a}</th>)}</tr>

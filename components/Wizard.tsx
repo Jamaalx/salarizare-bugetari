@@ -288,9 +288,15 @@ export default function Wizard({ initialData }: Props) {
   const goTo = (idx: number) => setS((p) => ({ ...p, step: idx }));
 
   const sectionRef = useRef<HTMLElement | null>(null);
+  const primaRandare = useRef(true);
   useEffect(() => {
     // La schimbarea pasului, aducem conținutul wizard-ului în vizor (sub banner),
     // ca utilizatorul să nu fie nevoit să scroleze peste header de fiecare dată.
+    // Nu și la încărcarea paginii: acolo pagina sărea peste titlu și firimituri.
+    if (primaRandare.current) {
+      primaRandare.current = false;
+      return;
+    }
     if (typeof window === "undefined") return;
     const el = sectionRef.current;
     if (el) {
@@ -309,8 +315,13 @@ export default function Wizard({ initialData }: Props) {
               key={st.id}
               onClick={() => i <= currentIdx && goTo(i)}
               disabled={i > currentIdx}
+              aria-label={`Pasul ${i + 1} din ${visibleSteps.length}: ${st.title}${
+                i < currentIdx ? " (completat, apasă ca să revii)" : i === currentIdx ? " (pasul curent)" : ""
+              }`}
+              aria-current={i === currentIdx ? "step" : undefined}
               className={
-                "flex-1 group flex flex-col items-center gap-2 " +
+                // zona de atingere are cel puțin 24 px (py-[9px] + bara de 6 px); bara rămâne subțire
+                "flex-1 min-w-0 group flex flex-col items-center gap-2 py-[9px] " +
                 (i <= currentIdx ? "cursor-pointer" : "cursor-not-allowed")
               }
             >
@@ -479,7 +490,7 @@ export default function Wizard({ initialData }: Props) {
             <button
               onClick={prev}
               disabled={currentIdx === 0}
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 disabled:opacity-30 disabled:cursor-not-allowed"
+              className="inline-flex min-h-[42px] items-center gap-1.5 px-1 text-sm font-medium text-slate-600 hover:text-slate-900 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <ArrowLeft className="w-4 h-4" /> Înapoi
             </button>
@@ -489,7 +500,7 @@ export default function Wizard({ initialData }: Props) {
                 (current?.id === "familia" && !s.anexa) ||
                 (current?.id === "functie" && s.functieIdx === null)
               }
-              className="inline-flex items-center gap-1.5 rounded-full bg-rt-navy text-white px-5 py-2.5 text-sm font-semibold hover:bg-rt-blue transition disabled:opacity-30 disabled:cursor-not-allowed"
+              className="rt-btn rt-btn--primary rt-btn--sm max-w-full !whitespace-normal !leading-tight disabled:opacity-30 disabled:cursor-not-allowed"
             >
               {currentIdx === visibleSteps.length - 1
                 ? "Vezi rezultatul"
@@ -530,7 +541,7 @@ function StepIntro({ onNext }: { onNext: () => void }) {
       </p>
       <button
         onClick={onNext}
-        className="mt-8 inline-flex items-center gap-2 rounded-full bg-rt-navy text-white px-8 py-3.5 text-base font-semibold hover:bg-rt-blue transition"
+        className="rt-btn rt-btn--primary mt-8 max-w-full !whitespace-normal text-center !leading-tight"
       >
         Începe calculul
         <ArrowRight className="w-5 h-5" />
@@ -1920,7 +1931,7 @@ function StepRezultat({
       <div className="flex flex-col sm:flex-row gap-3 pt-2">
         <button
           onClick={onReset}
-          className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+          className="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-full border-2 border-slate-300 px-5 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
         >
           <RefreshCw className="w-4 h-4" /> Calculează pentru alt rol
         </button>
@@ -1942,7 +1953,7 @@ function StepRezultat({
                   .catch(() => setCopyState("err"));
               }
             }}
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-rt-navy text-white px-5 py-2.5 text-sm font-semibold hover:bg-rt-blue transition"
+            className="rt-btn rt-btn--primary rt-btn--sm w-full sm:w-auto !whitespace-normal !leading-tight"
           >
             <Share2 className="w-4 h-4" /> Trimite linkul către un coleg
           </button>

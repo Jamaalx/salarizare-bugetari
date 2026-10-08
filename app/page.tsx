@@ -1,4 +1,4 @@
-import { Calendar, FileCheck, ExternalLink, Heart, Coffee } from "lucide-react";
+import { Calendar, ChevronRight, FileCheck, ExternalLink, Heart, Coffee } from "lucide-react";
 
 // Moștenire: îndemnul la donații („Buy me a coffee") și textul la persoana întâi.
 // Calculatorul apare acum ca parte din România Transparentă; se reactivează la build cu
@@ -6,7 +6,6 @@ import { Calendar, FileCheck, ExternalLink, Heart, Coffee } from "lucide-react";
 const LEGACY_PERSONAL = process.env.NEXT_PUBLIC_LEGACY_PERSONAL === "1";
 import ModeSwitcher from "@/components/ModeSwitcher";
 import Sources from "@/components/Sources";
-import ChatWidget from "@/components/ChatWidget";
 import BannerNeadoptat from "@/components/BannerNeadoptat";
 import Variante from "@/components/Variante";
 import { VARIANTE, VARIANTA_IMPLICITA } from "@/lib/variants";
@@ -48,6 +47,23 @@ export default function HomePage() {
 
       <section className="rt-hero relative overflow-hidden bg-rt-navy text-white">
         <div className="relative mx-auto max-w-6xl px-4 py-8 md:py-14">
+          {/* firimiturile site-ului (antetul pus prin SSI nu le are), ca pe celelalte registre */}
+          <nav aria-label="Firul paginii" className="mb-5 text-sm">
+            <ol className="flex flex-wrap items-center gap-1.5">
+              <li className="flex items-center">
+                <a
+                  href="https://romaniatransparenta.eu/registre/"
+                  className="inline-flex min-h-[24px] items-center font-medium text-white underline underline-offset-[3px] decoration-1 hover:text-rt-yellow hover:decoration-2"
+                >
+                  Registre
+                </a>
+              </li>
+              <li className="flex items-center gap-1.5 text-white/90">
+                <ChevronRight className="w-4 h-4 opacity-70" aria-hidden="true" />
+                <span aria-current="page">Salarii</span>
+              </li>
+            </ol>
+          </nav>
           <div className="inline-flex flex-wrap items-center gap-2 rounded-full bg-white/12 px-3 py-1 text-[13px] font-medium tracking-[.14em] uppercase">
             <Calendar className="w-3.5 h-3.5" />
             Proiect lege salarizare 2026 — 3 variante oficiale
@@ -72,14 +88,14 @@ export default function HomePage() {
             </span>
             <a
               href="#variante"
-              className="inline-flex items-center gap-1.5 underline-offset-2 hover:underline"
+              className="inline-flex min-h-[24px] items-center gap-1.5 underline-offset-2 hover:underline"
             >
               <ExternalLink className="w-4 h-4" />
               Ce s-a schimbat între variante
             </a>
             <a
               href="#sources"
-              className="inline-flex items-center gap-1.5 underline-offset-2 hover:underline"
+              className="inline-flex min-h-[24px] items-center gap-1.5 underline-offset-2 hover:underline"
             >
               <ExternalLink className="w-4 h-4" />
               Documentele oficiale
@@ -103,10 +119,13 @@ export default function HomePage() {
             {" · "}
             <Link href="/ghiduri" className="text-brand-700 underline underline-offset-2">Ghiduri: cum se calculează, pe funcții</Link>
           </p>
-          <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3 text-sm">
+          <ul className="mt-4 grid gap-x-4 gap-y-1 sm:grid-cols-2 lg:grid-cols-3 text-sm">
             {GRILE.map((g) => (
               <li key={g.slug}>
-                <Link href={`/grila/${g.slug}`} className="text-brand-700 underline-offset-2 hover:underline">
+                <Link
+                  href={`/grila/${g.slug}`}
+                  className="flex min-h-[44px] items-center py-1 text-brand-700 underline-offset-2 hover:underline md:min-h-[32px]"
+                >
                   Anexa {g.anexa}: {grilaDupaSlug(g.slug)!.nume}
                 </Link>
               </li>
@@ -154,7 +173,7 @@ export default function HomePage() {
               </p>
               <a
                 href="https://romaniatransparenta.eu/despre/"
-                className="rt-btn rt-btn--primary rt-btn--sm mt-5"
+                className="rt-btn rt-btn--primary rt-btn--sm mt-5 max-w-full !whitespace-normal text-center !leading-tight !py-2.5"
               >
                 Face parte din România Transparentă
                 <ExternalLink className="w-4 h-4" />
@@ -240,7 +259,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      <ChatWidget />
     </main>
   );
 }

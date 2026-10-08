@@ -145,7 +145,7 @@ export default async function GrilaPage({ params }: { params: Promise<{ slug: st
         {[...grupe].map(([grupa, rs]) => (
           <section key={grupa} className="mt-8">
             <h2 className="text-lg md:text-xl font-bold text-slate-900">{grupa}</h2>
-            <div className="mt-2 overflow-x-auto rounded-xl border border-slate-200 bg-white">
+            <div className="mt-2 overflow-x-auto rounded-xl border border-slate-200 bg-white" tabIndex={0} role="region" aria-label={`Tabel: ${grupa}`}>
               <table className="w-full text-sm">
                 <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
                   <tr>
@@ -186,7 +186,7 @@ export default async function GrilaPage({ params }: { params: Promise<{ slug: st
               La militari, polițiști și polițiștii de penitenciare, solda lunară = solda de funcție (tabelele de mai sus, cu gradații)
               + solda de grad = coeficientul gradului × {vr}, fără gradații.
             </p>
-            <div className="mt-2 overflow-x-auto rounded-xl border border-slate-200 bg-white">
+            <div className="mt-2 overflow-x-auto rounded-xl border border-slate-200 bg-white" tabIndex={0} role="region" aria-label="Tabel: solda de grad">
               <table className="w-full text-sm">
                 <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
                   <tr><th className="px-3 py-2">Gradul</th><th className="px-3 py-2 text-right">Coeficient</th><th className="px-3 py-2 text-right">Solda de grad</th></tr>
