@@ -118,6 +118,8 @@ export default function HomePage() {
             <Link href="/grila" className="text-brand-700 underline underline-offset-2">Toate grilele</Link>
             {" · "}
             <Link href="/ghiduri" className="text-brand-700 underline underline-offset-2">Ghiduri: cum se calculează, pe funcții</Link>
+            {" · "}
+            <Link href="/widget" className="text-brand-700 underline underline-offset-2">Pune calculatorul pe site-ul tău</Link>
           </p>
           <ul className="mt-4 grid gap-x-4 gap-y-1 sm:grid-cols-2 lg:grid-cols-3 text-sm">
             {GRILE.map((g) => (

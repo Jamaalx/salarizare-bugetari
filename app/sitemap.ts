@@ -14,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/ghiduri`, lastModified: ghiduri().map((g) => g.actualizat).sort().at(-1), changeFrequency: "weekly", priority: 0.7 },
     ...ghiduri().map((g) => ({ url: `${SITE_URL}/ghiduri/${g.slug}`, lastModified: g.actualizat, changeFrequency: "monthly" as const, priority: 0.7 })),
     { url: `${SITE_URL}/diplomatie`, lastModified: ULTIMA, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${SITE_URL}/widget`, lastModified: "2026-10-16", changeFrequency: "monthly", priority: 0.4 },
     { url: `${SITE_URL}/mcp`, lastModified: ULTIMA, changeFrequency: "monthly", priority: 0.3 },
   ];
 }

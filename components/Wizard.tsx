@@ -1,5 +1,6 @@
 "use client";
 
+import { linkPartajare } from "@/lib/widget";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { useVarianta } from "@/lib/varianta-context";
 import {
@@ -1943,12 +1944,12 @@ function StepRezultat({
                   .share({
                     title: "Calculator Salariu Bugetari",
                     text: `Salariu net estimat: ${fmt(tax.salariuNet)} lei pentru ${functie.functie}`,
-                    url: window.location.href,
+                    url: linkPartajare(window.location),
                   })
                   .catch(() => {});
               } else if (typeof window !== "undefined") {
                 navigator.clipboard
-                  .writeText(window.location.href)
+                  .writeText(linkPartajare(window.location))
                   .then(() => setCopyState("ok"))
                   .catch(() => setCopyState("err"));
               }
