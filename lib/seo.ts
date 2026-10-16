@@ -5,6 +5,7 @@
 import { ANEXE, VARIANTE, VARIANTA_IMPLICITA, getVarianta, type Varianta } from "./variants";
 import { getFunctii, type CoefEntry } from "./variants-data";
 import { aplicaGradatie } from "./tax";
+import ENT from "./entitati.json";
 
 /** adresa publică: pagina calculatorului pe site-ul România Transparentă (canonical, sitemap, JSON-LD) */
 export const SITE_URL = "https://romaniatransparenta.eu/registre/salarii";
@@ -15,12 +16,13 @@ export const SITE_URL = "https://romaniatransparenta.eu/registre/salarii";
 export const MCP_HOST = "salarii.romaniatransparenta.eu";
 export const MCP_URL = `https://${MCP_HOST}/api/mcp`;
 export const OG_IMAGE = "https://romaniatransparenta.eu/og-image.png";
-export const RT_ORGANIZATIE = {
-  "@type": "Organization",
-  "@id": "https://romaniatransparenta.eu/#organizatie",
-  name: "România Transparentă",
-  url: "https://romaniatransparenta.eu/",
-} as const;
+/**
+ * Organizația și site-ul RT vin din graful seo-ops (entities/graph.yaml → lib/entitati.json, generat cu
+ * `seo run entities salarizare gen=1 repo=<repo>`): aici doar le referim, cu ciotul {@type, @id, name, url}.
+ * Calculatorul e o pagină a site-ului romaniatransparenta.eu, nu un WebSite separat.
+ */
+export const RT_ORGANIZATIE = ENT.refs.rt;
+export const RT_SITE = ENT.refs.rt_site;
 
 /** adresele paginilor de grilă: /grila/<slug> */
 export const GRILE: { anexa: string; slug: string; titlu: string }[] = [

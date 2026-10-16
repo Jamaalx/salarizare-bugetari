@@ -12,7 +12,7 @@ import { VARIANTE, VARIANTA_IMPLICITA } from "@/lib/variants";
 import { numarFunctii } from "@/lib/variants-data";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { GRILE, RT_ORGANIZATIE, SITE_URL, VARIANTE_TEXT, grilaDupaSlug, jsonLd } from "@/lib/seo";
+import { GRILE, RT_ORGANIZATIE, RT_SITE, SITE_URL, VARIANTE_TEXT, grilaDupaSlug, jsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = { alternates: { canonical: "/" } };
 
@@ -39,7 +39,7 @@ export default function HomePage() {
               description: `Calculează salariul brut și net al personalului plătit din fonduri publice pe proiectul noii legi a salarizării, în variantele: ${VARIANTE_TEXT}. Proiect neadoptat.`,
               publisher: RT_ORGANIZATIE,
             },
-            { "@type": "WebSite", "@id": `${SITE_URL}/#site`, name: "Calculator Salariu Bugetari", url: `${SITE_URL}/`, inLanguage: "ro", publisher: RT_ORGANIZATIE },
+            { "@type": "WebPage", "@id": `${SITE_URL}/#webpage`, name: "Calculator Salariu Bugetari", url: `${SITE_URL}/`, inLanguage: "ro", isPartOf: RT_SITE, publisher: RT_ORGANIZATIE, mainEntity: { "@id": `${SITE_URL}/#aplicatie` } },
           ],
         })}
       />

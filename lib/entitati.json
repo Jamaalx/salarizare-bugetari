@@ -1,0 +1,27 @@
+{
+  "_info": "GENERAT de seo-ops din entities/graph.yaml (versiunea din 2026-10-16); nu edita de mână. Refă cu: seo run entities salarizare gen=1 repo=<repo>. `defines` = nodurile definite DOAR aici; `refs` = ciotul {@type,@id,name,url} cu care orice pagină referă o entitate.",
+  "ids": {
+    "rt": "https://romaniatransparenta.eu/#organizatie",
+    "rt_site": "https://romaniatransparenta.eu/#site"
+  },
+  "refs": {
+    "rt": {
+      "@type": "Organization",
+      "@id": "https://romaniatransparenta.eu/#organizatie",
+      "name": "România Transparentă",
+      "url": "https://romaniatransparenta.eu/"
+    },
+    "rt_site": {
+      "@type": "WebSite",
+      "@id": "https://romaniatransparenta.eu/#site",
+      "name": "România Transparentă",
+      "url": "https://romaniatransparenta.eu/"
+    }
+  },
+  "profiles": {
+    "rt": []
+  },
+  "defines": {
+    "ro": {}
+  }
+}

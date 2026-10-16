@@ -33,8 +33,7 @@ export interface Ghid {
   raspuns: string;
   /** „Pe scurt”: 3–6 fapte */
   peScurt: readonly string[];
-  /** autorul afișat sub titlu și în BlogPosting (Person); fără el, autorul e organizația */
-  autor?: { nume: string; url: string };
+  // fără câmp de autor: pe RT autorul și editorul e organizația (regula „fără persoane”, graful seo-ops)
   /** AAAA-LL-ZZ */
   publicat: string;
   /** AAAA-LL-ZZ, ≥ publicat */
