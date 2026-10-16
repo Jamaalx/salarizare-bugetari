@@ -6,9 +6,11 @@ import { SITE_URL } from "@/lib/seo";
 
 export const metadata: Metadata = {
   metadataBase: new URL(`${SITE_URL}/`),
-  title: "Calculator Salariu Bugetari 2026 — noua lege a salarizării",
+  // Titlul și descrierea urmează căutările reale din Search Console (16.10.2026): „calculator salarii invatamant 2026”,
+  // „calculator salariu”, „… profesor”, „… sanatate”, „… medici” — poziția 8–9 cu CTR aproape 0 pe vechiul titlu.
+  title: "Calculator salariu bugetari 2026: învățământ, sănătate",
   description:
-    "Calculează salariul brut și net pe noua lege a salarizării bugetarilor, în cele trei variante ale proiectului MMFTSS (25 mai, 17 iulie, 20 august 2026).",
+    "Calculează gratuit salariul brut și net pe noua lege a salarizării: profesori, medici, asistenți, funcționari, militari. Toate cele 3 variante ale proiectului.",
   keywords: [
     "salarizare bugetari",
     "calculator salariu",
@@ -18,9 +20,9 @@ export const metadata: Metadata = {
     "salariu functionar public",
   ],
   openGraph: {
-    title: "Calculator Salariu Bugetari — România Transparentă",
+    title: "Calculator salariu bugetari 2026: învățământ, sănătate",
     description:
-      "Estimează cum se va modifica salariul tău cu noul proiect de lege a salarizării.",
+      "Salariul brut și net pe noua lege a salarizării, pentru profesori, medici, asistenți, funcționari și militari. Gratuit.",
     siteName: "România Transparentă",
     url: `${SITE_URL}/`,
     locale: "ro_RO",
