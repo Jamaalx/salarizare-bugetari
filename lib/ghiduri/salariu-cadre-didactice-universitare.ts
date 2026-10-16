@@ -217,7 +217,6 @@ Plafonul de 20% al sporurilor se calculează pe ordonatorul principal de credite
     ],
     publicat: "2026-10-09",
     actualizat: "2026-10-09",
-    autor: { nume: "Alex Mantello", url: "https://alexandru.zed-zen.com" },
     corp,
     faq: [
       {
