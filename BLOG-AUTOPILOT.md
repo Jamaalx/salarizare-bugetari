@@ -290,3 +290,4 @@ Ultima linie a răspunsului, mereu: `PUBLICAT: https://romaniatransparenta.eu/re
 | 2026-10-09 | salariu-cadre-didactice-universitare | salariu lector universitar |
 | 2026-10-13 | salariu-cercetator-stiintific | salariu cercetator stiintific |
 | 2026-10-16 | salariu-medic-rezident | salariu medic rezident noua lege |
+| 2026-10-20 | legea-salarizarii-2026-cele-trei-variante | legea salarizarii 2026 |
