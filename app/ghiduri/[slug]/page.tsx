@@ -105,7 +105,7 @@ export default async function GhidPage({ params }: { params: Promise<{ slug: str
         <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-brand-700">{g.categorie}</p>
         <h1 className="mt-1 text-2xl md:text-4xl font-bold tracking-tight text-slate-900">{g.titlu}</h1>
         <p className="mt-2 text-sm text-slate-500">
-          Publicat pe <time dateTime={g.publicat}>{dataLunga(g.publicat)}</time>
+          de <a href={RT_ORGANIZATIE.url} rel="author" className="underline-offset-2 hover:underline">{RT_ORGANIZATIE.name}</a> · Publicat pe <time dateTime={g.publicat}>{dataLunga(g.publicat)}</time>
           {g.actualizat !== g.publicat && (
             <>
               {" "}· actualizat pe <time dateTime={g.actualizat}>{dataLunga(g.actualizat)}</time>
