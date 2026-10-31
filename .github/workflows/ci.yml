@@ -28,7 +28,7 @@ jobs:
       OAUTH_SIGNING_SECRET: ci-dummy-oauth-signing-secret
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node 22
         uses: actions/setup-node@v4
