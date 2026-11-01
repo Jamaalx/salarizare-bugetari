@@ -48,7 +48,7 @@ const fold = (s: string) =>
 /* ============ SCHEMAS ============ */
 
 export const searchFunctionSchema = z.object({
-  query: z.string().describe("Cuvinte cheie pentru căutare (ex: 'profesor universitar', 'inspector'); caută în numele funcției, grad, capitol, treaptă de populație și cod"),
+  query: z.string().max(200).describe("Cuvinte cheie pentru căutare (ex: 'profesor universitar', 'inspector'); caută în numele funcției, grad, capitol, treaptă de populație și cod"),
   anexa: z
     .enum(["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"])
     .optional()
@@ -113,6 +113,7 @@ export const calculateSalarySchema = z.object({
           .describe("Fracțiunea de timp (0–100) pentru sporurile proporționale cu timpul lucrat"),
       })
     )
+    .max(20)
     .default([])
     .describe("Lista sporurilor aplicabile cu procentul (dacă e custom)"),
   oreNormaLunara: z

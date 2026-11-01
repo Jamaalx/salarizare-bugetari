@@ -16,6 +16,10 @@ export const dynamic = "force-dynamic";
 // (Claude.ai connector) do `tools/list` + `tools/call` in bursts.
 const MCP_LIMIT = 60;
 const MCP_WINDOW_MS = 60_000;
+// Limita de mai sus e pe cerere HTTP; un batch JSON-RPC fără plafon ocolea
+// limita (mii de tools/call într-un singur POST). Plafonăm și corpul cererii.
+const MAX_BATCH = 20;
+const MAX_BODY_BYTES = 64 * 1024;
 
 /**
  * MCP server stateless cu HTTP transport simplificat.
@@ -190,15 +194,40 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  const declarat = Number(req.headers.get("content-length") ?? "0");
+  if (declarat > MAX_BODY_BYTES) {
+    return NextResponse.json(
+      { jsonrpc: "2.0", id: null, error: { code: -32600, message: "Request too large" } },
+      { status: 413 }
+    );
+  }
+
   let body: any;
   try {
-    body = await req.json();
+    const text = await req.text();
+    if (Buffer.byteLength(text) > MAX_BODY_BYTES) {
+      return NextResponse.json(
+        { jsonrpc: "2.0", id: null, error: { code: -32600, message: "Request too large" } },
+        { status: 413 }
+      );
+    }
+    body = JSON.parse(text);
   } catch {
     return NextResponse.json(
       {
         jsonrpc: "2.0",
         id: null,
         error: { code: -32700, message: "Parse error" },
+      },
+      { status: 400 }
+    );
+  }
+  if (Array.isArray(body) && (body.length === 0 || body.length > MAX_BATCH)) {
+    return NextResponse.json(
+      {
+        jsonrpc: "2.0",
+        id: null,
+        error: { code: -32600, message: `Invalid Request: batch must have 1-${MAX_BATCH} entries` },
       },
       { status: 400 }
     );
@@ -230,17 +259,12 @@ export async function GET(req: NextRequest) {
       }
     );
   }
-  const host =
-    req.headers.get("x-forwarded-host") ||
-    req.headers.get("host") ||
-    "salarii.romaniatransparenta.eu";
-  const proto = req.headers.get("x-forwarded-proto") || "https";
   return NextResponse.json({
     name: "salarizare-bugetari-ro",
     version: "1.0.0",
     protocol: "Model Context Protocol",
     transport: "HTTP (JSON-RPC over POST)",
-    documentation: `${proto}://${host}/mcp`,
+    documentation: `${baseUrl(req)}/mcp`,
     tools: TOOL_DEFINITIONS.map((t) => ({
       name: t.name,
       description: t.description,
