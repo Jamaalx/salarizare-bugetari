@@ -164,14 +164,30 @@ export function randomId(bytes = 12): string {
 
 /**
  * Adresa publică, folosită în metadatele OAuth (issuer, endpoint-uri) și în
- * antetul WWW-Authenticate. Se ia din PUBLIC_BASE_URL când e setată: antetele
- * x-forwarded-host/host pot fi trimise de oricine ajunge direct la origine,
- * iar un issuer falsificat ar trimite clientul să se autorizeze în altă parte.
- * Fără variabilă (dezvoltare locală) rămâne comportamentul vechi.
+ * antetul WWW-Authenticate. Antetele Host/X-Forwarded-Host pot fi trimise de
+ * oricine ajunge direct la origine, iar un issuer falsificat ar trimite
+ * clientul să se autorizeze în altă parte. De aceea, în producție gazda din
+ * antet e acceptată doar dacă e în PUBLIC_HOSTS (implicit cele două domenii
+ * ale aplicației); altfel se folosește PUBLIC_BASE_URL sau primul domeniu.
+ * Fiecare domeniu permis își păstrează propriile metadate: conectorii
+ * înregistrați pe salarizare.zed-zen.com verifică potrivirea resursei (RFC 9728).
  */
+const GAZDE_IMPLICITE = "salarii.romaniatransparenta.eu,salarizare.zed-zen.com";
+
 export function baseUrl(req: Request): string {
+  const permise = (process.env.PUBLIC_HOSTS ?? GAZDE_IMPLICITE)
+    .split(",")
+    .map((h) => h.trim().toLowerCase())
+    .filter(Boolean);
+  const gazda = (req.headers.get("x-forwarded-host") || req.headers.get("host") || "")
+    .split(",")[0]
+    .trim()
+    .toLowerCase();
+  if (gazda && permise.includes(gazda)) return `https://${gazda}`;
   const fix = process.env.PUBLIC_BASE_URL?.trim().replace(/\/+$/, "");
   if (fix && /^https?:\/\/[^\s/]+$/.test(fix)) return fix;
+  if (process.env.NODE_ENV === "production") return `https://${permise[0] ?? "salarii.romaniatransparenta.eu"}`;
+  // dezvoltare locală: ca înainte
   const proto = req.headers.get("x-forwarded-proto") || "https";
   const host =
     req.headers.get("x-forwarded-host") ||
