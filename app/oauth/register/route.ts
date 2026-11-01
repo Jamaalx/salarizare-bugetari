@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
       client_id_issued_at: Math.floor(Date.now() / 1000),
       redirect_uris: redirectUris,
       token_endpoint_auth_method: "none",
-      grant_types: ["authorization_code"],
+      grant_types: ["authorization_code", "refresh_token"],
       response_types: ["code"],
       scope: "mcp",
       client_name:

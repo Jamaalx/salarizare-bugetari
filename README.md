@@ -68,6 +68,8 @@ cp .env.example .env.local   # apoi completează ce ai nevoie
 | `NVIDIA_MODEL` | modelul folosit de chat (implicit `meta/llama-3.3-70b-instruct`) |
 | `OAUTH_SIGNING_SECRET` | secretul HMAC (min. 32 caractere) pentru token-urile OAuth ale serverului MCP (`/oauth/*`); fără el OAuth e dezactivat (503), iar `/api/mcp` rămâne public — nu există secret de rezervă |
 | `OAUTH_REDIRECT_ALLOWLIST` | opțional: `redirect_uri` exacte suplimentare (separate prin virgulă); implicit doar conectorul Claude, ChatGPT și `localhost` |
+| `PUBLIC_BASE_URL` | adresa publică, ex. `https://salarii.romaniatransparenta.eu`; folosită în metadatele OAuth în locul antetelor `Host`/`X-Forwarded-Host`, care pot fi falsificate. Obligatorie în producție |
+| `OAUTH_TOKEN_EPOCH` | opțional, implicit `1`. Token-urile de acces trăiesc o oră, refresh token-urile 30 de zile (rotite la fiecare folosire); crește valoarea ca să retragi toate token-urile emise |
 
 Build Docker identic cu cel din producție:
 

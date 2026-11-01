@@ -1,5 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { signJwt, verifyJwt, pkceVerify, oauthEnabled, oauthDisabledResponse, oauthRateLimited } from "@/lib/oauth";
+import {
+  signJwt,
+  verifyJwt,
+  pkceVerify,
+  oauthEnabled,
+  oauthDisabledResponse,
+  oauthRateLimited,
+  ACCESS_TOKEN_TTL,
+  REFRESH_TOKEN_TTL,
+} from "@/lib/oauth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -36,6 +45,7 @@ export async function POST(req: NextRequest) {
   }
 
   const grant_type = params.get("grant_type");
+  if (grant_type === "refresh_token") return refresh(params);
   if (grant_type !== "authorization_code") {
     return NextResponse.json(
       { error: "unsupported_grant_type" },
@@ -105,21 +115,55 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const ONE_YEAR = 60 * 60 * 24 * 365;
-  const access_token = signJwt(
-    { typ: "access", cid: payload.cid },
-    ONE_YEAR
-  );
+  return issueTokens(String(payload.cid));
+}
 
+/**
+ * Token de acces de o oră + refresh token de 30 de zile. Fiecare refresh
+ * emite o pereche nouă (rotație), deci un client activ nu se deconectează,
+ * iar unul abandonat pierde accesul după 30 de zile.
+ */
+function issueTokens(cid: string) {
+  const access_token = signJwt({ typ: "access", cid }, ACCESS_TOKEN_TTL);
+  const refresh_token = signJwt({ typ: "refresh", cid }, REFRESH_TOKEN_TTL);
   return NextResponse.json(
     {
       access_token,
       token_type: "Bearer",
-      expires_in: ONE_YEAR,
+      expires_in: ACCESS_TOKEN_TTL,
+      refresh_token,
       scope: "mcp",
     },
-    { headers: CORS }
+    { headers: { ...CORS, "Cache-Control": "no-store", Pragma: "no-cache" } }
   );
+}
+
+// RFC 6749 §6. Clienții sunt publici (fără secret), deci refresh token-ul e
+// legat doar de client_id-ul din el; dacă clientul îl trimite, trebuie să fie
+// același.
+function refresh(params: URLSearchParams) {
+  const token = params.get("refresh_token");
+  if (!token) {
+    return NextResponse.json(
+      { error: "invalid_request", error_description: "missing refresh_token" },
+      { status: 400, headers: CORS }
+    );
+  }
+  const payload = verifyJwt(token);
+  if (!payload || payload.typ !== "refresh" || typeof payload.cid !== "string") {
+    return NextResponse.json(
+      { error: "invalid_grant", error_description: "refresh_token invalid or expired" },
+      { status: 400, headers: CORS }
+    );
+  }
+  const client_id = params.get("client_id");
+  if (client_id && client_id !== payload.cid) {
+    return NextResponse.json(
+      { error: "invalid_grant", error_description: "client_id mismatch" },
+      { status: 400, headers: CORS }
+    );
+  }
+  return issueTokens(payload.cid);
 }
 
 export async function OPTIONS() {

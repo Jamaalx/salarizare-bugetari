@@ -99,13 +99,33 @@ function fromB64url(input: string): Buffer {
   return Buffer.from(input, "base64url");
 }
 
+/**
+ * Durate de viață. Token-urile de acces trăiesc o oră; clientul le reînnoiește
+ * cu refresh token-ul (rotit la fiecare folosire). Înainte, token-ul de acces
+ * era valabil un an și nu putea fi retras.
+ */
+export const ACCESS_TOKEN_TTL = 60 * 60; // 1 oră
+export const REFRESH_TOKEN_TTL = 60 * 60 * 24 * 30; // 30 de zile
+
+/**
+ * Retragerea tuturor token-urilor: OAUTH_TOKEN_EPOCH (număr întreg, implicit 1)
+ * e scris în fiecare token, iar verifyJwt le refuză pe cele dintr-o epocă mai
+ * veche. Crești valoarea în Coolify → toți clienții refac autorizarea, fără să
+ * schimbi OAUTH_SIGNING_SECRET. Token-urile vechi, fără epocă (cele de un an),
+ * sunt refuzate.
+ */
+export function tokenEpoch(): number {
+  const n = Number.parseInt(process.env.OAUTH_TOKEN_EPOCH ?? "", 10);
+  return Number.isFinite(n) && n > 0 ? n : 1;
+}
+
 export function signJwt(
   payload: Record<string, unknown>,
   lifetimeSec: number
 ): string {
   const header = { alg: "HS256", typ: "JWT" };
   const now = Math.floor(Date.now() / 1000);
-  const body = { ...payload, iat: now, exp: now + lifetimeSec };
+  const body = { ...payload, ep: tokenEpoch(), iat: now, exp: now + lifetimeSec };
   const h = b64url(JSON.stringify(header));
   const p = b64url(JSON.stringify(body));
   const sig = b64url(createHmac("sha256", requireSecret()).update(`${h}.${p}`).digest());
@@ -124,11 +144,9 @@ export function verifyJwt(token: string): Record<string, unknown> | null {
     if (expected.length !== got.length) return null;
     if (!timingSafeEqual(expected, got)) return null;
     const payload = JSON.parse(fromB64url(p).toString("utf-8"));
-    if (
-      typeof payload.exp === "number" &&
-      payload.exp < Math.floor(Date.now() / 1000)
-    )
-      return null;
+    // exp e obligatoriu (îl punem mereu); un token fără exp nu e de-al nostru.
+    if (typeof payload.exp !== "number" || payload.exp < Math.floor(Date.now() / 1000)) return null;
+    if (typeof payload.ep !== "number" || payload.ep < tokenEpoch()) return null;
     return payload;
   } catch {
     return null;
@@ -144,7 +162,16 @@ export function randomId(bytes = 12): string {
   return b64url(randomBytes(bytes));
 }
 
+/**
+ * Adresa publică, folosită în metadatele OAuth (issuer, endpoint-uri) și în
+ * antetul WWW-Authenticate. Se ia din PUBLIC_BASE_URL când e setată: antetele
+ * x-forwarded-host/host pot fi trimise de oricine ajunge direct la origine,
+ * iar un issuer falsificat ar trimite clientul să se autorizeze în altă parte.
+ * Fără variabilă (dezvoltare locală) rămâne comportamentul vechi.
+ */
 export function baseUrl(req: Request): string {
+  const fix = process.env.PUBLIC_BASE_URL?.trim().replace(/\/+$/, "");
+  if (fix && /^https?:\/\/[^\s/]+$/.test(fix)) return fix;
   const proto = req.headers.get("x-forwarded-proto") || "https";
   const host =
     req.headers.get("x-forwarded-host") ||
