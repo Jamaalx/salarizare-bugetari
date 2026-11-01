@@ -1,20 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
-import { randomId, oauthEnabled, oauthDisabledResponse, redirectUriPermis } from "@/lib/oauth";
+import { randomId, oauthEnabled, oauthDisabledResponse, oauthRateLimited, redirectUriPermis } from "@/lib/oauth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   if (!oauthEnabled()) return oauthDisabledResponse();
+  const limitat = oauthRateLimited(req, "register");
+  if (limitat) return limitat;
   let body: any = {};
   try {
-    body = await req.json();
+    const parsed = await req.json();
+    // „null” sau un array ca body aruncau la body.redirect_uris → 500.
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) body = parsed;
   } catch {}
 
   // RFC 7591 §3.2.2: redirect_uris nepermise → invalid_redirect_uri.
   const redirectUris: string[] = Array.isArray(body.redirect_uris)
     ? body.redirect_uris.filter((u: unknown): u is string => typeof u === "string")
     : [];
+  if (redirectUris.length > 10) {
+    return NextResponse.json(
+      { error: "invalid_client_metadata", error_description: "prea multe redirect_uris (max 10)" },
+      { status: 400, headers: { "Access-Control-Allow-Origin": "*", "Cache-Control": "no-store" } },
+    );
+  }
   const respinse = redirectUris.filter((u) => !redirectUriPermis(u));
   if (respinse.length > 0) {
     return NextResponse.json(
@@ -39,7 +49,7 @@ export async function POST(req: NextRequest) {
       scope: "mcp",
       client_name:
         typeof body.client_name === "string"
-          ? body.client_name
+          ? body.client_name.slice(0, 200)
           : "Anonymous MCP Client",
     },
     {

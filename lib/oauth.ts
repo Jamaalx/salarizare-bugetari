@@ -1,4 +1,5 @@
 import { createHmac, createHash, randomBytes, timingSafeEqual } from "crypto";
+import { rateLimit, getClientIp } from "./rate-limit";
 
 /**
  * Secretul HMAC pentru codurile și token-urile OAuth. FĂRĂ valoare de rezervă:
@@ -27,6 +28,26 @@ export function oauthDisabledResponse(): Response {
   return Response.json(
     { error: "temporarily_unavailable", error_description: OAUTH_DISABLED_MESSAGE },
     { status: 503, headers: { "Cache-Control": "no-store", "Access-Control-Allow-Origin": "*" } },
+  );
+}
+
+/**
+ * Limită per IP pe /oauth/* (înainte nu exista): 30 cereri/minut ajung pentru
+ * un flux normal (register → authorize → token) chiar repetat de câteva ori.
+ */
+export function oauthRateLimited(req: Request, ruta: string): Response | null {
+  const rl = rateLimit(`oauth-${ruta}:${getClientIp(req)}`, 30, 60_000);
+  if (rl.ok) return null;
+  return Response.json(
+    { error: "slow_down", error_description: "Prea multe cereri. Reîncearcă peste un minut." },
+    {
+      status: 429,
+      headers: {
+        "Retry-After": String(Math.max(1, Math.ceil((rl.resetAt - Date.now()) / 1000))),
+        "Cache-Control": "no-store",
+        "Access-Control-Allow-Origin": "*",
+      },
+    },
   );
 }
 

@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { signJwt, oauthEnabled, oauthDisabledResponse, redirectUriPermis } from "@/lib/oauth";
+import { signJwt, oauthEnabled, oauthDisabledResponse, oauthRateLimited, redirectUriPermis } from "@/lib/oauth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   if (!oauthEnabled()) return oauthDisabledResponse();
+  const limitat = oauthRateLimited(req, "authorize");
+  if (limitat) return limitat;
   const url = new URL(req.url);
   const p = url.searchParams;
   const response_type = p.get("response_type");
@@ -18,14 +20,27 @@ export async function GET(req: NextRequest) {
   if (response_type !== "code" || !client_id || !redirect_uri) {
     return NextResponse.json({ error: "invalid_request" }, { status: 400 });
   }
-  if (code_challenge && code_challenge_method !== "S256") {
+  // PKCE obligatoriu (OAuth 2.1 §4.1.1, MCP authorization): clienții sunt
+  // publici (token_endpoint_auth_method "none") și aprobarea e automată, deci
+  // fără code_challenge un cod interceptat ar putea fi schimbat pe un token.
+  // Claude, ChatGPT și MCP Inspector trimit toți S256.
+  if (!code_challenge || code_challenge_method !== "S256") {
     return NextResponse.json(
       {
         error: "invalid_request",
-        error_description: "Only S256 PKCE supported",
+        error_description: "PKCE obligatoriu: code_challenge cu code_challenge_method=S256",
       },
       { status: 400 }
     );
+  }
+  if (!/^[A-Za-z0-9_-]{43}$/.test(code_challenge)) {
+    return NextResponse.json(
+      { error: "invalid_request", error_description: "code_challenge invalid (S256 base64url, 43 caractere)" },
+      { status: 400 }
+    );
+  }
+  if (client_id.length > 200 || (state && state.length > 1024)) {
+    return NextResponse.json({ error: "invalid_request" }, { status: 400 });
   }
 
   let parsedRedirect: URL;
@@ -53,7 +68,7 @@ export async function GET(req: NextRequest) {
     {
       typ: "code",
       cid: client_id,
-      cc: code_challenge ?? null,
+      cc: code_challenge,
       rdr: redirect_uri,
     },
     600
