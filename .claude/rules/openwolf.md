@@ -3,8 +3,8 @@ description: OpenWolf protocol enforcement, active on all files
 globs: **/*
 ---
 
-- To locate a symbol or file, run `openwolf find <name>` first (ranked shortlist, under 1k tokens). For one file's description and symbol ranges: `openwolf find --file <path>`. Never read .wolf/anatomy.md whole; it is an index.
-- Check .wolf/cerebrum.md Do-Not-Repeat list before generating code (grep "## Do-Not-Repeat"); after a user correction, update cerebrum.md immediately.
-- Do NOT manually update .wolf/anatomy.md or .wolf/memory.md; the OpenWolf hooks maintain them.
-- BEFORE fixing any bug: run `openwolf bug search "<error>"` or grep .wolf/buglog.json. AFTER fixing one: log it there (error_message, root_cause, fix, tags).
-- When resuming a session, read .wolf/STATUS.md first; regenerate it with /handoff when a quest finishes.
+- Use direct search or `openwolf find` as appropriate. Anatomy is optional; do not read the whole index or force a scan before ordinary work.
+- Retrieve relevant cerebrum knowledge on demand; save substantive preferences and recurring root causes, updating existing entries rather than duplicating them.
+- With active OpenWolf hooks, leave anatomy and automatic action bookkeeping to the hooks. In manual mode, keep only useful task summaries.
+- Search known fixes when relevant. Record established root causes; repeated edits alone are not proof of a bug.
+- Read `.wolf/STATUS.md` on resume as a starting point. Keep it compact and current; link detailed evidence. Historical observations are not current verification results.

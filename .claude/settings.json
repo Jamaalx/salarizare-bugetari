@@ -6,8 +6,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"/root/salarizare-bugetari/.wolf/hooks/session-start.js\"",
-            "timeout": 5
+            "command": "node \"/root/oss-maint/salarizare-bugetari/.wolf/hooks/session-start.js\"",
+            "timeout": 15
           }
         ]
       }
@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"/root/salarizare-bugetari/.wolf/hooks/user-prompt-submit.js\"",
+            "command": "node \"/root/oss-maint/salarizare-bugetari/.wolf/hooks/user-prompt-submit.js\"",
             "timeout": 5
           }
         ]
@@ -30,7 +30,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"/root/salarizare-bugetari/.wolf/hooks/pre-read.js\"",
+            "command": "node \"/root/oss-maint/salarizare-bugetari/.wolf/hooks/pre-read.js\"",
             "timeout": 5
           }
         ]
@@ -40,7 +40,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"/root/salarizare-bugetari/.wolf/hooks/pre-write.js\"",
+            "command": "node \"/root/oss-maint/salarizare-bugetari/.wolf/hooks/pre-write.js\"",
             "timeout": 5
           }
         ]
@@ -50,7 +50,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"/root/salarizare-bugetari/.wolf/hooks/pre-bash.js\"",
+            "command": "node \"/root/oss-maint/salarizare-bugetari/.wolf/hooks/pre-bash.js\"",
             "timeout": 5
           }
         ]
@@ -62,7 +62,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"/root/salarizare-bugetari/.wolf/hooks/post-read.js\"",
+            "command": "node \"/root/oss-maint/salarizare-bugetari/.wolf/hooks/post-read.js\"",
             "timeout": 5
           }
         ]
@@ -72,7 +72,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"/root/salarizare-bugetari/.wolf/hooks/post-write.js\"",
+            "command": "node \"/root/oss-maint/salarizare-bugetari/.wolf/hooks/post-write.js\"",
             "timeout": 10
           }
         ]
@@ -82,7 +82,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"/root/salarizare-bugetari/.wolf/hooks/post-bash.js\"",
+            "command": "node \"/root/oss-maint/salarizare-bugetari/.wolf/hooks/post-bash.js\"",
             "timeout": 10
           }
         ]
@@ -94,7 +94,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"/root/salarizare-bugetari/.wolf/hooks/post-batch.js\"",
+            "command": "node \"/root/oss-maint/salarizare-bugetari/.wolf/hooks/post-batch.js\"",
             "timeout": 5
           }
         ]
@@ -106,7 +106,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"/root/salarizare-bugetari/.wolf/hooks/precompact.js\"",
+            "command": "node \"/root/oss-maint/salarizare-bugetari/.wolf/hooks/precompact.js\"",
             "timeout": 5
           }
         ]
@@ -118,7 +118,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"/root/salarizare-bugetari/.wolf/hooks/stop.js\"",
+            "command": "node \"/root/oss-maint/salarizare-bugetari/.wolf/hooks/stop.js\"",
             "timeout": 10
           }
         ]
@@ -130,11 +130,15 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"/root/salarizare-bugetari/.wolf/hooks/session-end.js\"",
+            "command": "node \"/root/oss-maint/salarizare-bugetari/.wolf/hooks/session-end.js\"",
             "timeout": 10
           }
         ]
       }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "node \"/root/oss-maint/salarizare-bugetari/.wolf/hooks/visibility-statusline.js\""
   }
 }

@@ -1,3 +1,15 @@
+# OpenWolf recovery and usage artifacts
+usage-report.json
+updates/
+handoff/
+activity/
+usage/
+archive/
+session-memory/
+ledger-pending/
+ledger-sessions/
+bug-pending/
+*.pending/
 # OpenWolf: machine-local state (committed state: cerebrum.md, STATUS.md,
 # memory.md, buglog.json, anatomy.md, anatomy-index.json, config.json, OPENWOLF.md)
 hooks/

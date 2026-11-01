@@ -25,6 +25,21 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "@types/react-dom"
         update-types: ["version-update:semver-major"]
+      # Amânate cu motiv (trecerea 2026-11), se fac manual împreună cu Next 16:
+      # Tailwind 4 cere migrarea configurației în CSS; ESLint 10 renunță la
+      # eslintrc, pe care next lint din Next 15 îl folosește; TypeScript 7 nu
+      # are încă API-ul JS cu care next build verifică tipurile.
+      - dependency-name: tailwindcss
+        update-types: ["version-update:semver-major"]
+      - dependency-name: eslint
+        update-types: ["version-update:semver-major"]
+      - dependency-name: eslint-config-next
+        update-types: ["version-update:semver-major"]
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
+      # Tipurile urmează versiunea Node din producție (22), nu ultima Node.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     commit-message:
       prefix: "chore(deps)"
 

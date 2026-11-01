@@ -1,4 +1,67 @@
 {
   "version": 1,
-  "bugs": []
+  "bugs": [
+    {
+      "error_message": "Type error",
+      "file": "app/api/chat/route.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "status": "candidate",
+      "observed_worktree": "/root/oss-maint/salarizare-bugetari",
+      "id": "bug-001",
+      "timestamp": "2026-11-01T15:03:09.979Z",
+      "last_seen": "2026-11-01T15:03:09.979Z",
+      "occurrences": 1,
+      "related_bugs": []
+    },
+    {
+      "error_message": "Null/undefined access in oauth.ts",
+      "file": "lib/oauth.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "status": "candidate",
+      "observed_worktree": "/root/oss-maint/salarizare-bugetari",
+      "id": "bug-002",
+      "timestamp": "2026-11-01T15:03:48.806Z",
+      "last_seen": "2026-11-01T15:06:28.284Z",
+      "occurrences": 3,
+      "related_bugs": []
+    },
+    {
+      "error_message": "Wrong operator: === should be !==",
+      "file": "lib/oauth.ts",
+      "root_cause": "Used \"===\" instead of \"!==\"",
+      "fix": "Changed operator === → !==",
+      "tags": [
+        "auto-detected",
+        "operator-fix",
+        "ts"
+      ],
+      "status": "candidate",
+      "observed_worktree": "/root/oss-maint/salarizare-bugetari",
+      "id": "bug-003",
+      "timestamp": "2026-11-01T15:03:49.278Z",
+      "last_seen": "2026-11-01T15:03:49.278Z",
+      "occurrences": 1,
+      "related_bugs": []
+    }
+  ],
+  "applied_observations": {
+    "977e28dc-aca2-4c3d-b021-05157f998ff9": true,
+    "86438a4d-0625-405d-98a0-844dfee12c65": true,
+    "8273d2d0-744c-4c93-a4cb-ba0554b8dcbb": true,
+    "f9e9651f-71f8-4083-9094-3b2f34c4968c": true,
+    "99e22df7-59f6-42d2-a91b-40ed6e791a2f": true
+  },
+  "next_id": 4
 }

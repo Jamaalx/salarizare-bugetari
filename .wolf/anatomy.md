@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-09-12T07:36:14.772Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-01T15:06:28.266Z
 > Files: 54 tracked | Anatomy hits: 0 | Misses: 0
 
 > Project structure index. Auto-maintained by OpenWolf hooks and daemon.
@@ -48,7 +48,7 @@
 
 ## app/api/chat/
 
-- `route.ts` — Next.js API route: POST (~2618 tok)
+- `route.ts` — Next.js API route: POST (~2831 tok)
 
 ## app/api/coeficienti/[varianta]/
 
@@ -104,7 +104,7 @@
 
 ## lib/
 
-- `oauth.ts` — API routes: GET (3 endpoints) (~580 tok)
+- `oauth.ts` — Secretul HMAC pentru codurile și token-urile OAuth. FĂRĂ valoare de rezervă: (~2224 tok)
 - `rate-limit.ts` — In-memory token-bucket rate limiter. Single-instance only. (~466 tok)
 - `tax.ts` — Deducerea personală 2027 — pe baza Codului fiscal (OUG 16/2022, neabrogată de (~18005 tok)
 - `tools.ts` — Tools partajate între MCP server și chat AI. (~5134 tok)

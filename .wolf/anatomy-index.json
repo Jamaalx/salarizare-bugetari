@@ -1,13 +1,13 @@
 {
   "version": 1,
   "meta": {
-    "lastScanned": "2026-09-12T07:36:14.772Z",
+    "lastScanned": "2026-11-01T15:06:28.266Z",
     "fileCount": 54,
     "hits": 0,
     "misses": 0,
-    "renderedHash": "415415e5ff4815c9a0b7e121a67aba982e424d4e765084a8d14c5a34b67e233f",
-    "storeUpdatedAt": "2026-09-12T07:36:14.772Z",
-    "rootHash": "e34501f954d687df"
+    "renderedHash": "9123ad0a83e1ee7dd11abb85281e05eb90a9cc650bb36f2f1fbac9ec45f3f706",
+    "storeUpdatedAt": "2026-11-01T15:06:28.272Z",
+    "rootHash": "568c87329ec8d6c8"
   },
   "files": {
     ".dockerignore": {
@@ -72,52 +72,35 @@
     },
     "app/api/chat/route.ts": {
       "description": "Next.js API route: POST",
-      "tokens": 2618,
-      "hash": "ca47b470b3071952",
-      "size": 9284,
-      "mtimeMs": 1789198572228.2466,
-      "updatedAt": "2026-09-12T07:36:12.378Z",
-      "source": "scan",
+      "tokens": 2831,
+      "hash": "cde4131414825d67",
+      "size": 10074,
+      "mtimeMs": 1793545389795.3184,
+      "updatedAt": "2026-11-01T15:03:09.961Z",
+      "source": "hook",
       "symbols": [
-        {
-          "name": "OPENAI_TOOLS",
-          "kind": "fn",
-          "startLine": 52,
-          "endLine": 59,
-          "tokens": 68
-        },
-        {
-          "name": "ChatMessage",
-          "kind": "section",
-          "startLine": 61,
-          "endLine": 67,
-          "tokens": 45
-        },
         {
           "name": "executeToolCall",
           "kind": "fn",
-          "startLine": 69,
-          "endLine": 79,
-          "tokens": 125
+          "startLine": 72,
+          "endLine": 83,
+          "tokens": 126
         },
         {
           "name": "callNvidia",
           "kind": "fn",
-          "startLine": 81,
-          "endLine": 122,
-          "tokens": 286
+          "startLine": 84,
+          "endLine": 128,
+          "tokens": 326
         },
         {
           "name": "POST",
           "kind": "fn",
-          "startLine": 124,
-          "endLine": 253,
+          "startLine": 129,
+          "endLine": 259,
           "tokens": 1052
         }
-      ],
-      "symbolSource": "ts",
-      "skeleton": "const OPENAI_TOOLS = TOOL_DEFINITIONS.map((t) => ({\ntype ChatMessage = {\nasync function executeToolCall(name: string, args: any): Promise<string> {\nasync function callNvidia(messages: ChatMessage[], useTools = true): Promise<any> {\nexport async function POST(req: NextRequest) {",
-      "importance": 0.2483
+      ]
     },
     "app/api/coeficienti/[varianta]/route.ts": {
       "description": "Setul de coeficienți al unei variante a proiectului, în formatul citit de",
@@ -821,66 +804,113 @@
       "importance": 0.2483
     },
     "lib/oauth.ts": {
-      "description": "API routes: GET (3 endpoints)",
-      "tokens": 580,
-      "hash": "6a6c7dd32949d00b",
-      "size": 2030,
-      "mtimeMs": 1789198572239.2466,
-      "updatedAt": "2026-09-12T07:36:12.403Z",
-      "source": "scan",
+      "description": "Secretul HMAC pentru codurile și token-urile OAuth. FĂRĂ valoare de rezervă:",
+      "tokens": 2224,
+      "hash": "d7c304970e8c2302",
+      "size": 7890,
+      "mtimeMs": 1793545588193.7473,
+      "updatedAt": "2026-11-01T15:06:28.266Z",
+      "source": "hook",
       "symbols": [
+        {
+          "name": "signingSecret",
+          "kind": "fn",
+          "startLine": 13,
+          "endLine": 17,
+          "tokens": 44
+        },
+        {
+          "name": "oauthEnabled",
+          "kind": "fn",
+          "startLine": 18,
+          "endLine": 26,
+          "tokens": 102
+        },
+        {
+          "name": "oauthDisabledResponse",
+          "kind": "fn",
+          "startLine": 27,
+          "endLine": 37,
+          "tokens": 124
+        },
+        {
+          "name": "oauthRateLimited",
+          "kind": "fn",
+          "startLine": 38,
+          "endLine": 53,
+          "tokens": 153
+        },
+        {
+          "name": "requireSecret",
+          "kind": "fn",
+          "startLine": 54,
+          "endLine": 75,
+          "tokens": 245
+        },
+        {
+          "name": "redirectUriPermis",
+          "kind": "fn",
+          "startLine": 76,
+          "endLine": 93,
+          "tokens": 172
+        },
         {
           "name": "b64url",
           "kind": "fn",
-          "startLine": 7,
-          "endLine": 9,
+          "startLine": 94,
+          "endLine": 97,
           "tokens": 30
         },
         {
           "name": "fromB64url",
           "kind": "fn",
-          "startLine": 11,
-          "endLine": 13,
-          "tokens": 26
+          "startLine": 98,
+          "endLine": 116,
+          "tokens": 218
+        },
+        {
+          "name": "tokenEpoch",
+          "kind": "fn",
+          "startLine": 117,
+          "endLine": 121,
+          "tokens": 45
         },
         {
           "name": "signJwt",
           "kind": "fn",
-          "startLine": 15,
-          "endLine": 26,
-          "tokens": 129
+          "startLine": 122,
+          "endLine": 134,
+          "tokens": 137
         },
         {
           "name": "verifyJwt",
           "kind": "fn",
-          "startLine": 28,
-          "endLine": 47,
-          "tokens": 186
+          "startLine": 135,
+          "endLine": 155,
+          "tokens": 244
         },
         {
           "name": "pkceVerify",
           "kind": "fn",
-          "startLine": 49,
-          "endLine": 52,
+          "startLine": 156,
+          "endLine": 160,
           "tokens": 53
         },
         {
           "name": "randomId",
           "kind": "fn",
-          "startLine": 54,
-          "endLine": 56,
-          "tokens": 25
+          "startLine": 161,
+          "endLine": 176,
+          "tokens": 226
         },
         {
           "name": "baseUrl",
           "kind": "fn",
-          "startLine": 58,
-          "endLine": 65,
-          "tokens": 76
+          "startLine": 177,
+          "endLine": 198,
+          "tokens": 257
         }
-      ],
-      "symbolSource": "ts",
-      "importance": 0.2483
+      ]
     },
     "lib/rate-limit.ts": {
       "description": "In-memory token-bucket rate limiter. Single-instance only.",
