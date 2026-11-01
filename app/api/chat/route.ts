@@ -34,7 +34,8 @@ ${VARIANTE.map(
 ).join("\n")}
 - Formula: salariu_de_baza = coeficient × valoare_referinta + gradații vechime
 - Gradații (art. 13, identice în toate variantele): G0 <3ani (0%), G1 3-5 (+7.5%), G2 5-10 (+5%), G3 10-15 (+5%), G4 15-20 (+2.5%), G5 >20 (+2.5%) — se aplică multiplicativ succesiv
-- Pentru funcții de conducere și învățământ universitar/sanitar, coeficientul include deja vechimea (nu se mai aplică gradațiile)
+- Gradațiile NU se aplică (sunt deja incluse) doar la: funcții de conducere (gradația maximă inclusă, art. 10 alin. 6), demnitate publică, înalți funcționari publici (art. 13 alin. 1), Anexa V justiție (indemnizație de încadrare) și Anexa IX. Militarii, polițiștii și personalul din penitenciare au regim propriu: Anexa VI art. 4, 7 gradații de 3% pe solda de funcție
+- Pentru TOATE funcțiile de execuție din anexele I–VIII, inclusiv învățământ (Anexa I) și sănătate (Anexa II), coeficientul e la gradația 0 (art. 13 alin. 2) și gradațiile de vechime în muncă se aplică pe deasupra. Vechimea din grila de învățământ/sănătate e vechimea în specialitate care alege coeficientul, nu vechimea în muncă
 - Plafon sporuri: 20% din salariul de bază (art. 21, identic); excepții: noapte, ore supl., handicap, fonduri EU
 - Impozite: CAS 25% + CASS 10% + impozit pe venit 10%
 - Solda de grad (Anexa VI) diferă între variante: 25 mai Mareșal 1,00 → Soldat 0,10; 17 iulie și 20 august Mareșal 1,10 → Soldat 0,40 (vezi list_variante)
