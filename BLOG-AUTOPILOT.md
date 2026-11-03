@@ -293,3 +293,4 @@ Ultima linie a răspunsului, mereu: `PUBLICAT: https://romaniatransparenta.eu/re
 | 2026-10-20 | legea-salarizarii-2026-cele-trei-variante | legea salarizarii 2026 |
 | 2026-10-23 | salarii-bugetari-2026 | salarii bugetari |
 | 2026-10-27 | coeficient-salarizare-bugetari | coeficient salarizare bugetari |
+| 2026-11-03 | salarii-functionari-publici-2026 | salarii functionari publici 2026 |
